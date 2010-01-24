@@ -50,7 +50,7 @@ a:hover{
 }
 
 #searchInput{
-  background-image:url(../images/searchInputBox.png);
+  background-image:url('../images/searchInputBox.png');
   float:left;
   height:23px;
   margin-left:10px;
@@ -84,7 +84,7 @@ a:hover{
 	width: 69px;
 	border: 0px;
 	height:22px;
-	background-image: url(../images/searchBtn.png);
+	background-image: url('../images/searchBtn.png');
 	background-repeat: no-repeat;
 	background-color: transparent;
 }
@@ -265,7 +265,7 @@ padding-right:5px;
 }
 
 #facets #active span.remove{
-  background:transparent url(../images/remove.png) no-repeat scroll center center;
+  background:transparent url('../images/remove.png') no-repeat scroll center center;
   display:block;
   height:7px;
   margin-top:5px;
@@ -330,11 +330,11 @@ padding-right:5px;
 }
 
 #sortbar div.sortAsc{
-  background: transparent url(../images/ascending.gif) no-repeat scroll center center;
+  background: transparent url('../images/ascending.gif') no-repeat scroll center center;
 }
 
 #sortbar div.sortDesc{
-  background: transparent url(../images/descending.gif) no-repeat scroll center center;
+  background: transparent url('../images/descending.gif') no-repeat scroll center center;
 }
 
 #sortbar span.left{

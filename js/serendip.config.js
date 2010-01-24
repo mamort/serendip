@@ -1,4 +1,16 @@
-
+/*!
+ * Serendip Javascript Library v1.0
+ * http://github.com/mamort/serendip
+ *
+ * Copyright 2010, Mats Mortensen
+ * Licensed under the MIT license.
+ * http://github.com/mamort/serendip/blob/master/License.txt
+ *
+ * Includes: 
+ * jquery-1.4.min.js (http://jquery.com/)
+ * date.format-1.2.3.js (http://blog.stevenlevithan.com/archives/date-time-format)
+ */
+ 
 $(document).ready(function(){
     var search = new Serendip.Search({
       solrBaseUrl: "http://localhost:8983/solr",
@@ -15,7 +27,7 @@ $(document).ready(function(){
     search.setFields(["id","key_title", "title", "description","news_release_date", "url", "key_revisor"]);
     search.setAutocompleteField("key_revisor");
     
-    search.addSortField(new Serendip.SortField({name: "news_release_date", header: "dato"}));
+    search.addSortField(new Serendip.SortField({name: "news_release_date", header: "date"}));
     
     // Use DISMAX request handler
     search.addQueryParam("qt", "dismax"); 
@@ -44,7 +56,7 @@ $(document).ready(function(){
       id: "pagetype",
       name: "page_type", 
       activeHeader: "Page Type", 
-      header: "Filtrer etter type", 
+      header: "Filter by page type", 
       minFacetsToDisplay: 5, 
       maxFacetsToDisplay: 10
     }));
@@ -59,23 +71,12 @@ $(document).ready(function(){
       maxFacetsToDisplay: 10
     }));
     
-    // Event country facet
-    search.addFacet(new Serendip.Facet({
-      id: "eventcountry",
-      name: "event_country", 
-      activeHeader: "Event Country", 
-      header: "Filtrer etter land", 
-      minFacetsToDisplay: 5, 
-      maxFacetsToDisplay: 10
-    }));    
-    
-
     // News release date facet [dynamic range]
     search.addFacet(new Serendip.DateFacet({
       id: "news",
       name: "news_release_date", 
       activeHeader: "Release date", 
-      header: "Filter by release date", 
+      header: "Filter by news release date", 
       minFacetsToDisplay: 5, 
       maxFacetsToDisplay: 10,
       
@@ -91,15 +92,15 @@ $(document).ready(function(){
       id: "news2",
       name: "news_release_date", 
       activeHeader: "Release date", 
-      header: "Filtrer etter utgivelsesdato", 
+      header: "Filter by news release date", 
       minFacetsToDisplay: 5, 
       maxFacetsToDisplay: 10,
       
       getFacetValues: function(){
         var values = [];
         
-        values.push(new Serendip.CustomDateFacetValue({name: "Siste tre mnd", value: "NOW-3MONTHS TO NOW"}));
-        values.push(new Serendip.CustomDateFacetValue({name: "Siste 5 år", value: "NOW-5YEAR TO NOW"}));
+        values.push(new Serendip.CustomDateFacetValue({name: "Last 3 months", value: "NOW-3MONTHS TO NOW"}));
+        values.push(new Serendip.CustomDateFacetValue({name: "Last 5 years", value: "NOW-5YEAR TO NOW"}));
         
         return values;
       }

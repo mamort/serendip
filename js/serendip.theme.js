@@ -1,3 +1,15 @@
+/*!
+ * Serendip Javascript Library v1.0
+ * http://github.com/mamort/serendip
+ *
+ * Copyright 2010, Mats Mortensen
+ * Licensed under the MIT license.
+ * http://github.com/mamort/serendip/blob/master/License.txt
+ *
+ * Includes: 
+ * jquery-1.4.min.js (http://jquery.com/)
+ * date.format-1.2.3.js (http://blog.stevenlevithan.com/archives/date-time-format)
+ */
 
 var mytheme = new Serendip.Theme({
 
