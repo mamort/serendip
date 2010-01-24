@@ -1,0 +1,373 @@
+body {
+	font-family: Helvetica, Arial, sans-serif;
+	min-width: 850px;
+}
+
+a{
+  color:#002EB8;
+  text-decoration:none;
+}
+
+a:hover{
+  text-decoration:underline;
+}
+
+.line{
+  background:#CCCCCC none repeat scroll 0 0;
+}
+
+.t1, .t2 {
+  font-size:1px;
+  height:1px;
+  line-height:1px;
+  overflow:hidden;
+}
+
+.t1{
+  margin:0 2px;
+}
+
+.t2 {
+  margin:0 1px;
+}
+
+#searchApp{
+  margin:0 auto;
+  width:1024px;
+}
+
+#query {
+  background-color:#CCCCCC;
+  min-height:25px;
+  padding-bottom:10px;
+  padding-top:10px;
+  padding-right:5px;
+  width:100%;
+}
+
+#queryform {
+	margin: 0px;
+}
+
+#searchInput{
+  background-image:url(../images/searchInputBox.png);
+  float:left;
+  height:23px;
+  margin-left:10px;
+  width:210px;
+}
+
+#querystring {
+  border:0 none;
+  font-size:100%;
+  font-family:arial;
+  height:20px;
+  margin:2px 0 10px 25px;
+  padding:0 0 0 3px;
+}
+
+#autocomplete {
+  display: none;
+  position: absolute;
+	margin-left:10px;
+	padding: 1px 0px 0px 3px;
+	border: 1px solid #CCCCCC;
+  background-color: white;
+	width: 205px;
+  z-index: 1000;
+}
+
+#searchbutton {
+	padding: 0px;
+	margin-top:1px;
+	vertical-align: bottom;
+	width: 69px;
+	border: 0px;
+	height:22px;
+	background-image: url(../images/searchBtn.png);
+	background-repeat: no-repeat;
+	background-color: transparent;
+}
+
+
+#autocomplete ul {
+	list-style: none;
+	margin: 0px;
+	padding: 0px;
+}
+
+#searchbutton:hover {
+	cursor: pointer;
+}
+
+.resultbody {
+	margin: 1px 0px 0px 0px;
+	font-size: 75%;
+}
+
+#results {
+	padding-top:10px;
+	padding-left:10px;
+	width: 780px;
+	float: left;
+}
+
+#results.inProgress{
+  height:350px;
+  background: transparent url('../images/inProgress.gif') no-repeat scroll center center;
+}
+
+#results em{
+  font-style:normal;
+  font-weight:bold;
+}
+
+
+#results #zerohits {
+	padding: 0px 0px 0px 8px;
+}
+
+#results #zerohits h1 {
+	font-size: 110%;
+	margin: 10px 0px 10px 0px;
+	padding: 0px;
+}
+
+#results #searchsuggestion {
+	font-weight: bold;
+	color: blue;
+}
+
+#results #searchsuggestion:hover {
+	cursor: pointer;
+}
+
+#resultbar {
+  float:left;
+	font-size: 80%;
+	background-color: #F2F2F2;
+	padding: 3px 0px 3px 6px;
+	width: 100%;
+	text-align: right;
+	min-height: 15px;
+}
+
+.resultfooter{
+	font-size: 75%;
+	color: green;
+}
+
+.resultfooter a{
+  color:green;
+}
+
+#Paging {
+	clear: both;
+	float:left;
+	width: 800px;  
+	padding:0 0 0 15px;
+}
+
+#Paging ul{
+  float:left;
+  list-style: none;
+  padding:0;
+  margin:0;
+}
+
+#Paging li{
+  float:left;
+  padding-right:10px;
+}
+
+#results ul {
+	list-style: none;
+	margin: 0px;
+	padding: 0px 5px;
+}
+
+#results ul li {
+	margin: 0px 0px 15px 0px;
+}
+
+#facetBox{
+  margin-top:10px;
+  float:right;
+}
+
+#facetBox #inactive.inProgress{
+  height:300px;
+  background: transparent Url('../images/inProgress.gif') no-repeat scroll center center;
+}
+
+
+#facets {
+	padding: 0 0 10px;
+	margin: 0px;
+	width: 200px;
+	float: left;
+	
+	border:2px solid #CCCCCC;
+}
+
+#facets h1 {
+	font-size: 90%;
+	margin: 10px 0px 0px 0px;
+	padding: 0 0 3px;;
+	text-transform: uppercase;
+	
+}
+
+#facets div.facet {
+	font-size: 90%;
+	margin: 1px 0px 5px 20px;
+	padding: 0px;
+	float:left;
+	clear:left;
+	width:100%;
+}
+
+#facets div.facet span, #facets div.facet a {
+	color: blue;
+	margin: 0px 4px 2px 0px;
+}
+
+#facets div.facet ul{
+  list-style: none;
+  margin: 0px;
+  padding: 0 0 5px;
+}
+
+#facets div.facet a{
+  color:#005A8B;
+}
+
+
+#facets div.facet a:hover {
+	cursor: pointer;
+}
+
+#facets div.facet span {
+	color: #aaa;
+	margin: 0px;
+	padding: 0px 0px 2px 0px;
+}
+
+#facets #inactive a.moreFacets{
+  font-size:10px;
+  color:#700000
+}
+
+#facets #active span.header{
+float:left;
+clear:left;
+padding-right:5px;
+}
+
+#facets #active span.remove{
+  background:transparent url(../images/remove.png) no-repeat scroll center center;
+  display:block;
+  height:7px;
+  margin-top:5px;
+  width:7px;
+  float:left;
+}
+
+#facets #active span.remove:hover{
+  cursor: pointer;
+}
+
+#facets #active #activeFacets a{
+  clear:none;
+  float:left;
+}
+
+.morefacets:hover, .removefilter:hover {
+	cursor: pointer;
+}
+
+#sortbar div, #sortbar span{
+  padding:4px 6px;
+}
+
+#sortbar {
+	text-align: left;
+	float: left;
+	width:100%;
+}
+
+#sortbar div.sort{
+  float:left;
+  margin-left:10px;
+  border: 1px solid transparent;
+}
+
+#sortbar div.sort.active{
+  border: 1px solid #888888;
+  -moz-border-radius: 7px;
+  -webkit-border-radius: 7px;
+}
+
+#sortbar div.sort a{
+  font-weight:bold;
+}
+
+#sortbar div.sort.active a{
+  color:black;
+}
+
+#sortbar span.text{
+  float:left;
+  padding:0px;
+}
+
+#sortbar div.sortAsc, #sortbar div.sortDesc{
+  float:left;
+  margin-top:4px;
+  padding:0px;
+  width:12px;
+  height:12px;
+}
+
+#sortbar div.sortAsc{
+  background: transparent url(../images/ascending.gif) no-repeat scroll center center;
+}
+
+#sortbar div.sortDesc{
+  background: transparent url(../images/descending.gif) no-repeat scroll center center;
+}
+
+#sortbar span.left{
+  float:left;
+  font-weight:bold;
+  padding-top:5px;
+}
+
+#sortbar span.right{
+  float:right;
+}
+
+#sortkey {
+	color: blue;
+}
+
+#sortkey:hover {
+	cursor: pointer;
+}
+
+#SpellSuggestions{
+  padding:3px;
+  float:left;
+  width:100%;
+  margin-left: 12px; 
+  font-size: 13px; 
+  font-family: arial; 
+  color: darkred;
+}
+
+#TagCloud{
+  float:left;
+  margin-top:20px;
+  margin-left:10px
+}
+
