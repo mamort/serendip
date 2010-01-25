@@ -24,7 +24,7 @@ $(document).ready(function(){
     });
 
     // Set fields here or specify them in the request handler Solr config
-    search.setFields(["id","key_title", "title", "description","news_release_date", "url", "key_revisor"]);
+    search.setFields(["id", "text", "key_title", "title", "description","news_release_date", "url", "key_revisor"]);
     search.setAutocompleteField("key_revisor");
     
     search.addSortField(new Serendip.SortField({name: "news_release_date", header: "date"}));
@@ -39,6 +39,8 @@ $(document).ready(function(){
     
     // Enable highlighting
     search.addQueryParam("hl", "true");
+    //"[-\w ,/\n\"']{50,400}"
+    search.addQueryParam("hl.regex.pattern", "\w[^\.!\?]{50,600}[\.!\?]"); 
     
     // Enable spellchecking 
     // Make sure to configure spellcheck component to be used in RequestHandler 
@@ -66,10 +68,21 @@ $(document).ready(function(){
       id: "revisor",
       name: "key_revisor", 
       activeHeader: "Revisor", 
-      header: "Filtrer etter revisor", 
+      header: "Filter by revisor", 
       minFacetsToDisplay: 5, 
       maxFacetsToDisplay: 10
     }));
+    
+    // Content type facet
+    search.addFacet(new Serendip.Facet({
+      id: "contenttype",
+      name: "content_type", 
+      activeHeader: "ContentType", 
+      header: "Filtery by content-type", 
+      minFacetsToDisplay: 5, 
+      maxFacetsToDisplay: 10
+    }));    
+    
     
     // News release date facet [dynamic range]
     search.addFacet(new Serendip.DateFacet({
