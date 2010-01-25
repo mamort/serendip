@@ -133,11 +133,19 @@ var mytheme = new Serendip.Theme({
         var html = [];
         html.push("<ul>");
         
+        // Render previous page
+        if(currentPage > 0){
+          html.push("<li><a page='");
+          html.push(currentPage-1);
+          html.push("' href=''><< Previous</a></li>");
+        }
+        
+        // Render pages
         for(var i = windowStart; i < windowEnd; i++){
           var page = i + 1;
           
           if(i == currentPage){
-            html .push("<li><b>");
+            html.push("<li><b>");
             html.push(page);
             html.push("</b></li>");
           }else{
@@ -147,6 +155,13 @@ var mytheme = new Serendip.Theme({
             html.push(page);
             html.push("</a></li>");
           }
+        }
+        
+        // Render next page
+        if(currentPage < totalPages-1){
+          html.push("<li><a page='");
+          html.push(currentPage+1);
+          html.push("' href=''>Next >></a></li>");
         }
         
         html.push("</ul>");
@@ -249,7 +264,9 @@ var mytheme = new Serendip.Theme({
     renderFacetField : function(facet, value, formattedValue, count, isActive){
       var checkedStr = "";
       var html = [];
-                
+  
+      formattedValue = this.convertFacetFieldValue(facet, formattedValue);   
+          
       if(!isActive){
         html.push("<li><a href='#' active='false' facetname='");
         html.push(facet.id);
@@ -269,6 +286,41 @@ var mytheme = new Serendip.Theme({
       
       return html.join("");
     },
+        
+    convertFacetFieldValue : function(facet, value){
+      var converted = value;
+      
+      if(facet.id == "contenttype"){
+        converted = this.convertContentTypeFacetValue(value);
+      }
+      
+      return converted;
+    },
+    
+    convertContentTypeFacetValue : function(value){
+        var convertedValue = value;
+
+        value = value.toLowerCase();
+        var convertionList = this.getFacetContentTypeConvertions();
+        
+        for(var key in convertionList){
+          if(value.indexOf(key) > -1){
+            convertedValue = convertionList[key];
+            break;
+          }  
+        }
+        
+        return convertedValue;
+    },
+    
+    getFacetContentTypeConvertions : function(){
+      var list = [];
+      
+      list["text/html"] = "Html";
+      list["pdf"] = "PDF";
+      
+      return list;
+    },    
     
     renderActiveFacet: function(facetFieldsHtml){
         if(facetFieldsHtml && facetFieldsHtml.length > 0){
