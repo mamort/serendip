@@ -10,7 +10,7 @@
  * jquery-1.4.min.js (http://jquery.com/)
  * date.format-1.2.3.js (http://blog.stevenlevithan.com/archives/date-time-format)
  */
-
+ 
 var mytheme = new Serendip.Theme({
 
     translation: serendipTranslation,
@@ -175,18 +175,48 @@ var mytheme = new Serendip.Theme({
     
     getParam: function(fields, param, defaultValue){
         var value = defaultValue;
+        
         if(fields[param])
-            value = fields[param];       
+            value = fields[param];   
+            
+        if(isArray(value)){
+            value = value.join("");
+        }
             
          return value;
-    },    
+    },   
+    
+    getParamRestrictChars: function(fields, param, defaultValue, maxChars){
+        var text = this.getParam(fields, param, defaultValue);
+                
+        if(text.length > maxChars){
+          text = text.substring(0, maxChars);
+        }
+        
+        return text;
+    },
+    
+    getParamAsDate: function(fields, param, format, defaultValue){
+        var dateValue = this.getParam(fields, param, "")
+
+        if(dateValue != ""){
+          var date = ISODate.convert(dateValue);
+          dateValue = date.format(format);
+        }else{
+          dateValue = defaultValue;
+        }    
+        
+        return dateValue;
+    }, 
     
     renderDoc : function(fields){
         var html = [];
         
         var title = this.getParam(fields, "key_title", "");
-        if(title == "") 
+
+        if(title == ""){
             title = this.getParam(fields, "title", "No title available for this document");
+        }
         
         html.push("<li><div class=\"resulttitle\"><a href=\"");
         html.push(this.getParam(fields, "url", ""));
@@ -194,16 +224,21 @@ var mytheme = new Serendip.Theme({
         html.push(title);
         html.push("</a></div>");
         
+        var paragraph = this.getParamRestrictChars(fields, "tika_paragraphs", "No description available", 600);
+        
+        // Format ISO date into displayed date format
+        var moddate = this.getParamAsDate(fields, "moddate", "dd.mm.yyyy HH:MM", "No date available")
+        
         html.push("<div class=\"resultbody\">");
-        html.push(this.getParam(fields, "text", "No description available"));
+        html.push(paragraph);
         html.push(" ...</div>");
  
         html.push("<div class=\"resultfooter\"><a href='");
         html.push(this.getParam(fields, "url", ""));
         html.push("'>");
         html.push(this.getParam(fields, "url", ""));
-        html.push("</a><span class='date'> - ");
-        html.push(this.getParam(fields, "news_release_date", "No date available"));
+        html.push("</a><span class='date'>");
+        html.push(moddate);
         html.push("</span></div></li>");
         
         return html.join("");
