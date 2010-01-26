@@ -277,6 +277,7 @@ Serendip.Core = Serendip.Class.extend({
 
 Serendip.Theme = Serendip.Class.extend({
   
+  preInit : function(){},
   init : function(data){},
   renderInProgress : function(){},
   renderHeader : function(numDocsFound, responseTimeInMillis, sortValue, sortFields, sortDirection){},
@@ -292,7 +293,9 @@ Serendip.Theme = Serendip.Class.extend({
   renderPager : function(data){},
   renderAutocompleteTerms : function(terms){},
   renderComplete : function(data){},
+  renderError : function(httpReq, ajaxOpts, thrownError){},
   
+  bindPreInit : function(){},
   bindSortClickHandler : function(handler){},
   bindFacetClickHandler : function(handler){},
   bindShowMoreFacetsClickHandler : function(name){},
@@ -490,10 +493,13 @@ Serendip.Search = Serendip.Class.extend({
   init : function(pageName){
     var self = this;
     
+    self.theme.preInit();
+    
     // Initialize history plugin.
     // The callback is called at once by present location.hash. 
     $.historyInit(pageloadPriv, pageName);      
     
+    self.theme.bindPreInit();
     this.setupEvents(self); 
     
     function pageloadPriv(hash){
@@ -774,11 +780,17 @@ Serendip.Search = Serendip.Class.extend({
         } 
                 
     },
-  
-  doRequest: function(req){      	
-    clearTimeout(req.timerId);
     
-    req.theme.renderInProgress();
+    doRequest: function(req){
+        clearTimeout(req.timerId);
+            
+        req.theme.renderInProgress(function(){
+            req.continueRequest(req);
+        });
+      
+    },
+    
+    continueRequest: function(req){
     
     var query = encodeURIComponent($(req.searchFieldId).val());
     var params = req.core.getParamsAsQueryString(req.queryParams);
@@ -799,9 +811,8 @@ Serendip.Search = Serendip.Class.extend({
 
           success: handleResponse,        
           
-          error: function(XMLHttpRequest, textStatus, errorThrown) {
-            alert(errorThrown);
-            alert("error: " + textStatus);
+          error: function(httpReq, ajaxOpts, thrownError) {
+            req.theme.renderError(httpReq, ajaxOpts, thrownError);
           }
       });
     }
@@ -827,6 +838,7 @@ Serendip.Search = Serendip.Class.extend({
       
       req.theme.renderComplete(data);
       
+      req.theme.bindPreInit();
       req.setupEvents(req);
     }
     

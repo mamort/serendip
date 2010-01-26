@@ -14,25 +14,83 @@
 var mytheme = new Serendip.Theme({
 
     translation: serendipTranslation,
+    
+    // Private variables holding JQuery references
+    $results: null,
+    $facetBoxInactive: null,
+    $activeFacets: null,
+    $inactiveFacets: null,
+    $resultbar: null,
+    $paging: null,
+    $spellsuggestions: null,
+    $footer: null,
+    $autocomplete: null,
+    $facetsInProgress: null,
+    $resultsInProgress: null,
+    $facetsInProgress: null,
+    
+    // Binding vars
+    $sortbarHrefs: null,
+    $spellSuggestionsHrefs: null,
+    $facetRemoveHrefs: null,
+    $facetHrefs: null,
+    $facetsShowMoreHrefs: null,
+    $pagingHrefs: null,
+    
+    preInit : function(){
 
-    renderInProgress : function(){
-        $("#results").html("");
-        $("#facetBox #inactive").html("");
-        $("#results").removeClass("inProgress").addClass("inProgress");
-        $("#facetBox #inactive").removeClass("inProgress").addClass("inProgress");
+        $results = $("#results");
+        $facetBoxInactive = $("#facetBox #inactive");
+        $activeFacets = $("#facets #activeFacets");
+        $inactiveFacets = $("#facets #inactive");
+        $resultbar = $("#resultbar");
+        $paging = $("#Paging");
+        $spellsuggestions = $("#SpellSuggestions");
+        $footer = $("#footer");
+        $autocomplete = $("#autocomplete");
+        $resultsInProgress = $("#inProgress");
+        $facetsInProgress = $("#facetsInProgress");
+    },
+    
+    bindPreInit : function(){
+        $sortbarHrefs = $("#sortbar a");
+        $spellSuggestionsHrefs = $("#SpellSuggestions a");
+        $facetRemoveHrefs = $("#facets div.facet span.remove");
+        $facetHrefs = $("#facets div.facet a");
+        $facetsShowMoreHrefs = $("#facets a.moreFacets");
+        $pagingHrefs = $("#Paging li a");
+    },
+
+    renderInProgress : function(callback){
+    
+        $results.fadeTo(200, 0, function(){
+            var height = $(this).height();
+            if(height > 0)
+                $resultsInProgress.height(height);
+            $(this).hide();
+            $resultsInProgress.show();
+            
+            callback();
+        });
+
     },
 
     init : function(data){
         var numDocs = data.response.numFound; 
         
-        $("#results").removeClass("inProgress");
-        $("#facetBox #inactive").removeClass("inProgress");
+         $results.queue(function(){
+            $results.fadeTo(200, 1, function(){
+                $resultsInProgress.hide();
+            });
+            
+            $(this).dequeue();
+         });      
         
         dateFormat.i18n.dayNames = this.translation["Date:DayNames"];
         dateFormat.i18n.monthNames = this.translation["Date:MonthNames"];
         
         if(numDocs > 0)
-          $("#facets #activeFacets").html("");
+          $activeFacets.html("");
     },
     
     renderHeader : function(numDocsFound, responseTimeInMillis, 
@@ -73,7 +131,9 @@ var mytheme = new Serendip.Theme({
         html.push(responseTimeInMillis);
         html.push(" ms)</span></div>");    
         
-        $("#resultbar").html(html.join(""));
+        html = html.join("");
+        
+        $resultbar.html(html);
         
         function isRelevansActive(sortValue){
             if(typeof(sortValue) == "undefined" || sortValue == "")
@@ -167,9 +227,9 @@ var mytheme = new Serendip.Theme({
         html.push("</ul>");
         
         if(totalPages > 1){
-            $("#Paging").html(html.join(""));
+            $paging.html(html.join(""));
         }else{
-            $("#Paging").html("");
+            $paging.html("");
         }
     },
     
@@ -249,19 +309,26 @@ var mytheme = new Serendip.Theme({
         if(suggestions.length > 0)
             html = this.translation["renderSpellSuggestions:DidYouMean"] + " <a href='#'>" + suggestions[0] + "</a>";
             
-        $("#SpellSuggestions").hide();
-        $("#SpellSuggestions").html(html).fadeIn('slow');
+        $spellsuggestions
+            .hide()
+            .html(html)
+            .fadeIn('slow');
     },
     
     renderDocuments : function(docsHtml){
         var html = "<ul>" + docsHtml + "</ul>";
-        $("#results").hide();
-        $("#results").html(html).fadeIn('slow');
+
+        $results
+            .hide()
+            .html(html)
+            .fadeIn('slow');
     },
     
     renderFacets : function(facetsHtml, facets){
-        $("#facets #inactive").hide();
-        $("#facets #inactive").html(facetsHtml).fadeIn('slow');
+        $inactiveFacets
+            .hide()
+            .html(facetsHtml)
+            .fadeIn('slow');
     },
     
     renderFacet : function(facet, facetFieldsHtml, facets, moreFacetsCount){
@@ -360,8 +427,11 @@ var mytheme = new Serendip.Theme({
     renderActiveFacet: function(facetFieldsHtml){
         if(facetFieldsHtml && facetFieldsHtml.length > 0){
             var html = "<ul>" + facetFieldsHtml + "</ul>";
-            $("#facets #activeFacets").hide();
-            $("#facets #activeFacets").html(html).fadeIn('slow');
+
+            $activeFacets
+                .hide()
+                .html(html)
+                .fadeIn('slow');
         }
     },
     
@@ -387,45 +457,71 @@ var mytheme = new Serendip.Theme({
     },
         
     renderEmptyResult : function(searchSuggestions){
-        var html = "<div id=\"zerohits\"><h1>" + this.translation["renderEmptyResult:NoHits"] + "</h1>";
+        var html = [];
+        
+        html.push("<div id=\"zerohits\"><h1>");
+        html.push(this.translation["renderEmptyResult:NoHits"]);
+        html.push("</h1>");
     
         var len = searchSuggestions.length;
         if (len > 0) {
-          html += this.translation["renderEmptyResult:SearchSuggestions"];
-          html += "<span id=\"searchsuggestion\">" + searchSuggestions[len-1] + "</span>";
+          html.push(this.translation["renderEmptyResult:SearchSuggestions"]);
+          html.push("<span id=\"searchsuggestion\">");
+          html.push(searchSuggestions[len-1]);
+          html.push("</span>");
         } else {
-          html += this.translation["renderEmptyResult:NoSearchSuggestions"];
+          html.push(this.translation["renderEmptyResult:NoSearchSuggestions"]);
         }
     
-        $("#results").html(html);
-        $("#footer").html("");
+        html = html.join("");
+    
+        $results.html(html);
+        $footer.html("");
     },     
     
     renderAutocompleteTerms : function(terms){
       
-      var html = "<ul>"
+      var html = [];
+      
+      html.push("<ul>");
       
       for(var i = 0; i < terms.length; i++){
-        html = html + "<li><span>" + terms[i].value + "</span> (" + terms[i].count + ")</li>";
+        html.push("<li><span>");
+        html.push(terms[i].value);
+        html.push("</span> (");
+        html.push(terms[i].count);
+        html.push(")</li>");
       }
       
-      html += "</ul>";
+      html.push("</ul>");
       
-      $("#autocomplete").html(html).fadeIn(300);
+      html = html.join("");
+      
+      $autocomplete
+          .html(html)
+          .fadeIn(300);
       
     },
     
     renderComplete : function(data){
 
-      var html = $("#facets #activeFacets").html();
+      var html = $activeFacets.html();
 
       if(html == null || html.length == 0){
-          $("#facets #activeFacets").html(this.translation["renderFacets:NoActiveFacets"]);
+          $activeFacets.html(this.translation["renderFacets:NoActiveFacets"]);
       }
     },     
     
+    renderError: function(httpReq, ajaxOpts, thrownError){
+      var html = "<span class='error'>Could not communicate with remote server.<span>";
+      $results
+          .hide()
+          .html(html)
+          .fadeIn('slow');
+    },
+    
     bindSuggestClickHandler: function(handler){
-      $("#SpellSuggestions a").unbind('click').bind('click', function(){
+      $spellSuggestionsHrefs.unbind('click').bind('click', function(){
           var text = $(this).text();
           handler.handleSuggestClick(text);
           
@@ -436,7 +532,7 @@ var mytheme = new Serendip.Theme({
     
     bindSortClickHandler : function(handler){
 
-      $("#sortbar a").unbind('click').bind('click', function(){
+      $sortbarHrefs.unbind('click').bind('click', function(){
  
           var value = $(this).attr("sort");
           
@@ -449,14 +545,14 @@ var mytheme = new Serendip.Theme({
     
     bindFacetClickHandler : function(handler){
     
-      $("#facets div.facet span.remove").unbind('click').bind('click',function(){
+      $facetRemoveHrefs.unbind('click').bind('click',function(){
           var id = $(this).parent().find("a").attr("facetname");
           var value = $(this).parent().find("a").attr("facetvalue");
           
           handler.handleFacetClick(id, value, false);
       });
    
-      $("#facets div.facet a").unbind('click').bind('click',function(){
+      $facetHrefs.unbind('click').bind('click',function(){
 
           var id = $(this).attr("facetname");
           var value = $(this).attr("facetvalue");
@@ -477,7 +573,7 @@ var mytheme = new Serendip.Theme({
     }, 
     
     bindShowMoreFacetsClickHandler : function(handler){
-      $("#facets a.moreFacets").unbind('click').bind('click', function(){
+      $facetsShowMoreHrefs.unbind('click').bind('click', function(){
           
           var id = $(this).attr("facetname");
           
@@ -503,11 +599,11 @@ var mytheme = new Serendip.Theme({
     },
     
     bindPagingClickHandler : function(handler){
-      $("#Paging li a").unbind('click').bind('click', function(){
-          
+      $pagingHrefs.unbind('click').bind('click', function(){
           var page = $(this).attr("page");
+            
           handler.handlePagingClick(page);
-          
+       
           // Return false to avoid the a:href executing
           return false;
       });

@@ -105,14 +105,14 @@ a:hover{
 	font-size: 75%;
 }
 
-#results {
+#content{
 	padding-top:10px;
 	padding-left:10px;
 	width: 780px;
 	float: left;
 }
 
-#results.inProgress{
+#inProgress{
   height:350px;
   background: transparent url('../images/inProgress.gif') no-repeat scroll center center;
 }
@@ -121,7 +121,6 @@ a:hover{
   font-style:normal;
   font-weight:bold;
 }
-
 
 #results #zerohits {
 	padding: 0px 0px 0px 8px;
@@ -200,12 +199,6 @@ a:hover{
   margin-top:10px;
   float:right;
 }
-
-#facetBox #inactive.inProgress{
-  height:300px;
-  background: transparent Url('../images/inProgress.gif') no-repeat scroll center center;
-}
-
 
 #facets {
 	padding: 0 0 10px;
