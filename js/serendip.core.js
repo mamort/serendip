@@ -30,6 +30,10 @@ var ISODate = {
 /* General purpose functions */
 String.prototype.trim = function() {return this.replace(/^\s\s*/, '').replace(/\s\s*$/, '');};
 
+function isArray(testObject) {   
+    return testObject && !(testObject.propertyIsEnumerable('length')) && typeof testObject === 'object' && typeof testObject.length === 'number';
+}  
+
 /* Start Serendip library */
 var Serendip = function(){};
 
@@ -901,7 +905,7 @@ Serendip.Search = Serendip.Class.extend({
     
     function renderDoc(doc, highlight){
       
-      var fieldsArr = [];
+      var fieldsArr = {};
       for(var i = 0; i < req.fields.length; i++){
         fieldsArr[req.fields[i]] = getFieldValue(doc, highlight, req.fields[i]);
       }
@@ -909,20 +913,20 @@ Serendip.Search = Serendip.Class.extend({
       for(var i = 0; i < req.highlightFields.length; i++){
         fieldsArr[req.highlightFields[i]] = getFieldValue(doc, highlight, req.highlightFields[i]);
       }      
-      
+         
       return req.theme.renderDoc(fieldsArr);
     }
     
     
     function getFieldValue(doc, highlight, field){
       var value;
-            
-      if(typeof(highlight) == "undefined"){
+         
+      if( typeof(highlight) == "undefined"){
           value = doc[field];
       }else{
           value = highlight[doc.id][field];
       }     
-          
+  
       if(typeof(value) == "undefined")
           value = doc[field];
           
@@ -1227,11 +1231,7 @@ Serendip.Search = Serendip.Class.extend({
       }
       
       return false;
-    }   
-    
-    function isArray(testObject) {   
-    return testObject && !(testObject.propertyIsEnumerable('length')) && typeof testObject === 'object' && typeof testObject.length === 'number';
-    }       
+    }        
     
     function isFacetMatch(activeFacet, facet, value){
       var facetValue = "";
