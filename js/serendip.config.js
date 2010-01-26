@@ -24,10 +24,10 @@ $(document).ready(function(){
     });
 
     // Set fields here or specify them in the request handler Solr config
-    search.setFields(["id", "text", "key_title", "title", "description","news_release_date", "url", "key_revisor"]);
+    search.setFields(["id", "tika_paragraphs", "key_title", "title", "description","news_release_date", "moddate", "url", "key_revisor"]);
     search.setAutocompleteField("key_revisor");
     
-    search.addSortField(new Serendip.SortField({name: "news_release_date", header: "date"}));
+    search.addSortField(new Serendip.SortField({name: "moddate", header: "date"}));
     
     // Use DISMAX request handler
     search.addQueryParam("qt", "dismax"); 
@@ -39,20 +39,21 @@ $(document).ready(function(){
     
     // Enable highlighting
     search.addQueryParam("hl", "true");
-    //"[-\w ,/\n\"']{50,400}"
-    search.addQueryParam("hl.regex.pattern", "\w[^\.!\?]{50,600}[\.!\?]"); 
+    search.addQueryParam("hl.fragmenter", "regex");
     
+    search.addQueryParam("hl.regex.pattern", "\w[^\.!\?]{40,600}[\.!\?]");
+    
+    // Highlighting fields (separate with ["","",""])
+    search.setHighlightFields(["key_title", "tika_paragraphs"]);
+    
+    // Number of characters to use for highlighting
+    search.addQueryParam("hl.fragsize", "500");    
+       
     // Enable spellchecking 
     // Make sure to configure spellcheck component to be used in RequestHandler 
     // Issue "spellcheck.build=true" once to build the dictionary
     search.addQueryParam("spellcheck", "true");
-    
-    // Highlighting fields (separate with ["","",""])
-    search.setHighlightFields(["text"]);
-
-    // Number of characters to use for highlighting
-    search.addQueryParam("hl.fragsize", "500");
-    
+        
     // Page type facet
     search.addFacet(new Serendip.Facet({
       id: "pagetype",
