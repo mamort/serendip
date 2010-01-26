@@ -161,6 +161,12 @@ a:hover{
   color:green;
 }
 
+.resultfooter span.date{
+  float: right;
+  font-size:11px;
+  color:#999999
+}
+
 #Paging {
 	clear: both;
 	float:left;
