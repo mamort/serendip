@@ -16,7 +16,7 @@ var mytheme = new Serendip.Theme({
     translation: serendipTranslation,
     
     // Private variables holding JQuery references
-    $results: null,
+    th$results: null,
     $facetBoxInactive: null,
     $activeFacets: null,
     $inactiveFacets: null,
@@ -39,36 +39,40 @@ var mytheme = new Serendip.Theme({
     
     preInit : function(){
 
-        $results = $("#results");
-        $facetBoxInactive = $("#facetBox #inactive");
-        $activeFacets = $("#facets #activeFacets");
-        $inactiveFacets = $("#facets #inactive");
-        $resultbar = $("#resultbar");
-        $paging = $("#Paging");
-        $spellsuggestions = $("#SpellSuggestions");
-        $footer = $("#footer");
-        $autocomplete = $("#autocomplete");
-        $resultsInProgress = $("#inProgress");
-        $facetsInProgress = $("#facetsInProgress");
+        this.$results = $("#results");
+        this.$facetBoxInactive = $("#facetBox #inactive");
+        this.$activeFacets = $("#facets #activeFacets");
+        this.$inactiveFacets = $("#facets #inactive");
+        this.$resultbar = $("#resultbar");
+        this.$paging = $("#Paging");
+        this.$spellsuggestions = $("#SpellSuggestions");
+        this.$footer = $("#footer");
+        this.$autocomplete = $("#autocomplete");
+        this.$resultsInProgress = $("#inProgress");
+        this.$facetsInProgress = $("#facetsInProgress");
+        
+        this.$resultsInProgress.hide();
     },
     
     bindPreInit : function(){
-        $sortbarHrefs = $("#sortbar a");
-        $spellSuggestionsHrefs = $("#SpellSuggestions a");
-        $facetRemoveHrefs = $("#facets div.facet span.remove");
-        $facetHrefs = $("#facets div.facet a");
-        $facetsShowMoreHrefs = $("#facets a.moreFacets");
-        $pagingHrefs = $("#Paging li a");
+        this.$sortbarHrefs = $("#sortbar a");
+        this.$spellSuggestionsHrefs = $("#SpellSuggestions a");
+        this.$facetRemoveHrefs = $("#facets div.facet span.remove");
+        this.$facetHrefs = $("#facets div.facet a");
+        this.$facetsShowMoreHrefs = $("#facets a.moreFacets");
+        this.$pagingHrefs = $("#Paging li a");
     },
 
     renderInProgress : function(callback){
     
-        $results.fadeTo(200, 0, function(){
+        $inProgress = this.$resultsInProgress;
+    
+        this.$results.fadeTo(200, 0, function(){
             var height = $(this).height();
             if(height > 0)
-                $resultsInProgress.height(height);
+                $inProgress.height(height);
             $(this).hide();
-            $resultsInProgress.show();
+            $inProgress.show();
             
             callback();
         });
@@ -78,9 +82,11 @@ var mytheme = new Serendip.Theme({
     init : function(data){
         var numDocs = data.response.numFound; 
         
-         $results.queue(function(){
-            $results.fadeTo(200, 1, function(){
-                $resultsInProgress.hide();
+        $inProgress = this.$resultsInProgress;
+        
+         this.$results.queue(function(){
+            $(this).fadeTo(200, 1, function(){
+                $inProgress.hide();
             });
             
             $(this).dequeue();
@@ -90,7 +96,7 @@ var mytheme = new Serendip.Theme({
         dateFormat.i18n.monthNames = this.translation["Date:MonthNames"];
         
         if(numDocs > 0)
-          $activeFacets.html("");
+          this.$activeFacets.html("");
     },
     
     renderHeader : function(numDocsFound, responseTimeInMillis, 
@@ -133,7 +139,7 @@ var mytheme = new Serendip.Theme({
         
         html = html.join("");
         
-        $resultbar.html(html);
+        this.$resultbar.html(html);
         
         function isRelevansActive(sortValue){
             if(typeof(sortValue) == "undefined" || sortValue == "")
@@ -227,9 +233,9 @@ var mytheme = new Serendip.Theme({
         html.push("</ul>");
         
         if(totalPages > 1){
-            $paging.html(html.join(""));
+            this.$paging.html(html.join(""));
         }else{
-            $paging.html("");
+            this.$paging.html("");
         }
     },
     
@@ -309,7 +315,7 @@ var mytheme = new Serendip.Theme({
         if(suggestions.length > 0)
             html = this.translation["renderSpellSuggestions:DidYouMean"] + " <a href='#'>" + suggestions[0] + "</a>";
             
-        $spellsuggestions
+        this.$spellsuggestions
             .hide()
             .html(html)
             .fadeIn('slow');
@@ -318,14 +324,14 @@ var mytheme = new Serendip.Theme({
     renderDocuments : function(docsHtml){
         var html = "<ul>" + docsHtml + "</ul>";
 
-        $results
+        this.$results
             .hide()
             .html(html)
             .fadeIn('slow');
     },
     
     renderFacets : function(facetsHtml, facets){
-        $inactiveFacets
+        this.$inactiveFacets
             .hide()
             .html(facetsHtml)
             .fadeIn('slow');
@@ -428,7 +434,7 @@ var mytheme = new Serendip.Theme({
         if(facetFieldsHtml && facetFieldsHtml.length > 0){
             var html = "<ul>" + facetFieldsHtml + "</ul>";
 
-            $activeFacets
+            this.$activeFacets
                 .hide()
                 .html(html)
                 .fadeIn('slow');
@@ -475,8 +481,8 @@ var mytheme = new Serendip.Theme({
     
         html = html.join("");
     
-        $results.html(html);
-        $footer.html("");
+        this.$results.html(html);
+        this.$footer.html("");
     },     
     
     renderAutocompleteTerms : function(terms){
@@ -497,7 +503,7 @@ var mytheme = new Serendip.Theme({
       
       html = html.join("");
       
-      $autocomplete
+      this.$autocomplete
           .html(html)
           .fadeIn(300);
       
@@ -505,23 +511,23 @@ var mytheme = new Serendip.Theme({
     
     renderComplete : function(data){
 
-      var html = $activeFacets.html();
+      var html = this.$activeFacets.html();
 
       if(html == null || html.length == 0){
-          $activeFacets.html(this.translation["renderFacets:NoActiveFacets"]);
+          this.$activeFacets.html(this.translation["renderFacets:NoActiveFacets"]);
       }
     },     
     
     renderError: function(httpReq, ajaxOpts, thrownError){
       var html = "<span class='error'>Could not communicate with remote server.<span>";
-      $results
+      this.$results
           .hide()
           .html(html)
           .fadeIn('slow');
     },
     
     bindSuggestClickHandler: function(handler){
-      $spellSuggestionsHrefs.unbind('click').bind('click', function(){
+      this.$spellSuggestionsHrefs.unbind('click').bind('click', function(){
           var text = $(this).text();
           handler.handleSuggestClick(text);
           
@@ -532,7 +538,7 @@ var mytheme = new Serendip.Theme({
     
     bindSortClickHandler : function(handler){
 
-      $sortbarHrefs.unbind('click').bind('click', function(){
+      this.$sortbarHrefs.unbind('click').bind('click', function(){
  
           var value = $(this).attr("sort");
           
@@ -545,14 +551,14 @@ var mytheme = new Serendip.Theme({
     
     bindFacetClickHandler : function(handler){
     
-      $facetRemoveHrefs.unbind('click').bind('click',function(){
+      this.$facetRemoveHrefs.unbind('click').bind('click',function(){
           var id = $(this).parent().find("a").attr("facetname");
           var value = $(this).parent().find("a").attr("facetvalue");
           
           handler.handleFacetClick(id, value, false);
       });
    
-      $facetHrefs.unbind('click').bind('click',function(){
+      this.$facetHrefs.unbind('click').bind('click',function(){
 
           var id = $(this).attr("facetname");
           var value = $(this).attr("facetvalue");
@@ -573,7 +579,7 @@ var mytheme = new Serendip.Theme({
     }, 
     
     bindShowMoreFacetsClickHandler : function(handler){
-      $facetsShowMoreHrefs.unbind('click').bind('click', function(){
+      this.$facetsShowMoreHrefs.unbind('click').bind('click', function(){
           
           var id = $(this).attr("facetname");
           
@@ -599,7 +605,7 @@ var mytheme = new Serendip.Theme({
     },
     
     bindPagingClickHandler : function(handler){
-      $pagingHrefs.unbind('click').bind('click', function(){
+      this.$pagingHrefs.unbind('click').bind('click', function(){
           var page = $(this).attr("page");
             
           handler.handlePagingClick(page);
