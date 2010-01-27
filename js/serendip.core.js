@@ -390,6 +390,7 @@ Serendip.Search = Serendip.Class.extend({
   facetQueries: [],
   sortQuery: "",
   startDoc: 0,
+  clickType: "",
   
   sortValue: "",
   cplIndex: -1,
@@ -706,6 +707,7 @@ Serendip.Search = Serendip.Class.extend({
       
                 self.sortValue = sortValue;
                 self.sortQuery = "&sort=" + sortValue;
+                self.clickType = "sorting";
                 
                 var query = $(self.searchFieldId).val();
                 self.saveHistoryItem(query, self.startDoc, self.sortQuery, self.getFacetQuery());
@@ -722,6 +724,7 @@ Serendip.Search = Serendip.Class.extend({
             handlePagingClick : function(page){
                 var query = $(self.searchFieldId).val();
                 self.startDoc = page * self.numResults;
+                self.clickType = "paging";
                 self.saveHistoryItem(query, self.startDoc, self.sortQuery, self.getFacetQuery());
             }
             
@@ -822,7 +825,17 @@ Serendip.Search = Serendip.Class.extend({
 	        
       req.theme.init(data);
       
-      renderHeader(numDocs, data.responseHeader.QTime, req.sortValue, req.sortFields);
+      // When paging and sorting we do not have to rerender every page item
+      if(req.clickType != "paging"){
+        renderHeader(numDocs, data.responseHeader.QTime, req.sortValue, req.sortFields);
+        
+        if(req.clickType != "sorting"){
+          renderActiveFacets();
+          renderFacets(data, req.facets);  
+          renderSpellSuggestions(data); 
+        }
+      }
+            
       
       if (numDocs > 0) {
         renderDocuments(data);         
@@ -832,14 +845,12 @@ Serendip.Search = Serendip.Class.extend({
       
       renderPaging(data);      
       
-      renderActiveFacets();
-      renderFacets(data, req.facets);     
-      renderSpellSuggestions(data); 
-      
       req.theme.renderComplete(data);
       
       req.theme.bindPreInit();
       req.setupEvents(req);
+      
+      req.clickType = "";
     }
     
     function renderSpellSuggestions(data){
