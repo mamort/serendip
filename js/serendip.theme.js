@@ -14,53 +14,103 @@
 var mytheme = new Serendip.Theme({
 
     translation: serendipTranslation,
+    fieldMap: serendipThemeFieldMap,
     
     // Private variables holding JQuery references
-    th$results: null,
-    $facetBoxInactive: null,
+    $content: null,
+    $results: null,
     $activeFacets: null,
     $inactiveFacets: null,
     $resultbar: null,
     $paging: null,
     $spellsuggestions: null,
-    $footer: null,
     $autocomplete: null,
     $facetsInProgress: null,
     $resultsInProgress: null,
     $facetsInProgress: null,
+    $facetBox: null,
     
     // Binding vars
     $sortbarHrefs: null,
     $spellSuggestionsHrefs: null,
     $facetRemoveHrefs: null,
-    $facetHrefs: null,
+    $activeFacetHrefs: null,
+    $inactiveFacetHrefs: null,
     $facetsShowMoreHrefs: null,
     $pagingHrefs: null,
+    $resultbar: null,
+    $noActiveFacets: null,
+    
+    // Prototypes
+    docRow_Prototype: null,
+    facetRow_Prototype: null,
+    facetValueRow_Prototype: null,
+    sortfield_prototype: null,
+    activeFacetRow_prototype: null,
+    results_prototype: null,
+    pagingRow_prototype: null,
+    pagingCurrentRow_prototype: null,
+    pagingNextRow_prototype: null,
+    pagingPrevRow_prototype: null,
+    paging_prototype: null,
+    emptyResults_prototype: null,
+    searchSuggestions_Prototype: null,
+    autocomplete_prototype: null,
+    autocompleteRow_prototype: null,
+    errorMsg_prototype: null,
+    spellingSuggestions_prototype: null,
+      
+    resultbar_html: null,
     
     preInit : function(){
 
-        this.$results = $("#results");
-        this.$facetBoxInactive = $("#facetBox #inactive");
-        this.$activeFacets = $("#facets #activeFacets");
-        this.$inactiveFacets = $("#facets #inactive");
-        this.$resultbar = $("#resultbar");
-        this.$paging = $("#Paging");
-        this.$spellsuggestions = $("#SpellSuggestions");
-        this.$footer = $("#footer");
-        this.$autocomplete = $("#autocomplete");
-        this.$resultsInProgress = $("#inProgress");
+        this.$content = $("#Content_Theme");
+        this.$results = $("#Results_Theme");
+        this.$activeFacets = $("#ActiveFacets_Theme");
+        this.$inactiveFacets = $("#InactiveFacets_Theme");
+        this.$resultbar = $("#ResultBar_Theme");
+        this.$paging = $("#Paging_Theme");
+        this.$spellsuggestions = $("#SpellSuggestions_Theme");
+        this.$autocomplete = $("#Autocomplete_Theme");
+        this.$resultsInProgress = $("#ResultsInProgress_Theme");
         this.$facetsInProgress = $("#facetsInProgress");
+        this.$noActiveFacets = $("#NoActiveFacets_Theme");
+        this.$facetBox = $("#Facets_Theme");
+        
+        this.docRow_Prototype = $("#DocRow_Prototype").html();
+        this.facetRow_Prototype = $("#FacetRow_Prototype").html();
+        this.facetValueRow_Prototype = $("#FacetRow_ValueRow_Prototype").html();
+        this.sortfield_prototype = $("#SortField_Prototype").html();
+        this.activeFacetRow_prototype = $("#ActiveFacetRow_Prototype").html();
+        this.results_prototype = $("#Results_Prototype").html();
+        this.pagingRow_prototype = $("#PagingRow_Prototype").html();
+        this.pagingCurrentRow_prototype = $("#PagingCurrentRow_Prototype").html();
+        this.pagingNextRow_prototype = $("#PagingNextRow_Prototype").html();
+        this.pagingPrevRow_prototype = $("#PagingPrevRow_Prototype").html();
+        this.paging_prototype = $("#Paging_Prototype").html();
+        this.emptyResults_prototype = $("#EmptyResults_Prototype").html();
+        this.searchSuggestions_Prototype = $("#SearchSuggestions_Prototype").html();
+        this.autocomplete_prototype = $("#Autocomplete_Prototype").html();
+        this.autocompleteRow_prototype = $("#AutocompleteRow_Prototype").html();
+        this.errorMsg_prototype = $("#ErrorMsg_Prototype").html();
+        this.spellingSuggestions_prototype = $("#SpellingSuggestions_Prototype").html();
+        
+        this.resultbar_html = this.$resultbar.html();
         
         this.$resultsInProgress.hide();
+        this.$resultbar.fadeTo(0,0);
+        
     },
     
     bindPreInit : function(){
-        this.$sortbarHrefs = $("#sortbar a");
-        this.$spellSuggestionsHrefs = $("#SpellSuggestions a");
-        this.$facetRemoveHrefs = $("#facets div.facet span.remove");
-        this.$facetHrefs = $("#facets div.facet a");
-        this.$facetsShowMoreHrefs = $("#facets a.moreFacets");
-        this.$pagingHrefs = $("#Paging li a");
+        this.$sortbarHrefs = $("a", this.$resultbar);
+        this.$spellSuggestionsHrefs = $("a", this.$spellsuggestions);
+        this.$facetRemoveHrefs = $("span.remove", this.$activeFacets);
+        this.$activeFacetHrefs = $("a", this.$activeFacets);
+        this.$inactiveFacetHrefs = $("a", this.$inactiveFacets);
+        this.$facetsShowMoreHrefs = $("a.moreFacets", this.$inactiveFacets);
+        this.$pagingHrefs = $("li a", this.$paging);
+        
     },
 
     renderInProgress : function(callback){
@@ -97,23 +147,30 @@ var mytheme = new Serendip.Theme({
         
         if(numDocs > 0)
           this.$activeFacets.html("");
+          
+        this.$noActiveFacets.hide();
+        
+        // Hide facet box if no facets
+        if(typeof(data.facet_counts) != "undefined"){
+            this.$facetBox.fadeIn("slow"); 
+        }else{
+            this.$content.css("width", "100%");
+        }
     },
     
     renderHeader : function(numDocsFound, responseTimeInMillis, 
       sortValue, sortFields, sortDirection){
       
+        if(numDocsFound > 0){
+          this.$resultbar.fadeTo(0, 1);
+        }
+      
         var html = [];
-
-        html.push("<div id=\"sortbar\"><span class='left'>");
-        html.push(this.translation["renderHeader:LeftText"]);
-        html.push("</span>");
+              
+        var sortFieldHtml = this.sortfield_prototype;
         
-        var currentSortHeader = this.translation["renderHeader:SortByRelevansHeader"];
-        var isRelevansActive = isRelevansActive(sortValue);
-        
-        var sortHtml = renderSortValue("", currentSortHeader, isRelevansActive);  
-        html.push(sortHtml);        
-        
+        var relevansActiveStr = "active";
+      
         for(var i = 0; i < sortFields.length; i++){
             var sField = sortFields[i].name; 
             var sFieldHeader = sortFields[i].header;
@@ -121,25 +178,23 @@ var mytheme = new Serendip.Theme({
             var isActive = isSortFieldActive(sField, sortValue);  
             
             if(isActive){
-                currentSortHeader = sFieldHeader;
+                relevansActiveStr = "";
             }
             
-            var sortHtml = renderSortValue(sField, sFieldHeader, isActive, sortDirection);  
-            html.push(sortHtml);
-        }
+            sortFieldHtml = renderSortValue(sortFieldHtml, sField, sFieldHeader, isActive, sortDirection);
+
+            html.push(sortFieldHtml);
+        }     
         
-        html.push("<span class='right'><strong>");
-        html.push(numDocsFound);
-        html.push("</strong>");
-        html.push(this.translation["renderHeader:RightText"]);
-        html.push(currentSortHeader);
-        html.push(". (");
-        html.push(responseTimeInMillis);
-        html.push(" ms)</span></div>");    
+        var sortBarHtml = this.resultbar_html; 
+      
+        sortBarHtml = sortBarHtml.replace(/\[sortfield:relevansActive\]/gi, relevansActiveStr);
+        sortBarHtml = sortBarHtml.replace(/\[sortfield:hits\]/gi, numDocsFound);
+        sortBarHtml = sortBarHtml.replace(/\[sortfield:time\]/gi, responseTimeInMillis);
         
-        html = html.join("");
-        
-        this.$resultbar.html(html);
+        sortBarHtml = sortBarHtml.replace(/\[sortfield:list\]/gi, html.join(""));
+
+        this.$resultbar.html(sortBarHtml);
         
         function isRelevansActive(sortValue){
             if(typeof(sortValue) == "undefined" || sortValue == "")
@@ -148,42 +203,27 @@ var mytheme = new Serendip.Theme({
                 return false;
         }
         
-        function renderSortValue(field, header, isActive, sortDirection){
-            var html = [];
-                                                
-            if (isActive) {
-                html.push("<div class='sort active'><a href='#' sort='"); 
-            }else{
-                html.push("<div class='sort'><a href='#' sort='"); 
+        function renderSortValue(sortFieldHtml, field, header, isActive, sortDirection){
+            var isActiveStr = "";
+            if(isActive){
+                isActiveStr = "active";
             }
+            
+            sortFieldHtml = sortFieldHtml.replace(/\[sortfield:currentDirection\]/gi, sortDirection);
             
             if(sortDirection == "asc")
               sortDirection = "desc";
             else
               sortDirection = "asc";
-            
-            
-            if(field.length > 0)
-                html.push(field + " " + sortDirection);
-                
+                         
             var title = header.substr(0, 1).toUpperCase() + header.substr(1);
-
-            html.push("'>");
-            html.push("<span class='text'>");
-            html.push(title);   
-            html.push("</span>");   
+      
+            sortFieldHtml = sortFieldHtml.replace(/\[sortfield:active\]/gi, isActiveStr);
+            sortFieldHtml = sortFieldHtml.replace(/\[sortfield:name\]/gi, field);
+            sortFieldHtml = sortFieldHtml.replace(/\[sortfield:direction\]/gi, sortDirection);
+            sortFieldHtml = sortFieldHtml.replace(/\[sortfield:displayValue\]/gi, title);
             
-            if(field.length > 0 && isActive){
-              if(sortDirection == "asc"){
-                  html.push("<div class='sortDesc'></div>");
-              }else{
-                   html.push("<div class='sortAsc'></div>");
-              }
-            }
-            
-            html.push("</a></div> ");  
-            
-            return html.join("");
+            return sortFieldHtml;
         }
         
         function isSortFieldActive(sortField, sortValue){
@@ -195,45 +235,44 @@ var mytheme = new Serendip.Theme({
     },
 
     renderPager : function(currentPage, totalPages, windowStart, windowEnd){
-
-        var html = [];
-        html.push("<ul>");
+        var pagingRowsHtml = [];
+        
+        var pagingHtml = this.paging_prototype;
+        var pagingRowHtml = this.pagingRow_prototype;
+        var pagingCurrentRowHtml = this.pagingCurrentRow_prototype;
+        var pagingNextRowHtml = this.pagingNextRow_prototype;
+        var pagingPrevRowHtml = this.pagingPrevRow_prototype;
         
         // Render previous page
-        if(currentPage > 0){
-          html.push("<li><a page='");
-          html.push(currentPage-1);
-          html.push("' href=''><< Previous</a></li>");
+        if(currentPage > 1){
+          var prevPage = currentPage-1;
+          pagingPrevRowHtml = pagingPrevRowHtml.replace(/\[paging:prevPage\]/gi, prevPage);
+          pagingRowsHtml.push(pagingPrevRowHtml);
         }
-        
+            
         // Render pages
         for(var i = windowStart; i < windowEnd; i++){
-          var page = i + 1;
+          var rowHtml = "";
           
           if(i == currentPage){
-            html.push("<li><b>");
-            html.push(page);
-            html.push("</b></li>");
+            rowHtml = pagingCurrentRowHtml.replace(/\[paging:page\]/gi, i);
           }else{
-            html.push("<li><a page='");
-            html.push(i);
-            html.push("' href=''>");
-            html.push(page);
-            html.push("</a></li>");
+            rowHtml = pagingRowHtml.replace(/\[paging:page\]/gi, i);
           }
+          
+          pagingRowsHtml.push(rowHtml);
         }
         
         // Render next page
-        if(currentPage < totalPages-1){
-          html.push("<li><a page='");
-          html.push(currentPage+1);
-          html.push("' href=''>Next >></a></li>");
-        }
-        
-        html.push("</ul>");
-        
+        if(currentPage < totalPages){
+          var nextPage = currentPage+1;
+          pagingNextRowHtml = pagingNextRowHtml.replace(/\[paging:nextPage\]/gi, nextPage);
+          pagingRowsHtml.push(pagingNextRowHtml);
+        }            
+                
         if(totalPages > 1){
-            this.$paging.html(html.join(""));
+            pagingHtml = pagingHtml.replace(/\[paging:pageList\]/gi, pagingRowsHtml.join(""));
+            this.$paging.html(pagingHtml);
         }else{
             this.$paging.html("");
         }
@@ -276,58 +315,59 @@ var mytheme = new Serendip.Theme({
     }, 
     
     renderDoc : function(fields){
-        var html = [];
+      var html = [];
         
-        var title = this.getParam(fields, "key_title", "");
+      var docRowPrototypeHtml = this.docRow_Prototype;
+               
+      var url = this.getParam(fields, 
+          this.fieldMap["field:url"], 
+          this.fieldMap["field:url:empty"]); 
+          
+      var title = this.getParam(fields, 
+          this.fieldMap["field:title"], 
+          this.fieldMap["field:title:empty"]);
+        
+      var content = this.getParamRestrictChars(fields, 
+          this.fieldMap["field:content"], 
+          this.fieldMap["field:content:empty"], 
+          this.fieldMap["field:content:maxlen"]);
+            
+      var date = this.getParamAsDate(fields, 
+          this.fieldMap["field:date"], 
+          this.fieldMap["field:date:format"], 
+          this.fieldMap["field:date:empty"]);
+        
+      docRowPrototypeHtml = docRowPrototypeHtml.replace(/\[field:url\]/gi, url);
+      docRowPrototypeHtml = docRowPrototypeHtml.replace(/\[field:title\]/gi,title);
+      docRowPrototypeHtml = docRowPrototypeHtml.replace(/\[field:content\]/gi,content);
+      docRowPrototypeHtml = docRowPrototypeHtml.replace(/\[field:date\]/gi,date);
 
-        if(title == ""){
-            title = this.getParam(fields, "title", "No title available for this document");
-        }
-        
-        html.push("<li><div class=\"resulttitle\"><a href=\"");
-        html.push(this.getParam(fields, "url", ""));
-        html.push("\">");
-        html.push(title);
-        html.push("</a></div>");
-        
-        var paragraph = this.getParamRestrictChars(fields, "tika_paragraphs", "No description available", 600);
-        
-        // Format ISO date into displayed date format
-        var moddate = this.getParamAsDate(fields, "moddate", "dd.mm.yyyy HH:MM", "No date available")
-        
-        html.push("<div class=\"resultbody\">");
-        html.push(paragraph);
-        html.push(" ...</div>");
- 
-        html.push("<div class=\"resultfooter\"><a href='");
-        html.push(this.getParam(fields, "url", ""));
-        html.push("'>");
-        html.push(this.getParam(fields, "url", ""));
-        html.push("</a><span class='date'>");
-        html.push(moddate);
-        html.push("</span></div></li>");
-        
-        return html.join("");
+      return docRowPrototypeHtml;
     },   
     
-    renderSpellSuggestions: function(suggestions){
-        var html = "";
-        if(suggestions.length > 0)
-            html = this.translation["renderSpellSuggestions:DidYouMean"] + " <a href='#'>" + suggestions[0] + "</a>";
-            
-        this.$spellsuggestions
-            .hide()
-            .html(html)
-            .fadeIn('slow');
-    },
-    
     renderDocuments : function(docsHtml){
-        var html = "<ul>" + docsHtml + "</ul>";
+        
+        var resultsHtml = this.results_prototype;
+        resultsHtml = resultsHtml.replace(/\[results:list\]/gi,docsHtml);
 
         this.$results
             .hide()
-            .html(html)
+            .html(resultsHtml)
             .fadeIn('slow');
+            
+    },
+    
+    renderSpellSuggestions: function(suggestions){
+        var spellingSuggestionsHtml = this.spellingSuggestions_prototype;
+        
+        if(suggestions.length > 0){
+            spellingSuggestionsHtml = spellingSuggestionsHtml.replace(/\[spellingsuggestion:suggestion\]/gi,suggestions[0]);
+            
+            this.$spellsuggestions
+              .hide()
+              .html(spellingSuggestionsHtml)
+              .fadeIn('slow');
+        }
     },
     
     renderFacets : function(facetsHtml, facets){
@@ -337,62 +377,58 @@ var mytheme = new Serendip.Theme({
             .fadeIn('slow');
     },
     
+    replaceTagWithClass: function(tagName, className, text, replacement){
+        var regStr = "<" + tagName + "[\\s]*class=\"" + className + "\"[^>]*>([\\s\\S]*?)<\\/" + tagName +">";
+        var reg = new RegExp(regStr, "gi");
+        text = text.replace(reg, replacement);
+        return text;
+    },
+    
+    replaceTagWithId: function(tagName, id, text, replacement){
+        var regStr = "<" + tagName + "[\\s]*id=\"" + id + "\"[^>]*>([\\s\\S]*?)<\\/" + tagName +">";
+        var reg = new RegExp(regStr, "gi");
+        text = text.replace(reg, replacement);
+        return text;
+    },    
+    
     renderFacet : function(facet, facetFieldsHtml, facets, moreFacetsCount){
       
-      var html = [];
+      var facetRowHtml = this.facetRow_Prototype
+      var facetValueRowHtml = this.facetValueRow_Prototype;
       
-      // No matches
-      if(facetFieldsHtml == ""){
-          facetFieldsHtml = this.translation["renderFacet:NoMatches"];
+      if(facetFieldsHtml != ""){
+          facetRowHtml = facetRowHtml.replace(/\[facet:name\]/gi, facet.id);
+          facetRowHtml = facetRowHtml.replace(/\[facet:header\]/gi, facet.header);
+          facetRowHtml = facetRowHtml.replace(/\[facet:valueList\]/gi, facetFieldsHtml);
+          
+          if(moreFacetsCount <= 0){
+            facetRowHtml = facetRowHtml.replace(/\moreFacetsActive/gi, "moreFacetsInactive");
+          }
+      }else{
+          facetRowHtml = "";
       }
-      
-      html.push("<div class='facet ");
-      html.push(facet.name);
-      html.push("'><h1>");
-      html.push(facet.header);
-      html.push("</h1>");
-      
-      html.push("<ul>");
-      html.push(facetFieldsHtml);
-      html.push("</ul>");
-            
-      if(moreFacetsCount > 0){
-          html.push("<a class='moreFacets' facetname='");
-          html.push(facet.id);
-          html.push("'>");
-          html.push(this.translation["renderFacet:ShowMore"]);
-          html.push("</a>");
-      }
-      
-      html.push("</div>");
-      
-      return html.join("");
+
+      return facetRowHtml;
     },
     
     renderFacetField : function(facet, value, formattedValue, count, isActive){
-      var checkedStr = "";
-      var html = [];
-  
-      formattedValue = this.convertFacetFieldValue(facet, formattedValue);   
-          
-      if(!isActive){
-        html.push("<li><a href='#' active='false' facetname='");
-        html.push(facet.id);
-        html.push("' facetvalue='");
-        html.push(value);
-        html.push("'>");
-        html.push(formattedValue);
-        html.push("</a>");
-        
-        // -1 returned for facets that cannot display counts
-        if(count > -1){
-            html.push("<span class='count'>(");
-            html.push(count);
-            html.push(")</span></li>");  
-        }  
+      if(isActive) return "";
+    
+      formattedValue = this.convertFacetFieldValue(facet, formattedValue);
+    
+      var facetValueRowHtml = this.facetValueRow_Prototype;
+      
+      facetValueRowHtml = facetValueRowHtml.replace(/\[facet:name\]/gi, facet.id);
+      facetValueRowHtml = facetValueRowHtml.replace(/\[facet:value\]/gi, value);
+      facetValueRowHtml = facetValueRowHtml.replace(/\[facet:displayValue\]/gi, formattedValue);
+      
+      if(count > 0){
+          facetValueRowHtml = facetValueRowHtml.replace(/\[facet:count\]/gi, count);
+      }else{
+          facetValueRowHtml = this.replaceTagWithClass("span", "count", facetValueRowHtml, "");
       }
       
-      return html.join("");
+      return facetValueRowHtml;
     },
         
     convertFacetFieldValue : function(facet, value){
@@ -438,73 +474,56 @@ var mytheme = new Serendip.Theme({
                 .hide()
                 .html(html)
                 .fadeIn('slow');
+        }else{
+            this.$activeFacets.html("");
         }
     },
     
     renderActiveFacetField : function(facet, value, formattedValue){
-        var html = [];
+    
+        var activeFacetHtml = this.activeFacetRow_prototype;
+        activeFacetHtml = activeFacetHtml.replace(/\[activeFacet:header\]/gi, facet.activeHeader);
+        activeFacetHtml = activeFacetHtml.replace(/\[activeFacet:name\]/gi, facet.id);
+        activeFacetHtml = activeFacetHtml.replace(/\[activeFacet:value\]/gi, value);
+        activeFacetHtml = activeFacetHtml.replace(/\[activeFacet:displayValue\]/gi, formattedValue);
         
-        html.push("<li><span class='header'>");
-        html.push(facet.activeHeader);
-        html.push(": </span><a href='#' active='true' facetname='");
-        html.push(facet.id);
-        html.push("' facetvalue='");
-        html.push(value);
-        html.push("'>");
-        html.push(formattedValue);
-        html.push("</a>");
-        html.push("<span class='remove' facetname='");
-        html.push(facet.name);
-        html.push("' facetvalue='");
-        html.push(value);
-        html.push("'></span></li>");   
-        
-        return html.join("");
+        return activeFacetHtml;
     },
         
     renderEmptyResult : function(searchSuggestions){
         var html = [];
         
-        html.push("<div id=\"zerohits\"><h1>");
-        html.push(this.translation["renderEmptyResult:NoHits"]);
-        html.push("</h1>");
-    
+        var emptyResultsHtml = this.emptyResults_prototype;
+        html.push(emptyResultsHtml);
+        
         var len = searchSuggestions.length;
         if (len > 0) {
-          html.push(this.translation["renderEmptyResult:SearchSuggestions"]);
-          html.push("<span id=\"searchsuggestion\">");
-          html.push(searchSuggestions[len-1]);
-          html.push("</span>");
-        } else {
-          html.push(this.translation["renderEmptyResult:NoSearchSuggestions"]);
-        }
+          var searchSuggestionHtml = this.searchSuggestions_Prototype
+          searchSuggestionHtml = searchSuggestionHtml.replace(/\[searchsuggestion:suggestion\]/gi, value);
+          html.push(searchSuggestionHtml);
+        } 
     
         html = html.join("");
-    
         this.$results.html(html);
-        this.$footer.html("");
     },     
     
     renderAutocompleteTerms : function(terms){
       
       var html = [];
       
-      html.push("<ul>");
+      var autocompleteHtml = this.autocomplete_prototype;
+      var autocompleteRowHtml = this.autocompleteRow_prototype;
       
       for(var i = 0; i < terms.length; i++){
-        html.push("<li><span>");
-        html.push(terms[i].value);
-        html.push("</span> (");
-        html.push(terms[i].count);
-        html.push(")</li>");
+        autocompleteRowHtml = autocompleteRowHtml.replace(/\[autocomplete:value\]/gi, terms[i].value);
+        autocompleteRowHtml = autocompleteRowHtml.replace(/\[autocomplete:count\]/gi, terms[i].count);
+        html.push(autocompleteRowHtml);
       }
       
-      html.push("</ul>");
-      
-      html = html.join("");
+      autocompleteHtml = autocompleteHtml.replace(/\[autocomplete:list\]/gi, html.join(""));
       
       this.$autocomplete
-          .html(html)
+          .html(autocompleteHtml)
           .fadeIn(300);
       
     },
@@ -514,15 +533,26 @@ var mytheme = new Serendip.Theme({
       var html = this.$activeFacets.html();
 
       if(html == null || html.length == 0){
-          this.$activeFacets.html(this.translation["renderFacets:NoActiveFacets"]);
+          this.$noActiveFacets.show();
       }
     },     
     
     renderError: function(httpReq, ajaxOpts, thrownError){
-      var html = "<span class='error'>Could not communicate with remote server.<span>";
+      var errorMsgHtml = this.errorMsg_prototype;
+      
+      $inProgress = this.$resultsInProgress;
+        
+       this.$results.queue(function(){
+          $(this).fadeTo(200, 1, function(){
+              $inProgress.hide();
+          });
+          
+          $(this).dequeue();
+       });   
+
       this.$results
           .hide()
-          .html(html)
+          .html(errorMsgHtml)
           .fadeIn('slow');
     },
     
@@ -558,13 +588,27 @@ var mytheme = new Serendip.Theme({
           handler.handleFacetClick(id, value, false);
       });
    
-      this.$facetHrefs.unbind('click').bind('click',function(){
-
-          var id = $(this).attr("facetname");
-          var value = $(this).attr("facetvalue");
+      this.$activeFacetHrefs.unbind('click').bind('click',function(){
+          handleFacetClick($(this), handler);
           
-          var isActive = $(this).attr("active");
-
+          // Return false to avoid the a:href executing
+          return false;
+      });
+      
+      this.$inactiveFacetHrefs.unbind('click').bind('click',function(){
+          handleFacetClick($(this), handler);
+          
+          // Return false to avoid the a:href executing
+          return false;
+      });      
+      
+      function handleFacetClick(facet, handler){
+      
+          var id = facet.attr("facetname");
+          var value = facet.attr("facetvalue");
+          
+          var isActive = facet.attr("active");
+ 
           if(isActive == "false"){
             isActive = true;
           }else{
@@ -572,32 +616,50 @@ var mytheme = new Serendip.Theme({
           }
 
           handler.handleFacetClick(id, value, isActive);
-          
-          // Return false to avoid the a:href executing
-          return false;
-      });
+      }
     }, 
     
-    bindShowMoreFacetsClickHandler : function(handler){
+bindShowMoreFacetsClickHandler : function(handler){
       this.$facetsShowMoreHrefs.unbind('click').bind('click', function(){
           
           var id = $(this).attr("facetname");
           
-          var element = handler.handleShowMoreFacetsClick(id, $(this).parent());
+          var selector = "." + id + " div.moreFacets";
+          var $moreFacets = $(selector, this.$inactiveFacets);
           
-          if(element.css("display") == "none"){
+          selector = "." + id + " div.moreFacetsTxt";
+          var $moreFacetsTxt = $(selector, this.$inactiveFacets);  
           
-              element.slideDown("slow", function(){
-                $(this).show();
+          selector = "." + id + " div.lessFacetsTxt";
+          var $lessFacetsTxt = $(selector, this.$inactiveFacets);           
+              
+          if($moreFacets.css("display") == "none"){
+          
+              $moreFacets.slideDown("slow", function(){
+                  $(this).show();
               });
               
-              $(this).text("Show less");
+              $moreFacetsTxt
+                .removeClass("active")
+                .addClass("inactive");
+                
+              $lessFacetsTxt
+                .removeClass("inactive")
+                .addClass("active");    
+                            
           }else{
-              element.slideUp("slow", function(){
+          
+              $moreFacets.slideUp("slow", function(){
                 $(this).hide();
               });
               
-              $(this).text("Show more");
+              $lessFacetsTxt
+                .removeClass("moreFacetsActive")
+                .addClass("moreFacetsInactive");
+                
+              $moreFacetsTxt
+                .removeClass("moreFacetsInactive")
+                .addClass("moreFacetsActive");               
           }
           
           return false;
@@ -605,9 +667,10 @@ var mytheme = new Serendip.Theme({
     },
     
     bindPagingClickHandler : function(handler){
+
       this.$pagingHrefs.unbind('click').bind('click', function(){
           var page = $(this).attr("page");
-            
+          
           handler.handlePagingClick(page);
        
           // Return false to avoid the a:href executing

@@ -1,3 +1,6 @@
+/*****************************************************************
+* Generic styles
+******************************************************************/
 body {
 	font-family: Helvetica, Arial, sans-serif;
 	min-width: 850px;
@@ -31,12 +34,25 @@ a:hover{
   margin:0 1px;
 }
 
+/*****************************************************************
+* Page structure
+******************************************************************/
 #searchApp{
   margin:0 auto;
   width:1024px;
 }
 
-#query {
+#Content_Theme{
+	padding-top:10px;
+	padding-left:10px;
+	width: 780px;
+	float: left;
+}
+
+/*****************************************************************
+* Query input
+******************************************************************/
+#QueryInput_Theme {
   background-color:#CCCCCC;
   min-height:25px;
   padding-bottom:10px;
@@ -45,11 +61,11 @@ a:hover{
   width:100%;
 }
 
-#queryform {
+#QueryInput_Theme #queryform {
 	margin: 0px;
 }
 
-#searchInput{
+#QueryInput_Theme #searchInput{
   background-image:url('../images/searchInputBox.png');
   float:left;
   height:23px;
@@ -57,7 +73,7 @@ a:hover{
   width:210px;
 }
 
-#querystring {
+#QueryInput_Theme #queryInput {
   border:0 none;
   font-size:100%;
   font-family:arial;
@@ -66,18 +82,7 @@ a:hover{
   padding:0 0 0 3px;
 }
 
-#autocomplete {
-  display: none;
-  position: absolute;
-	margin-left:10px;
-	padding: 1px 0px 0px 3px;
-	border: 1px solid #CCCCCC;
-  background-color: white;
-	width: 205px;
-  z-index: 1000;
-}
-
-#searchbutton {
+#QueryInput_Theme #searchbutton {
 	padding: 0px;
 	margin-top:1px;
 	vertical-align: bottom;
@@ -89,113 +94,92 @@ a:hover{
 	background-color: transparent;
 }
 
+#QueryInput_Theme #searchbutton:hover {
+	cursor: pointer;
+}
 
-#autocomplete ul {
+/*****************************************************************
+* Autocomplete on search field
+******************************************************************/
+#Autocomplete_Theme {
+  display: none;
+  position: absolute;
+	margin-left:10px;
+	padding: 1px 0px 0px 3px;
+	border: 1px solid #CCCCCC;
+  background-color: white;
+	width: 205px;
+  z-index: 1000;
+}
+
+#Autocomplete_Theme ul {
 	list-style: none;
 	margin: 0px;
 	padding: 0px;
 }
 
-#searchbutton:hover {
-	cursor: pointer;
-}
-
-.resultbody {
-	margin: 1px 0px 0px 0px;
-	font-size: 75%;
-}
-
-#content{
-	padding-top:10px;
-	padding-left:10px;
-	width: 780px;
-	float: left;
-}
-
-#inProgress{
+/*****************************************************************
+* Results in progress
+******************************************************************/
+#ResultsInProgress_Theme{
   height:350px;
   background: transparent url('../images/inProgress.gif') no-repeat scroll center center;
 }
 
-#results em{
+/*****************************************************************
+* Results
+******************************************************************/
+#Results_Theme em{
   font-style:normal;
   font-weight:bold;
 }
 
-#results #zerohits {
+#Results_Theme #zerohits {
 	padding: 0px 0px 0px 8px;
 }
 
-#results #zerohits h1 {
+#Results_Theme #zerohits h1 {
 	font-size: 110%;
 	margin: 10px 0px 10px 0px;
 	padding: 0px;
 }
 
-#results #searchsuggestion {
-	font-weight: bold;
-	color: blue;
-}
-
-#results #searchsuggestion:hover {
-	cursor: pointer;
-}
-
-#resultbar {
-  float:left;
-	font-size: 80%;
-	background-color: #F2F2F2;
-	padding: 3px 0px 3px 6px;
-	width: 100%;
-	text-align: right;
-	min-height: 15px;
-}
-
-.resultfooter{
-	font-size: 75%;
-	color: green;
-}
-
-.resultfooter a{
-  color:green;
-}
-
-.resultfooter span.date{
-  float: right;
-  font-size:11px;
-  color:#999999
-}
-
-#Paging {
-	clear: both;
-	float:left;
-	width: 800px;  
-	padding:0 0 0 15px;
-}
-
-#Paging ul{
-  float:left;
-  list-style: none;
-  padding:0;
-  margin:0;
-}
-
-#Paging li{
-  float:left;
-  padding-right:10px;
-}
-
-#results ul {
+#Results_Theme ul {
 	list-style: none;
 	margin: 0px;
 	padding: 0px 5px;
 }
 
-#results ul li {
+#Results_Theme ul li {
 	margin: 0px 0px 15px 0px;
 }
 
-#facetBox{
+#Results_Theme .resultbody {
+	margin: 1px 0px 0px 0px;
+	font-size: 75%;
+}
+
+#Results_Theme .resultfooter{
+	font-size: 75%;
+	color: green;
+}
+
+#Results_Theme .resultfooter a{
+  color:green;
+}
+
+#Results_Theme .resultfooter span.date{
+  float: right;
+  font-size:11px;
+  color:#999999
+}
+
+/*****************************************************************
+* Facets
+******************************************************************/
+
+#Facets_Theme{
+  display:none; // Will be enabled by theme
   margin-top:10px;
   float:right;
 }
@@ -205,7 +189,6 @@ a:hover{
 	margin: 0px;
 	width: 200px;
 	float: left;
-	
 	border:2px solid #CCCCCC;
 }
 
@@ -252,18 +235,26 @@ a:hover{
 	padding: 0px 0px 2px 0px;
 }
 
-#facets #inactive a.moreFacets{
+#facets #InactiveFacets_Theme .moreFacetsActive{
+  display:block;
+}
+
+#facets #InactiveFacets_Theme .moreFacetsInactive{
+  display:none;
+}
+
+#facets #InactiveFacets_Theme a.moreFacets{
   font-size:10px;
   color:#700000
 }
 
-#facets #active span.header{
+#facets #ActiveFacets_Theme span.header{
 float:left;
 clear:left;
 padding-right:5px;
 }
 
-#facets #active span.remove{
+#facets #ActiveFacets_Theme span.remove{
   background:transparent url('../images/remove.png') no-repeat scroll center center;
   display:block;
   height:7px;
@@ -272,89 +263,35 @@ padding-right:5px;
   float:left;
 }
 
-#facets #active span.remove:hover{
+#facets #ActiveFacets_Theme span.remove:hover{
   cursor: pointer;
 }
 
-#facets #active #activeFacets a{
+#facets #ActiveFacets_Theme a{
   clear:none;
   float:left;
 }
 
-.morefacets:hover, .removefilter:hover {
+#ActiveFacets_Theme .morefacets:hover, #ActiveFacets_Theme .removefilter:hover {
 	cursor: pointer;
 }
 
-#sortbar div, #sortbar span{
-  padding:4px 6px;
-}
-
-#sortbar {
-	text-align: left;
-	float: left;
-	width:100%;
-}
-
-#sortbar div.sort{
-  float:left;
-  margin-left:10px;
-  border: 1px solid transparent;
-}
-
-#sortbar div.sort.active{
-  border: 1px solid #888888;
-  -moz-border-radius: 7px;
-  -webkit-border-radius: 7px;
-}
-
-#sortbar div.sort a{
-  font-weight:bold;
-}
-
-#sortbar div.sort.active a{
-  color:black;
-}
-
-#sortbar span.text{
-  float:left;
-  padding:0px;
-}
-
-#sortbar div.sortAsc, #sortbar div.sortDesc{
-  float:left;
-  margin-top:4px;
-  padding:0px;
-  width:12px;
-  height:12px;
-}
-
-#sortbar div.sortAsc{
-  background: transparent url('../images/ascending.gif') no-repeat scroll center center;
-}
-
-#sortbar div.sortDesc{
-  background: transparent url('../images/descending.gif') no-repeat scroll center center;
-}
-
-#sortbar span.left{
-  float:left;
-  font-weight:bold;
-  padding-top:5px;
-}
-
-#sortbar span.right{
-  float:right;
-}
-
-#sortkey {
+/*****************************************************************
+* Search suggestions
+******************************************************************/
+#Searchsuggestion_Theme {
+	font-weight: bold;
 	color: blue;
 }
 
-#sortkey:hover {
+#Searchsuggestion_Theme:hover {
 	cursor: pointer;
 }
 
-#SpellSuggestions{
+/*****************************************************************
+* Spelling suggestions
+******************************************************************/
+#SpellSuggestions_Theme{
   padding:3px;
   float:left;
   width:100%;
@@ -364,9 +301,113 @@ padding-right:5px;
   color: darkred;
 }
 
-#TagCloud{
+/*****************************************************************
+* Result bar (sorting, hits)
+******************************************************************/
+#ResultBar_Theme {
   float:left;
-  margin-top:20px;
-  margin-left:10px
+	font-size: 80%;
+	background-color: #F2F2F2;
+	padding: 3px 0px 3px 6px;
+	width: 100%;
+	text-align: right;
+	min-height: 15px;
 }
 
+#ResultBar_Theme #sortbar div, #sortbar span{
+  padding:4px 6px;
+}
+
+#ResultBar_Theme #sortbar {
+	text-align: left;
+	float: left;
+	width:100%;
+}
+
+#ResultBar_Theme #sortbar div.sort{
+  float:left;
+  margin-left:10px;
+  border: 1px solid transparent;
+}
+
+#ResultBar_Theme #sortbar div.sort.active{
+  border: 1px solid #888888;
+  -moz-border-radius: 7px;
+  -webkit-border-radius: 7px;
+}
+
+#ResultBar_Theme #sortbar div.sort a{
+  font-weight:bold;
+}
+
+#ResultBar_Theme #sortbar div.sort.active a{
+  color:black;
+}
+
+#ResultBar_Theme #sortbar span.text{
+  float:left;
+  padding:0px;
+}
+
+#ResultBar_Theme #sortbar div.sort_asc, #ResultBar_Theme #sortbar div.sort_desc{
+  float:left;
+  margin-top:4px;
+  padding:0px;
+  width:12px;
+  height:12px;
+}
+
+#ResultBar_Theme #sortbar div.sort.active div.sort_asc{
+  background: transparent url('../images/ascending.gif') no-repeat scroll center center;
+}
+
+#ResultBar_Theme #sortbar div.sort.active div.sort_desc{
+  background: transparent url('../images/descending.gif') no-repeat scroll center center;
+}
+
+#ResultBar_Theme #sortbar span.left{
+  float:left;
+  font-weight:bold;
+  padding-top:5px;
+}
+
+#ResultBar_Theme #sortbar span.right{
+  float:right;
+}
+
+#ResultBar_Theme #sortkey {
+	color: blue;
+}
+
+#ResultBar_Theme #sortkey:hover {
+	cursor: pointer;
+}
+
+/*****************************************************************
+* Paging
+******************************************************************/
+#Paging_Theme {
+	clear: both;
+	float:left;
+	width: 800px;  
+	padding:0 0 0 15px;
+}
+
+#Paging_Theme ul{
+  float:left;
+  list-style: none;
+  padding:0;
+  margin:0;
+}
+
+#Paging_Theme li{
+  float:left;
+  padding-right:10px;
+}
+
+/*****************************************************************
+* Hide prototypes
+******************************************************************/
+#Prototypes{
+  display:none;
+}

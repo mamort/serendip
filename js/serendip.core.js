@@ -73,67 +73,6 @@ Serendip.extend = function () {
 Serendip.Core = Serendip.Class.extend({
 
   search: null,
-
-  decode: function utf8decode(str) {
-
-    // Converts a UTF-8 encoded string to ISO-8859-1  
-    // 
-    // version: 903.3016
-    // discuss at: http://phpjs.org/functions/utf8_decode
-    // +   original by: Webtoolkit.info (http://www.webtoolkit.info/)
-    // +      input by: Aman Gupta
-    // +   improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-    // +   improved by: Norman "zEh" Fuchs
-    // +   bugfixed by: hitwork
-    // +   bugfixed by: Onno Marsman
-    // +      input by: Brett Zamir (http://brettz9.blogspot.com)
-    // +   bugfixed by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-    // *     example 1: utf8_decode('Kevin van Zonneveld');
-    // *     returns 1: 'Kevin van Zonneveld'
-	    var tmp_arr = [], i = 0, ac = 0, c1 = 0, c2 = 0, c3 = 0;
-	    
-	    str += '';
-	    
-	    while ( i < str.length ) {
-	        c1 = str.charCodeAt(i);
-	        if (c1 < 128) {
-	            tmp_arr[ac++] = String.fromCharCode(c1);
-	            i++;
-	        } else if ((c1 > 191) && (c1 < 224)) {
-	            c2 = str.charCodeAt(i+1);
-	            tmp_arr[ac++] = String.fromCharCode(((c1 & 31) << 6) | (c2 & 63));
-	            i += 2;
-	        } else {
-	            c2 = str.charCodeAt(i+1);
-	            c3 = str.charCodeAt(i+2);
-	            tmp_arr[ac++] = String.fromCharCode(((c1 & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
-	            i += 3;
-	        }
-	    }
-
-	    return tmp_arr.join('');
-	},
-	
-  encode: function utf8encode(string) {
-		var utftext = ""; 
-		for (var n = 0; n < string.length; n++) { 
-			var c = string.charCodeAt(n);
- 
-			if (c < 128) {
-				utftext += String.fromCharCode(c);
-			}
-			else if((c > 127) && (c < 2048)) {
-				utftext += String.fromCharCode((c >> 6) | 192);
-				utftext += String.fromCharCode((c & 63) | 128);
-			}
-			else {
-				utftext += String.fromCharCode((c >> 12) | 224);
-				utftext += String.fromCharCode(((c >> 6) & 63) | 128);
-				utftext += String.fromCharCode((c & 63) | 128);
-			}
-		}
-		return escape(utftext);
-	},
 	
   getParamsAsQueryString: function(params){
     var query = "";
@@ -348,10 +287,6 @@ Serendip.FacetClickHandler = Serendip.Class.extend({
   handleFacetClick : function(name, value, isActive){}
 });
 
-Serendip.ShowMoreFacetsClickHandler = Serendip.Class.extend({
-  handleShowMoreFacetsClick : function(name){}
-});
-
 Serendip.PagingClickHandler = Serendip.Class.extend({
   handlePagingClick : function(page){}
 });
@@ -368,6 +303,8 @@ Serendip.Search = Serendip.Class.extend({
   
   searchFieldId : null,
   searchBtnId : null,
+  autocompleteId: null,
+  autocompleteValuesSelector: null,
   
   pagerWindowSize: 5,
   minPagerPages: 10,
@@ -460,12 +397,14 @@ Serendip.Search = Serendip.Class.extend({
   
   initFromQueryStr: function(queryStr){
     
+    queryStr = decodeURIComponent(queryStr);
+    
     // Add postfix to map ids to avoid using "reserved" javascript words
     // ex paramsMap["sort"] will not work (sort is already funksjon on array)
     var paramsMap = this.core.parseQueryToMap(queryStr, "_param");
     
     // Search value
-    $(this.searchFieldId).val(unescape(paramsMap["q_param"]));
+    $(this.searchFieldId).val(paramsMap["q_param"]);
     
     // Facet values
     var facetsFilters = this.core.parseFacets(queryStr, this.facets);
@@ -520,7 +459,7 @@ Serendip.Search = Serendip.Class.extend({
     $.historyLoad(hash);    
   },  
   
-    getFacetQuery: function(useEscape){
+    getFacetQuery: function(){
       var facetQueryArr = [];
 
       for(var id in this.facetQueries){
@@ -536,11 +475,7 @@ Serendip.Search = Serendip.Class.extend({
               
               for(var i = 0; i < facet.values.length; i++){
 			  
-                  var value = "";
-                  if(useEscape)
-                    value = escape(facet.values[i]);
-                  else
-                    value = encodeURIComponent(facet.values[i]);
+                  var value = encodeURIComponent(facet.values[i]);
 					
                   if(facetConfig.facetType == "text")
                       query += "\"" + value + "\" ";
@@ -571,14 +506,16 @@ Serendip.Search = Serendip.Class.extend({
         setupAutocomplete();  
     
         function handleSearchBtnClick(self){
-          $(self.searchBtnId).click(function () {
+          $(self.searchBtnId).unbind('click').bind('click', function () {
 
             var query = $(self.searchFieldId).val();
 
-            self.saveHistoryItem(query, 0, self.sortQuery, self.getFacetQuery());
+            self.saveHistoryItem(query, 0, self.sortQuery,self.getFacetQuery());
+            collapseAutocomplete();
+
             return false;
           });
-        }    
+        }  
         
         function setupAutocomplete(){
           handleKeyPressOnSearchInputBox();
@@ -588,7 +525,7 @@ Serendip.Search = Serendip.Class.extend({
         function handleKeyDownOnSearchInputBox(){
           $(req.searchFieldId).unbind('keydown').bind('keydown', function (e) {
           
-              var cplArray = $("li span", "#autocomplete");
+              var cplArray = $(req.autocompleteValuesSelector, req.autocompleteId);
               $(cplArray[req.cplIndex]).css("font-weight","normal");
 
               if (e.keyCode == 32) { // space
@@ -603,7 +540,7 @@ Serendip.Search = Serendip.Class.extend({
                 
                 $(cplArray[req.cplIndex]).css("font-weight","bold");
                 
-                $("#autocomplete").fadeIn(300);
+                $(req.autocompleteId).fadeIn(300);
               }
               
               if (e.keyCode == 38) { // up arrow
@@ -643,7 +580,7 @@ Serendip.Search = Serendip.Class.extend({
         
         function collapseAutocomplete(){
             req.cplIndex = -1;
-            $("#autocomplete").fadeOut(300);
+            $(req.autocompleteId).fadeOut(300);
         }
        
       
@@ -652,7 +589,7 @@ Serendip.Search = Serendip.Class.extend({
             if (e.which > 32) {
               clearTimeout(req.timerId);
               req.timerId = setTimeout(function() {
-                q = $(req.searchFieldId).val();
+                q = decodeURIComponent($(req.searchFieldId).val());
 
                 if ((q.indexOf("\"") == -1) && (q.indexOf("+") == -1) && (q.indexOf("-") == -1) ) {
                   getAutoCompletions(q);
@@ -723,6 +660,7 @@ Serendip.Search = Serendip.Class.extend({
           
             handlePagingClick : function(page){
                 var query = $(self.searchFieldId).val();
+                page = page - 1;
                 self.startDoc = page * self.numResults;
                 self.clickType = "paging";
                 self.saveHistoryItem(query, self.startDoc, self.sortQuery, self.getFacetQuery());
@@ -772,14 +710,7 @@ Serendip.Search = Serendip.Class.extend({
         
         function handleShowMoreFacetsClick(self){
         
-          self.theme.bindShowMoreFacetsClickHandler(new Serendip.ShowMoreFacetsClickHandler({
-          
-            handleShowMoreFacetsClick : function(id, facet){
-      
-                return $("div.moreFacets." + id, facet);
-            }
-            
-          }));
+          self.theme.bindShowMoreFacetsClickHandler();
         } 
                 
     },
@@ -805,7 +736,7 @@ Serendip.Search = Serendip.Class.extend({
       reqString += req.sortQuery + "&wt=json" + req.getFacetQuery() + "&start=" + req.startDoc;
 	  
       $.ajax({
-			scriptCharset: "utf-8" , 
+          scriptCharset: "utf-8" , 
           type: "GET",
           url: reqString,
           data: "",
@@ -891,20 +822,20 @@ Serendip.Search = Serendip.Class.extend({
       var numDocs = data.response.numFound;
       
       var totalPages = Math.ceil(numDocs / req.numResults);
-      var currentPage = Math.ceil(req.startDoc / req.numResults);
+      var currentPage = Math.ceil(req.startDoc / req.numResults) + 1;
 	  
-      var start = currentPage - req.pagerWindowSize;
-      var end = currentPage + req.pagerWindowSize;
- 
-      if(start < 0) start = 0;
-      if(end > totalPages) end = totalPages;
+      var start = (currentPage - req.pagerWindowSize) + 1;
+      var end = (currentPage + req.pagerWindowSize) + 1;
+      
+      if(start < 1) start = 1;
+      if(end > totalPages) end = totalPages+1;
 	  
       var dif = end - start;
       if(dif < req.minPagerPages)
-          end += req.minPagerPages - dif;
+          end += req.minPagerPages - dif + 1;
       
-      if(start < 0) start = 0;
-      if(end > totalPages) end = totalPages;
+      if(start < 1) start = 1;
+      if(end > totalPages) end = totalPages+1;
       
       req.theme.renderPager(currentPage, totalPages, start, end);  
       
@@ -1169,7 +1100,7 @@ Serendip.Search = Serendip.Class.extend({
         moreFacets.count = 0;
         moreFacets.html = "";
  
-        htmlMoreFacets.push("<div class='moreFacets " + facet.id + "' style='display:none;'>");
+        htmlMoreFacets.push("<div class='moreFacets' style='display:none;'>");
         
         for (var i=currentIndex+2; i < len; i+=2) {  
           var value = facetArray[i];

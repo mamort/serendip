@@ -17,8 +17,10 @@ $(document).ready(function(){
       numResults: 5,
       maxFacetsToDisplay: 4,
       
-      searchFieldId: "#querystring",
+      searchFieldId: "#queryInput",
       searchBtnId: "#searchbutton", 
+      autocompleteId: "#Autocomplete_Theme",
+      autocompleteValuesSelector: "li span",
       
       theme : mytheme
     });
