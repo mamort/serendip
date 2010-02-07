@@ -9,6 +9,7 @@
  * Includes: 
  * jquery-1.4.min.js (http://jquery.com/)
  * date.format-1.2.3.js (http://blog.stevenlevithan.com/archives/date-time-format)
+ * pure_packed.js (http://beebole.com/pure/)
  */
  
 var mytheme = new Serendip.Theme({
@@ -17,6 +18,7 @@ var mytheme = new Serendip.Theme({
     fieldMap: serendipThemeFieldMap,
     
     // Private variables holding JQuery references
+    $searchInput: null,
     $content: null,
     $results: null,
     $activeFacets: null,
@@ -42,28 +44,22 @@ var mytheme = new Serendip.Theme({
     $noActiveFacets: null,
     
     // Prototypes
-    docRow_Prototype: null,
-    facetRow_Prototype: null,
-    facetValueRow_Prototype: null,
-    sortfield_prototype: null,
-    activeFacetRow_prototype: null,
-    results_prototype: null,
-    pagingRow_prototype: null,
-    pagingCurrentRow_prototype: null,
-    pagingNextRow_prototype: null,
-    pagingPrevRow_prototype: null,
-    paging_prototype: null,
-    emptyResults_prototype: null,
-    searchSuggestions_Prototype: null,
-    autocomplete_prototype: null,
-    autocompleteRow_prototype: null,
-    errorMsg_prototype: null,
-    spellingSuggestions_prototype: null,
+    $facetRow_Prototype: null,
+    $activeFacets_prototype: null,
+    $results_prototype: null,
+    $paging_prototype: null,
+    empty$results_prototype: null,
+    $searchSuggestions_Prototype: null,
+    $autocomplete_prototype: null,
+    errorMsg_prototype_html: null,
+    $spellingSuggestions_prototype: null,
+    $sortbar_prototype: null,
       
     resultbar_html: null,
     
     preInit : function(){
 
+        this.$searchInput = $("#queryInput");
         this.$content = $("#Content_Theme");
         this.$results = $("#Results_Theme");
         this.$activeFacets = $("#ActiveFacets_Theme");
@@ -77,23 +73,17 @@ var mytheme = new Serendip.Theme({
         this.$noActiveFacets = $("#NoActiveFacets_Theme");
         this.$facetBox = $("#Facets_Theme");
         
-        this.docRow_Prototype = $("#DocRow_Prototype").html();
-        this.facetRow_Prototype = $("#FacetRow_Prototype").html();
-        this.facetValueRow_Prototype = $("#FacetRow_ValueRow_Prototype").html();
-        this.sortfield_prototype = $("#SortField_Prototype").html();
-        this.activeFacetRow_prototype = $("#ActiveFacetRow_Prototype").html();
-        this.results_prototype = $("#Results_Prototype").html();
-        this.pagingRow_prototype = $("#PagingRow_Prototype").html();
-        this.pagingCurrentRow_prototype = $("#PagingCurrentRow_Prototype").html();
-        this.pagingNextRow_prototype = $("#PagingNextRow_Prototype").html();
-        this.pagingPrevRow_prototype = $("#PagingPrevRow_Prototype").html();
-        this.paging_prototype = $("#Paging_Prototype").html();
-        this.emptyResults_prototype = $("#EmptyResults_Prototype").html();
-        this.searchSuggestions_Prototype = $("#SearchSuggestions_Prototype").html();
-        this.autocomplete_prototype = $("#Autocomplete_Prototype").html();
-        this.autocompleteRow_prototype = $("#AutocompleteRow_Prototype").html();
-        this.errorMsg_prototype = $("#ErrorMsg_Prototype").html();
-        this.spellingSuggestions_prototype = $("#SpellingSuggestions_Prototype").html();
+        this.$facetRow_Prototype = $("#FacetRow_Prototype");
+        this.$activeFacets_prototype = $("#ActiveFacets_Prototype");
+        this.$results_prototype = $("#Results_Prototype");
+        this.$paging_prototype = $("#Paging_Prototype");
+        this.$searchSuggestions_Prototype = $("#SearchSuggestions_Prototype");
+        this.$autocomplete_prototype = $("#Autocomplete_Prototype");
+        this.$spellingSuggestions_prototype = $("#SpellingSuggestions_Prototype");
+        this.$sortbar_prototype = $("#SortBar_Prototype");
+        
+        this.emptyresults_prototype_html = $("#EmptyResults_Prototype").html();        
+        this.errorMsg_prototype_html = $("#ErrorMsg_Prototype").html();
         
         this.resultbar_html = this.$resultbar.html();
         
@@ -130,17 +120,19 @@ var mytheme = new Serendip.Theme({
     },
 
     init : function(data){
-        var numDocs = data.response.numFound; 
         
+        var $self = this;
         $inProgress = this.$resultsInProgress;
         
-         this.$results.queue(function(){
-            $(this).fadeTo(200, 1, function(){
-                $inProgress.hide();
-            });
+        this.$results.fadeTo(0, 1, function(){
+            $inProgress.hide();
             
-            $(this).dequeue();
-         });      
+            $self.continueInit(data);
+        });          
+    },
+    
+    continueInit: function(data){ 
+        var numDocs = data.response.numFound; 
         
         dateFormat.i18n.dayNames = this.translation["Date:DayNames"];
         dateFormat.i18n.monthNames = this.translation["Date:MonthNames"];
@@ -156,7 +148,7 @@ var mytheme = new Serendip.Theme({
         }else{
             this.$content.css("width", "100%");
         }
-    },
+    },   
     
     renderHeader : function(numDocsFound, responseTimeInMillis, 
       sortValue, sortFields, sortDirection){
@@ -167,9 +159,10 @@ var mytheme = new Serendip.Theme({
       
         var html = [];
               
-        var sortFieldHtml = this.sortfield_prototype;
-        
         var relevansActiveStr = "active";
+        var activeName = "relevans";
+        
+        var fieldData = [];
       
         for(var i = 0; i < sortFields.length; i++){
             var sField = sortFields[i].name; 
@@ -178,23 +171,38 @@ var mytheme = new Serendip.Theme({
             var isActive = isSortFieldActive(sField, sortValue);  
             
             if(isActive){
-                relevansActiveStr = "";
+                relevansActiveStr = "inactive";
+                activeName = sFieldHeader;
             }
             
-            sortFieldHtml = renderSortValue(sortFieldHtml, sField, sFieldHeader, isActive, sortDirection);
-
-            html.push(sortFieldHtml);
+            var sortValueData = renderSortValue(sField, sFieldHeader, isActive, sortDirection);
+            fieldData.push(sortValueData);
         }     
         
-        var sortBarHtml = this.resultbar_html; 
-      
-        sortBarHtml = sortBarHtml.replace(/\[sortfield:relevansActive\]/gi, relevansActiveStr);
-        sortBarHtml = sortBarHtml.replace(/\[sortfield:hits\]/gi, numDocsFound);
-        sortBarHtml = sortBarHtml.replace(/\[sortfield:time\]/gi, responseTimeInMillis);
+        var prot = this.$sortbar_prototype.clone();
         
-        sortBarHtml = sortBarHtml.replace(/\[sortfield:list\]/gi, html.join(""));
-
-        this.$resultbar.html(sortBarHtml);
+        var data = {     
+          "sortfield": fieldData
+        };
+        
+        var data2 = {
+          "relevansActive": relevansActiveStr,
+          "numDocs": "" + numDocsFound,
+          "time": "" + responseTimeInMillis,
+          "activeName": activeName,
+          "relevansSort": "relevans"
+        };
+        
+        /*
+          Remember: autoRender replaces the node its called from. This means the node its called from MUST have a parent node.
+                    When nodes are cloned they DO NOT have a parent node anymore.
+        */
+        
+        prot.find("#SortFields_Theme").autoRender(data);
+        prot = prot.find(".Placeholder").autoRender(data2);
+        
+        this.$resultbar.html(prot.html());
+        
         
         function isRelevansActive(sortValue){
             if(typeof(sortValue) == "undefined" || sortValue == "")
@@ -203,27 +211,31 @@ var mytheme = new Serendip.Theme({
                 return false;
         }
         
-        function renderSortValue(sortFieldHtml, field, header, isActive, sortDirection){
-            var isActiveStr = "";
+        function renderSortValue(field, header, isActive, sortDirection){
+            var isActiveStr = "inactive";
             if(isActive){
                 isActiveStr = "active";
             }
             
-            sortFieldHtml = sortFieldHtml.replace(/\[sortfield:currentDirection\]/gi, sortDirection);
-            
-            if(sortDirection == "asc")
+            if(sortDirection == "asc"){
+              oppositeDirection = "asc";
               sortDirection = "desc";
-            else
+            }else{
+              oppositeDirection = "desc";
               sortDirection = "asc";
+            }
                          
             var title = header.substr(0, 1).toUpperCase() + header.substr(1);
-      
-            sortFieldHtml = sortFieldHtml.replace(/\[sortfield:active\]/gi, isActiveStr);
-            sortFieldHtml = sortFieldHtml.replace(/\[sortfield:name\]/gi, field);
-            sortFieldHtml = sortFieldHtml.replace(/\[sortfield:direction\]/gi, sortDirection);
-            sortFieldHtml = sortFieldHtml.replace(/\[sortfield:displayValue\]/gi, title);
             
-            return sortFieldHtml;
+            var data = {
+              "active": isActiveStr,
+              "name": field,
+              "direction": sortDirection,
+              "oppositeDirection": oppositeDirection,
+              "title": title
+            };
+            
+            return data;
         }
         
         function isSortFieldActive(sortField, sortValue){
@@ -235,46 +247,62 @@ var mytheme = new Serendip.Theme({
     },
 
     renderPager : function(currentPage, totalPages, windowStart, windowEnd){
-        var pagingRowsHtml = [];
+        var pagingRowsData = [];
         
-        var pagingHtml = this.paging_prototype;
-        var pagingRowHtml = this.pagingRow_prototype;
-        var pagingCurrentRowHtml = this.pagingCurrentRow_prototype;
-        var pagingNextRowHtml = this.pagingNextRow_prototype;
-        var pagingPrevRowHtml = this.pagingPrevRow_prototype;
+        var paging = this.$paging_prototype.clone();
         
         // Render previous page
         if(currentPage > 1){
           var prevPage = currentPage-1;
-          pagingPrevRowHtml = pagingPrevRowHtml.replace(/\[paging:prevPage\]/gi, prevPage);
-          pagingRowsHtml.push(pagingPrevRowHtml);
+          
+          var pageData = createPageData(prevPage, "inactive", "inactive", "inactive", "active");          
+          pagingRowsData.push(pageData);
         }
             
         // Render pages
         for(var i = windowStart; i < windowEnd; i++){
           var rowHtml = "";
           
+          var currentPageActive = "inactive";
+          var regularPageActive = "active";
           if(i == currentPage){
-            rowHtml = pagingCurrentRowHtml.replace(/\[paging:page\]/gi, i);
-          }else{
-            rowHtml = pagingRowHtml.replace(/\[paging:page\]/gi, i);
+            currentPageActive = "active";
+            regularPageActive = "inactive";
           }
           
-          pagingRowsHtml.push(rowHtml);
+          var pageData = createPageData(i, regularPageActive, currentPageActive, "inactive", "inactive");
+          pagingRowsData.push(pageData);
         }
         
         // Render next page
         if(currentPage < totalPages){
           var nextPage = currentPage+1;
-          pagingNextRowHtml = pagingNextRowHtml.replace(/\[paging:nextPage\]/gi, nextPage);
-          pagingRowsHtml.push(pagingNextRowHtml);
-        }            
+          
+          var pageData = createPageData(nextPage, "inactive", "inactive", "active", "inactive");
+          pagingRowsData.push(pageData);
+        } 
+        
+        var data = {
+          "pageRow": pagingRowsData
+        };           
                 
         if(totalPages > 1){
-            pagingHtml = pagingHtml.replace(/\[paging:pageList\]/gi, pagingRowsHtml.join(""));
-            this.$paging.html(pagingHtml);
+            paging = paging.find(".Placeholder").autoRender(data);
+            this.$paging.html(paging.html());
         }else{
             this.$paging.html("");
+        }
+        
+        function createPageData(page, regularPageActive, currentPageActive, nextPageActive, prevPageActive){
+          var pageData = {
+            "page": page,
+            "regularPageActive": regularPageActive,
+            "currentPageActive": currentPageActive,
+            "nextPageActive": nextPageActive,
+            "prevPageActive": prevPageActive
+          };
+          
+          return pageData;
         }
     },
     
@@ -314,11 +342,8 @@ var mytheme = new Serendip.Theme({
         return dateValue;
     }, 
     
-    renderDoc : function(fields){
-      var html = [];
-        
-      var docRowPrototypeHtml = this.docRow_Prototype;
-               
+    renderDoc : function(fields){ 
+      
       var url = this.getParam(fields, 
           this.fieldMap["field:url"], 
           this.fieldMap["field:url:empty"]); 
@@ -336,99 +361,101 @@ var mytheme = new Serendip.Theme({
           this.fieldMap["field:date"], 
           this.fieldMap["field:date:format"], 
           this.fieldMap["field:date:empty"]);
-        
-      docRowPrototypeHtml = docRowPrototypeHtml.replace(/\[field:url\]/gi, url);
-      docRowPrototypeHtml = docRowPrototypeHtml.replace(/\[field:title\]/gi,title);
-      docRowPrototypeHtml = docRowPrototypeHtml.replace(/\[field:content\]/gi,content);
-      docRowPrototypeHtml = docRowPrototypeHtml.replace(/\[field:date\]/gi,date);
-
-      return docRowPrototypeHtml;
-    },   
+          
+          
+      var data = {url: url, title: title, content: content, date: date};
     
-    renderDocuments : function(docsHtml){
+      return data;
+    }, 
+    
+    renderDocuments : function(docsData){
         
-        var resultsHtml = this.results_prototype;
-        resultsHtml = resultsHtml.replace(/\[results:list\]/gi,docsHtml);
+        var data = {docs: docsData};
 
-        this.$results
-            .hide()
-            .html(resultsHtml)
-            .fadeIn('slow');
-            
+        var $element = this.$results_prototype.clone();
+        $element = $element.find(".Placeholder").autoRender(data);
+        
+        this.$results.hide()
+          .html($element.html())
+          .fadeIn('slow'); 
+
     },
     
     renderSpellSuggestions: function(suggestions){
-        var spellingSuggestionsHtml = this.spellingSuggestions_prototype;
         
         if(suggestions.length > 0){
-            spellingSuggestionsHtml = spellingSuggestionsHtml.replace(/\[spellingsuggestion:suggestion\]/gi,suggestions[0]);
+            var data = {
+              "suggestion": suggestions[0]
+            };
+        
+            var spellingSuggestions = this.$spellingSuggestions_prototype.clone();
+            spellingSuggestions = spellingSuggestions.find(".Placeholder").autoRender(data);
             
             this.$spellsuggestions
               .hide()
-              .html(spellingSuggestionsHtml)
+              .html(spellingSuggestions.html())
               .fadeIn('slow');
         }
     },
     
-    renderFacets : function(facetsHtml, facets){
+    renderFacets : function(facetsData, facets){
+
         this.$inactiveFacets
             .hide()
-            .html(facetsHtml)
+            .html(facetsData.join(""))
             .fadeIn('slow');
     },
-    
-    replaceTagWithClass: function(tagName, className, text, replacement){
-        var regStr = "<" + tagName + "[\\s]*class=\"" + className + "\"[^>]*>([\\s\\S]*?)<\\/" + tagName +">";
-        var reg = new RegExp(regStr, "gi");
-        text = text.replace(reg, replacement);
-        return text;
-    },
-    
-    replaceTagWithId: function(tagName, id, text, replacement){
-        var regStr = "<" + tagName + "[\\s]*id=\"" + id + "\"[^>]*>([\\s\\S]*?)<\\/" + tagName +">";
-        var reg = new RegExp(regStr, "gi");
-        text = text.replace(reg, replacement);
-        return text;
-    },    
-    
-    renderFacet : function(facet, facetFieldsHtml, facets, moreFacetsCount){
-      
-      var facetRowHtml = this.facetRow_Prototype
-      var facetValueRowHtml = this.facetValueRow_Prototype;
-      
-      if(facetFieldsHtml != ""){
-          facetRowHtml = facetRowHtml.replace(/\[facet:name\]/gi, facet.id);
-          facetRowHtml = facetRowHtml.replace(/\[facet:header\]/gi, facet.header);
-          facetRowHtml = facetRowHtml.replace(/\[facet:valueList\]/gi, facetFieldsHtml);
-          
-          if(moreFacetsCount <= 0){
-            facetRowHtml = facetRowHtml.replace(/\moreFacetsActive/gi, "moreFacetsInactive");
-          }
-      }else{
-          facetRowHtml = "";
-      }
 
-      return facetRowHtml;
+    renderFacet : function(facet, facetFieldsData, facets, moreFacetsCount, moreFacetsFieldsData){
+      if(facetFieldsData == "") return "";
+      
+      var facetData = {
+        "facetName": facet.id,
+        "facetHeader": facet.header    
+      };
+      
+      var facetRowData = {
+        "facetRow": facetFieldsData
+      };       
+      
+      var moreFacetsData = {
+        "facetRow": moreFacetsFieldsData
+      };
+      
+      var facetsElement = this.$facetRow_Prototype.clone();
+      facetsElement = facetsElement.find(".Placeholder").autoRender(facetData);
+      var facetValues = facetsElement.find(".FacetValues");
+      var facetValuesHtml = facetValues.html();
+      facetValues.autoRender(facetRowData);  
+      
+      facetsElement.find(".lessFacetsTxt").hide();
+      if(moreFacetsCount <= 0){
+        facetsElement.find(".moreFacetsTxt").hide();
+      }
+      
+      // Copy html for displaying a single facet row
+      // Auto render it using pure and finally hide it initially
+      facetsElement.find(".MoreFacetsValues")
+        .html(facetValuesHtml)
+        .autoRender(moreFacetsData)
+        .hide();   
+      
+      return facetsElement.html();
     },
     
     renderFacetField : function(facet, value, formattedValue, count, isActive){
       if(isActive) return "";
-    
+          
       formattedValue = this.convertFacetFieldValue(facet, formattedValue);
-    
-      var facetValueRowHtml = this.facetValueRow_Prototype;
+      var facetFieldData = {
+        "name": facet.id,
+        "value": value,
+        "displayValue": formattedValue,
+        "countValue": count,
+        "isActive": "false"
+      };      
       
-      facetValueRowHtml = facetValueRowHtml.replace(/\[facet:name\]/gi, facet.id);
-      facetValueRowHtml = facetValueRowHtml.replace(/\[facet:value\]/gi, value);
-      facetValueRowHtml = facetValueRowHtml.replace(/\[facet:displayValue\]/gi, formattedValue);
-      
-      if(count > 0){
-          facetValueRowHtml = facetValueRowHtml.replace(/\[facet:count\]/gi, count);
-      }else{
-          facetValueRowHtml = this.replaceTagWithClass("span", "count", facetValueRowHtml, "");
-      }
-      
-      return facetValueRowHtml;
+      return facetFieldData;
     },
         
     convertFacetFieldValue : function(facet, value){
@@ -466,13 +493,19 @@ var mytheme = new Serendip.Theme({
       return list;
     },    
     
-    renderActiveFacet: function(facetFieldsHtml){
-        if(facetFieldsHtml && facetFieldsHtml.length > 0){
-            var html = "<ul>" + facetFieldsHtml + "</ul>";
+    renderActiveFacet: function(facetFields){
+        if(facetFields && facetFields.length > 0){
+        
+            var data = {
+              "activeFacet": facetFields
+            };
+        
+            var prot = this.$activeFacets_prototype.clone();
+            prot = prot.find(".Placeholder").autoRender(data); 
 
             this.$activeFacets
                 .hide()
-                .html(html)
+                .html(prot.html())
                 .fadeIn('slow');
         }else{
             this.$activeFacets.html("");
@@ -481,46 +514,58 @@ var mytheme = new Serendip.Theme({
     
     renderActiveFacetField : function(facet, value, formattedValue){
     
-        var activeFacetHtml = this.activeFacetRow_prototype;
-        activeFacetHtml = activeFacetHtml.replace(/\[activeFacet:header\]/gi, facet.activeHeader);
-        activeFacetHtml = activeFacetHtml.replace(/\[activeFacet:name\]/gi, facet.id);
-        activeFacetHtml = activeFacetHtml.replace(/\[activeFacet:value\]/gi, value);
-        activeFacetHtml = activeFacetHtml.replace(/\[activeFacet:displayValue\]/gi, formattedValue);
+        var data = {
+          "header": facet.activeHeader,
+          "name": facet.id,
+          "value": value,
+          "displayValue": formattedValue,
+          "isActive": "true"
+        };
         
-        return activeFacetHtml;
+        return data;
     },
         
     renderEmptyResult : function(searchSuggestions){
-        var html = [];
+        var html = "";
         
-        var emptyResultsHtml = this.emptyResults_prototype;
-        html.push(emptyResultsHtml);
+        var emptyResultsHtml = this.emptyresults_prototype_html;
+        html = emptyResultsHtml;
         
         var len = searchSuggestions.length;
         if (len > 0) {
-          var searchSuggestionHtml = this.searchSuggestions_Prototype
-          searchSuggestionHtml = searchSuggestionHtml.replace(/\[searchsuggestion:suggestion\]/gi, value);
-          html.push(searchSuggestionHtml);
+          var data = {
+            "suggestion": searchSuggestions[0]
+          };
+          
+          var searchSuggestion = this.$searchSuggestions_Prototype.clone();
+          searchSuggestion = searchSuggestion.find(".Placeholder").autoRender(data);
+          html = searchSuggestion.html();
         } 
     
-        html = html.join("");
         this.$results.html(html);
     },     
     
     renderAutocompleteTerms : function(terms){
       
-      var html = [];
+      var termList = [];
       
-      var autocompleteHtml = this.autocomplete_prototype;
-      var autocompleteRowHtml = this.autocompleteRow_prototype;
+      var autocomplete = this.$autocomplete_prototype.clone();
       
       for(var i = 0; i < terms.length; i++){
-        autocompleteRowHtml = autocompleteRowHtml.replace(/\[autocomplete:value\]/gi, terms[i].value);
-        autocompleteRowHtml = autocompleteRowHtml.replace(/\[autocomplete:count\]/gi, terms[i].count);
-        html.push(autocompleteRowHtml);
+        var term = {
+          "value": terms[i].value,
+          "count": terms[i].count
+        };
+
+        termList.push(term);
       }
       
-      autocompleteHtml = autocompleteHtml.replace(/\[autocomplete:list\]/gi, html.join(""));
+      var data = {
+        "term": termList
+      };
+      
+      var autocomplete = autocomplete.find(".Placeholder").autoRender(data);
+      var autocompleteHtml = autocomplete.html();
       
       this.$autocomplete
           .html(autocompleteHtml)
@@ -535,10 +580,12 @@ var mytheme = new Serendip.Theme({
       if(html == null || html.length == 0){
           this.$noActiveFacets.show();
       }
+      
+      this.$searchInput.focus();
     },     
     
     renderError: function(httpReq, ajaxOpts, thrownError){
-      var errorMsgHtml = this.errorMsg_prototype;
+      var errorMsgHtml = this.errorMsg_prototype_html;
       
       $inProgress = this.$resultsInProgress;
         
@@ -571,8 +618,9 @@ var mytheme = new Serendip.Theme({
       this.$sortbarHrefs.unbind('click').bind('click', function(){
  
           var value = $(this).attr("sort");
+          var dir = $(this).attr("direction");
           
-          handler.handleSortClick(value);
+          handler.handleSortClick(value, dir);
           
           // Return false to avoid the a:href executing
           return false;
@@ -605,10 +653,9 @@ var mytheme = new Serendip.Theme({
       function handleFacetClick(facet, handler){
       
           var id = facet.attr("facetname");
-          var value = facet.attr("facetvalue");
-          
+          var value = facet.attr("facetvalue");          
           var isActive = facet.attr("active");
- 
+          
           if(isActive == "false"){
             isActive = true;
           }else{
@@ -624,13 +671,13 @@ bindShowMoreFacetsClickHandler : function(handler){
           
           var id = $(this).attr("facetname");
           
-          var selector = "." + id + " div.moreFacets";
+          var selector = "." + id + " .MoreFacetsValues";
           var $moreFacets = $(selector, this.$inactiveFacets);
           
-          selector = "." + id + " div.moreFacetsTxt";
+          selector = "." + id + " .moreFacetsTxt";
           var $moreFacetsTxt = $(selector, this.$inactiveFacets);  
           
-          selector = "." + id + " div.lessFacetsTxt";
+          selector = "." + id + " .lessFacetsTxt";
           var $lessFacetsTxt = $(selector, this.$inactiveFacets);           
               
           if($moreFacets.css("display") == "none"){
@@ -639,13 +686,8 @@ bindShowMoreFacetsClickHandler : function(handler){
                   $(this).show();
               });
               
-              $moreFacetsTxt
-                .removeClass("active")
-                .addClass("inactive");
-                
-              $lessFacetsTxt
-                .removeClass("inactive")
-                .addClass("active");    
+              $moreFacetsTxt.hide();
+              $lessFacetsTxt.show();
                             
           }else{
           
@@ -653,13 +695,8 @@ bindShowMoreFacetsClickHandler : function(handler){
                 $(this).hide();
               });
               
-              $lessFacetsTxt
-                .removeClass("moreFacetsActive")
-                .addClass("moreFacetsInactive");
-                
-              $moreFacetsTxt
-                .removeClass("moreFacetsInactive")
-                .addClass("moreFacetsActive");               
+              $lessFacetsTxt.hide();
+              $moreFacetsTxt.show();          
           }
           
           return false;

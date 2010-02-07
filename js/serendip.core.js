@@ -9,6 +9,7 @@
  * Includes: 
  * jquery-1.4.min.js (http://jquery.com/)
  * date.format-1.2.3.js (http://blog.stevenlevithan.com/archives/date-time-format)
+ * pure_packed.js (http://beebole.com/pure/)
  */
  
 /* 
@@ -338,7 +339,7 @@ Serendip.Search = Serendip.Class.extend({
 	// 2. after calling $.historyLoad();
 	// 3. after pushing "Go Back" button of a browser
 	pageload: function(hash) {
-
+	
 		// hash doesn't contain the first # character.
 		if(hash) {
 			// restore ajax loaded state
@@ -346,7 +347,7 @@ Serendip.Search = Serendip.Class.extend({
 				// jquery's $.load() function does't work when hash include special characters like aao.
 				//hash = encodeURIComponent(hash);
 			}
-									
+				
 			// Do your thing
 			if(hash.length > 0)
         this.initFromQueryStr(hash);
@@ -426,7 +427,7 @@ Serendip.Search = Serendip.Class.extend({
         this.sortQuery = "&sort=" + paramsMap["sort_param"];
         this.sortValue = paramsMap["sort_param"];
     }
-                 
+               
     this.doRequest(this);
   },
   
@@ -509,7 +510,7 @@ Serendip.Search = Serendip.Class.extend({
           $(self.searchBtnId).unbind('click').bind('click', function () {
 
             var query = $(self.searchFieldId).val();
-
+            
             self.saveHistoryItem(query, 0, self.sortQuery,self.getFacetQuery());
             collapseAutocomplete();
 
@@ -525,57 +526,98 @@ Serendip.Search = Serendip.Class.extend({
         function handleKeyDownOnSearchInputBox(){
           $(req.searchFieldId).unbind('keydown').bind('keydown', function (e) {
           
+              /* 
+              * Complicated: http://unixpapa.com/js/key.html 
+              * Fortunately even though IE, FF and Opera have different
+              * key codes for keyboard keys, they have the same key codes for:
+              * <EnterKey>, <Up-arrow>, <Down-arrow>, <Left-arrow> and <Right-arrow>,
+              * <Space>, <Backspace>, <Escape>
+              * which are the only keys we care about.
+              */
+              
+              var keyCode = e.keyCode ? e.keyCode : e.which;
+
               var cplArray = $(req.autocompleteValuesSelector, req.autocompleteId);
-              $(cplArray[req.cplIndex]).css("font-weight","normal");
-
-              if (e.keyCode == 32) { // space
-                if (req.cplIndex == -1) {
-                  collapseAutocomplete();
-                }
+              
+              if(req.cplIndex > -1){
+                  $(cplArray[req.cplIndex]).removeClass("selected");    
               }
               
-              if (e.keyCode == 40) { // down arrow
-                req.cplIndex++;
-                req.cplIndex = Math.min(req.cplIndex, cplArray.length-1);
-                
-                $(cplArray[req.cplIndex]).css("font-weight","bold");
-                
-                $(req.autocompleteId).fadeIn(300);
-              }
+              handleSpaceClick(cplArray, keyCode);
+              handleDownArrowClick(cplArray, keyCode);
+              handleUpArrowClick(cplArray, keyCode);
+              handleBackspaceOrEscapeClick(cplArray, keyCode);    
+              handleEnterClick(cplArray, keyCode);
               
-              if (e.keyCode == 38) { // up arrow
-                req.cplIndex--;
-                
-                if (req.cplIndex < 0) {
-                  collapseAutocomplete();
-                } else {
-                  $(cplArray[req.cplIndex]).css("font-weight","bold");
-                }
-              }
-
-              if (e.keyCode == 8 || e.keyCode == 27) { // backspace or escape
-                collapseAutocomplete();
-              }
-
-              if (e.keyCode == 13) { // enter
-                    
-                var value = $(req.searchFieldId).val();
-                
-                if (req.cplIndex > -1) {
-                  value = $(cplArray[req.cplIndex]).text();              
-                }
-                
-                req.saveHistoryItem(value, 0, req.sortQuery, req.getFacetQuery());
-                collapseAutocomplete();
-                
-                return false;
-              }
-
+              return CheckIfShouldConsumeEvent(keyCode);
           });	
           
           $(req.searchFieldId).unbind("blur").bind("blur", function(){
               collapseAutocomplete();
           });
+        }
+        
+        function handleSpaceClick(cplArray, keyCode){
+           if (keyCode == 32) { // space
+              if (req.cplIndex == -1) {
+                collapseAutocomplete();
+              }
+            }        
+        }
+        
+        function handleDownArrowClick(cplArray, keyCode){
+            if (keyCode == 40) { // down arrow
+              req.cplIndex++;
+              req.cplIndex = Math.min(req.cplIndex, cplArray.length-1);
+              
+              $(cplArray[req.cplIndex]).removeClass("selected").addClass("selected");
+              
+              $(req.autocompleteId).fadeIn(300);
+            }
+        }
+        
+        function handleUpArrowClick(cplArray, keyCode){
+            if (keyCode == 38) { // up arrow
+              req.cplIndex--;
+              
+              if (req.cplIndex < 0) {
+                collapseAutocomplete();
+              } else {
+                $(cplArray[req.cplIndex]).removeClass("selected").addClass("selected");
+              }
+            }
+        }
+        
+        function handleBackspaceOrEscapeClick(cplArray, keyCode){
+            if (keyCode == 8 || keyCode == 27) { // backspace or escape
+              collapseAutocomplete();
+            }        
+        }
+        
+        function handleEnterClick(cplArray, keyCode){
+            if (keyCode == 13) { // enter
+                  
+              var text = "";
+              
+              if(req.cplIndex > -1) {
+                text = $(cplArray[req.cplIndex]).text(); 
+                $(req.searchFieldId).val(text);    
+              }else{
+                text = $(req.searchFieldId).val();
+              }
+
+              req.saveHistoryItem(text, 0, req.sortQuery, req.getFacetQuery());
+              
+              collapseAutocomplete();
+              
+              return false;
+            }        
+        }
+        
+        function CheckIfShouldConsumeEvent(keyCode){
+          if(keyCode == 13) return false
+          
+          return true;
         }
         
         function collapseAutocomplete(){
@@ -589,11 +631,8 @@ Serendip.Search = Serendip.Class.extend({
             if (e.which > 32) {
               clearTimeout(req.timerId);
               req.timerId = setTimeout(function() {
-                q = decodeURIComponent($(req.searchFieldId).val());
-
-                if ((q.indexOf("\"") == -1) && (q.indexOf("+") == -1) && (q.indexOf("-") == -1) ) {
-                  getAutoCompletions(q);
-                }
+                var query = decodeURIComponent($(req.searchFieldId).val());
+                getAutoCompletions(query);
               }, 300);
             }
           });	
@@ -640,10 +679,15 @@ Serendip.Search = Serendip.Class.extend({
 
           self.theme.bindSortClickHandler(new Serendip.SortClickHandler({
           
-            handleSortClick : function(sortValue){
-      
-                self.sortValue = sortValue;
-                self.sortQuery = "&sort=" + sortValue;
+            handleSortClick : function(sortValue, sortDirection){
+            
+                if(sortValue && sortDirection && sortValue != "relevans"){
+                  self.sortQuery = "&sort=" + sortValue + " " + sortDirection;
+                }else{
+                  self.sortQuery = "";
+                }
+                
+                self.sortValue = sortValue;   
                 self.clickType = "sorting";
                 
                 var query = $(self.searchFieldId).val();
@@ -673,7 +717,8 @@ Serendip.Search = Serendip.Class.extend({
         
           self.theme.bindFacetClickHandler(new Serendip.FacetClickHandler({
             handleFacetClick : function(id, value, isActive){
-
+                 value = decodeURIComponent(value);
+                 
                 var facet = self.facetIdToFacetMap[id];
                 var facetQuery = self.facetQueries[id];
                 
@@ -717,7 +762,7 @@ Serendip.Search = Serendip.Class.extend({
     
     doRequest: function(req){
         clearTimeout(req.timerId);
-            
+                    
         req.theme.renderInProgress(function(){
             req.continueRequest(req);
         });
@@ -726,30 +771,31 @@ Serendip.Search = Serendip.Class.extend({
     
     continueRequest: function(req){
     
-    var query = encodeURIComponent($(req.searchFieldId).val());
-    var params = req.core.getParamsAsQueryString(req.queryParams);
-    var facetParams = req.core.getFacetsAsQueryString(req.facets);  
-    
-    if(query.length > 0){
-              
-      var reqString = req.solrBaseUrl + "/select/?" + params + "&q=" + query + "&rows=" + req.numResults + "&" + facetParams;
-      reqString += req.sortQuery + "&wt=json" + req.getFacetQuery() + "&start=" + req.startDoc;
-	  
-      $.ajax({
-          scriptCharset: "utf-8" , 
-          type: "GET",
-          url: reqString,
-          data: "",
-          dataType: "json",
-          contentType:"text/plain; charset=utf-8",
+      var query = encodeURIComponent($(req.searchFieldId).val());
+      
+      var params = req.core.getParamsAsQueryString(req.queryParams);
+      var facetParams = req.core.getFacetsAsQueryString(req.facets);  
+      
+      if(query.length > 0){
+                
+        var reqString = req.solrBaseUrl + "/select/?" + params + "&q=" + query + "&rows=" + req.numResults + "&" + facetParams;
+        reqString += req.sortQuery + "&wt=json" + req.getFacetQuery() + "&start=" + req.startDoc;
+      
+        $.ajax({
+            scriptCharset: "utf-8" , 
+            type: "GET",
+            url: reqString,
+            data: "",
+            dataType: "json",
+            contentType:"text/plain; charset=utf-8",
 
-          success: handleResponse,        
-          
-          error: function(httpReq, ajaxOpts, thrownError) {
-            req.theme.renderError(httpReq, ajaxOpts, thrownError);
-          }
-      });
-    }
+            success: handleResponse,        
+            
+            error: function(httpReq, ajaxOpts, thrownError) {
+              req.theme.renderError(httpReq, ajaxOpts, thrownError);
+            }
+        });
+      }
     
     function handleResponse(data){
       var numDocs = data.response.numFound; 
@@ -849,12 +895,13 @@ Serendip.Search = Serendip.Class.extend({
     function renderDocuments(data){
       var docs = data.response.docs;
       
-      var docsHtml = "";
+      var docsDataArr = [];
       for (i=0; i<docs.length; i++) {
-        docsHtml += renderDoc(docs[i], data.highlighting);
+        var data = renderDoc(docs[i], data.highlighting);
+        docsDataArr.push(data)
       }
   
-      req.theme.renderDocuments(docsHtml);      
+      req.theme.renderDocuments(docsDataArr);      
     }
     
     function renderDoc(doc, highlight){
@@ -888,7 +935,7 @@ Serendip.Search = Serendip.Class.extend({
     }  
     
     function renderActiveFacets(){      
-      var html = [];
+      var activeFacetData = [];
       
       for(var id in req.facetQueries){
           var facetQuery = req.facetQueries[id];
@@ -899,14 +946,14 @@ Serendip.Search = Serendip.Class.extend({
             continue;
             
           for(var i = 0; i < facetQuery.values.length; i++){
-              var val = facetQuery.values[i];
-              
-             var activeHtml = renderActiveFacetValue(facet, facet.facetType, val);
-             html.push(activeHtml);
+             var val = facetQuery.values[i];
+             
+             var data = renderActiveFacetValue(facet, facet.facetType, val);
+             activeFacetData.push(data);
           }               
       }
 
-      req.theme.renderActiveFacet(html.join(""));  
+      req.theme.renderActiveFacet(activeFacetData);  
     }   
     
     function renderActiveFacetValue(facet, type, value){
@@ -925,7 +972,8 @@ Serendip.Search = Serendip.Class.extend({
     }
     
     function renderActiveTextFacet(facet, value){
-      return req.theme.renderActiveFacetField(facet, value, value);
+      var encodedValue = encodeURIComponent(value); 
+      return req.theme.renderActiveFacetField(facet, encodedValue, value);
     }
     
     function renderActiveDateFacet(facet, value){
@@ -941,7 +989,8 @@ Serendip.Search = Serendip.Class.extend({
           formattedValue = facet.dateValue;
       }    
       
-      return req.theme.renderActiveFacetField(facet, value, formattedValue);
+      var encodedValue = encodeURIComponent(value); 
+      return req.theme.renderActiveFacetField(facet, encodedValue, formattedValue);
     }
     
     function renderActiveCustomDateFacet(facet, value){
@@ -957,7 +1006,8 @@ Serendip.Search = Serendip.Class.extend({
           }
       } 
       
-      return req.theme.renderActiveFacetField(facet, value, formattedValue);
+      var encodedValue = encodeURIComponent(value); 
+      return req.theme.renderActiveFacetField(facet, encodedValue, formattedValue);
     }    
     
     function renderFacets(data, facets){
@@ -966,17 +1016,17 @@ Serendip.Search = Serendip.Class.extend({
           var facetfields = data.facet_counts.facet_fields;
           var facetdates = data.facet_counts.facet_dates;
           
-          var html = [];
+          var rows = [];
           
           var facetCount = Math.min(facets.length, req.maxFacetsToDisplay);
             
           for (var i=0;i<facetCount;i++){
                 
             var facetHtml = renderFacetTypes(data, facetfields, facetdates, facets[i]);    
-            html.push(facetHtml);
+            rows.push(facetHtml);
           }
       
-          req.theme.renderFacets(html.join(""), req.facets)
+          req.theme.renderFacets(rows, req.facets)
       }      
     }
     
@@ -1058,7 +1108,7 @@ Serendip.Search = Serendip.Class.extend({
     }
     
     function renderFacet(data, facet, facetArray) {
-        var html = [];
+        var facetRow = [];
         
         facetArray = removeEmptyFacets(facetArray);
         
@@ -1072,8 +1122,9 @@ Serendip.Search = Serendip.Class.extend({
             
             var isActive = isFacetFieldActive(data, facet, value);
             
-            var facetFieldHtml = renderFacetField(facet, value, count, isActive);
-            html.push(facetFieldHtml);
+            var facetFieldData = renderFacetField(facet, value, count, isActive);
+            if(facetFieldData != "")
+                facetRow.push(facetFieldData);
             
             currentIndex = i; 
         }
@@ -1081,44 +1132,41 @@ Serendip.Search = Serendip.Class.extend({
         len = facetArray.length;
         var max = facet.maxFacetsToDisplay * 2;
 
+          
         var moreFacetsCount = 0;
+        var moreFacets = "";
         if(len > currentIndex && max > currentIndex){
-            var moreFacets = addMoreFacets(data, facet, facetArray, len, max, currentIndex);     
-            html.push(moreFacets.html);   
+            moreFacets = addMoreFacets(data, facet, facetArray, len, max, currentIndex);     
             moreFacetsCount = moreFacets.count;
         }
         
-        return req.theme.renderFacet(facet, html.join(""), req.facets, moreFacetsCount);  
+        return req.theme.renderFacet(facet, facetRow, req.facets, moreFacetsCount, moreFacets.data);  
     }
     
     function addMoreFacets(data, facet, facetArray, len, max, currentIndex){
         if(max < len) len = max;
         
-        var htmlMoreFacets = [];
+        var moreFacetsData = [];
   
         var moreFacets = new Object();
         moreFacets.count = 0;
-        moreFacets.html = "";
+        moreFacets.data = "";
  
-        htmlMoreFacets.push("<div class='moreFacets' style='display:none;'>");
-        
         for (var i=currentIndex+2; i < len; i+=2) {  
           var value = facetArray[i];
           var count = facetArray[i+1];      
                 
           var isActive = isFacetFieldActive(data, facet, value);
-          var facetHtml = renderFacetField(facet, value, count, isActive);
+          var facetData = renderFacetField(facet, value, count, isActive);
           
-          if(facetHtml != ""){
-            htmlMoreFacets.push(facetHtml);
+          if(facetData != ""){
+            moreFacetsData.push(facetData);
             moreFacets.count++;
           }
         }
-        
-        htmlMoreFacets.push("</div>");
                     
         if(moreFacets.count > 0){
-          moreFacets.html = htmlMoreFacets.join("");
+          moreFacets.data = moreFacetsData;
         }    
     
         return moreFacets;
@@ -1159,6 +1207,8 @@ Serendip.Search = Serendip.Class.extend({
       }else{
           formattedValue = value;
       }
+      
+      value = encodeURIComponent(value);
       
       return req.theme.renderFacetField(facet, value, formattedValue, count, isActive);
     }

@@ -118,6 +118,10 @@ a:hover{
 	padding: 0px;
 }
 
+#Autocomplete_Theme ul .selected{
+  font-weight:bold;
+}
+
 /*****************************************************************
 * Results in progress
 ******************************************************************/
@@ -179,7 +183,7 @@ a:hover{
 ******************************************************************/
 
 #Facets_Theme{
-  display:none; // Will be enabled by theme
+  display:none; /* Will be enabled by theme */
   margin-top:10px;
   float:right;
 }
@@ -217,7 +221,7 @@ a:hover{
 #facets div.facet ul{
   list-style: none;
   margin: 0px;
-  padding: 0 0 5px;
+  padding: 0px;
 }
 
 #facets div.facet a{
@@ -237,6 +241,7 @@ a:hover{
 
 #facets #InactiveFacets_Theme .moreFacetsActive{
   display:block;
+  padding-top:2px;
 }
 
 #facets #InactiveFacets_Theme .moreFacetsInactive{
@@ -314,65 +319,71 @@ padding-right:5px;
 	min-height: 15px;
 }
 
-#ResultBar_Theme #sortbar div, #sortbar span{
-  padding:4px 6px;
+#ResultBar_Theme #SortBar{
+  padding: 3px 8px;
 }
 
-#ResultBar_Theme #sortbar {
-	text-align: left;
-	float: left;
-	width:100%;
-}
-
-#ResultBar_Theme #sortbar div.sort{
+#ResultBar_Theme div.sortfield{
   float:left;
   margin-left:10px;
-  border: 1px solid transparent;
 }
 
-#ResultBar_Theme #sortbar div.sort.active{
+#ResultBar_Theme div.sortfield .active{
+  float:left;
   border: 1px solid #888888;
   -moz-border-radius: 7px;
   -webkit-border-radius: 7px;
 }
 
-#ResultBar_Theme #sortbar div.sort a{
+#ResultBar_Theme div.sortfield .inactive, #ResultBar_Theme div.sortfield .active{
+  padding:4px;
+}
+
+#ResultBar_Theme div.sortfield a{
   font-weight:bold;
 }
 
-#ResultBar_Theme #sortbar div.sort.active a{
+#ResultBar_Theme div.sortfield .active a{
   color:black;
 }
 
-#ResultBar_Theme #sortbar span.text{
+#ResultBar_Theme span.text{
   float:left;
   padding:0px;
 }
 
-#ResultBar_Theme #sortbar div.sort_asc, #ResultBar_Theme #sortbar div.sort_desc{
+#ResultBar_Theme .sortfield .active span.asc, #ResultBar_Theme .sortfield .active span.desc{
   float:left;
   margin-top:4px;
   padding:0px;
   width:12px;
   height:12px;
+  display:block;
 }
 
-#ResultBar_Theme #sortbar div.sort.active div.sort_asc{
+#ResultBar_Theme #SortFields_Theme{
+  float:left;
+  padding:0px;
+  margin:0px;
+}
+
+#ResultBar_Theme .sortfield .active span.asc{
   background: transparent url('../images/ascending.gif') no-repeat scroll center center;
 }
 
-#ResultBar_Theme #sortbar div.sort.active div.sort_desc{
+#ResultBar_Theme .sortfield .active span.desc{
   background: transparent url('../images/descending.gif') no-repeat scroll center center;
 }
 
-#ResultBar_Theme #sortbar span.left{
+#ResultBar_Theme span.left{
   float:left;
   font-weight:bold;
-  padding-top:5px;
+  padding:3px;
 }
 
-#ResultBar_Theme #sortbar span.right{
+#ResultBar_Theme span.right{
   float:right;
+  padding:3px;
 }
 
 #ResultBar_Theme #sortkey {
@@ -403,6 +414,10 @@ padding-right:5px;
 #Paging_Theme li{
   float:left;
   padding-right:10px;
+}
+
+#Paging_Theme li .inactive{
+  display:none;
 }
 
 /*****************************************************************

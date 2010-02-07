@@ -6,9 +6,10 @@
 Serendip is a javascript library that is intended to make it easier to create a GUI frontend
 using the search engine Solr. The library requires 7 javascript files:
 
-jquery-1.3.2.min.js
+jquery-1.4.min.js
 jquery.history.js
 date.format-1.2.3.js
+pure_packed.js
 
 serendip.core.js
 serendip.theme.js

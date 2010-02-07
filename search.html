@@ -8,6 +8,7 @@
   <script src="js/jquery-1.4.min.js" type="text/javascript" language="javascript"></script>
   <script src="js/jquery.history.js" type="text/javascript"></script>
   <script src="js/date.format-1.2.3.js" type="text/javascript" language="javascript"></script>
+  <script src="js/pure_packed.js" type="text/javascript" language="javascript"></script>
   <script src="js/serendip.core.js" type="text/javascript"></script>
   <script src="js/serendip.theme.config.js" type="text/javascript"></script>
   <script src="js/serendip.theme.js" type="text/javascript"></script>
@@ -17,82 +18,106 @@
 <body>
 
   <div id="Prototypes">
-      
+  
     <!-- Prototype for each sort field -->
-    <div id="SortField_Prototype">
-      <div class="sort [sortfield:active]">
-        <a sort="[sortfield:name] [sortfield:direction]" href="#">
-          <span class="text">[sortfield:displayValue]</span>
-          <div class="sort_[sortfield:currentDirection]"></div>
-        </a>
+    <div id="SortBar_Prototype">
+      <div class="Placeholder">
+        <div id="SortBar">
+          <span class="left">Sort hits by: </span>
+          
+          <div class="sortfield">
+              <div class="relevansActive@class"> 
+                  <a class="relevansSort@sort" href="#">
+                      <span class="text">Relevans</span>
+                  </a>
+              </div>
+          </div>
+          
+          <div id="SortFields_Theme">
+            <div class="sortfield">
+              <div class="active@class">
+                <a class="name@sort direction@direction" href="#">
+                  <span class="text title">&nbsp;</span>
+                  <span class="oppositeDirection@class">&nbsp;</span>
+                </a>
+              </div>
+            </div>
+          </div>
+          
+          <span class="right">
+              <strong class="numDocs">&nbsp;</strong>&nbsp;hits sorted by&nbsp;
+              <span class="activeName">&nbsp;</span>. (<span class="time">&nbsp;</span> ms)
+          </span>
+        </div>
       </div>
-    </div>
-    
+    </div>  
+      
     <!-- Prototype for each active facet -->
-    <div id="ActiveFacetRow_Prototype">
-      <li>
-          <span class="header">[activeFacet:header]</span>
-          <a facetname="[activeFacet:name]" facetvalue="[activeFacet:value]" active="true" href="#">
-            [activeFacet:displayValue]
-          </a> 
-          <span class="remove" facetname="[activeFacet:name]" facetvalue="[activeFacet:value]" />
-      </li>
+    <div id="ActiveFacets_Prototype">
+      <div class="Placeholder">
+          <ul>
+            <li class="activeFacet">
+                <span class="header">&nbsp;</span>
+                <a class="name@facetname value@facetvalue isActive@active displayValue" href="#">&nbsp;</a> 
+                <span class="name@facetname value@facetvalue remove">&nbsp;</span>
+            </li>
+          </ul>
+      </div>
     </div>
     
        <!-- Prototype for each faceet -->
     <div id="FacetRow_Prototype">
-      <div class="facet [facet:name]">
-          <h1>[facet:header]</h1>
-          
-          <ul>
-              [facet:valueList]
-          </ul>
-          
-          <div class="moreFacetsTxt moreFacetsActive">
-            <a class="moreFacets" facetname="[facet:name]">Show more</a>
-          </div>
-          
-          <div class="lessFacetsTxt moreFacetsInactive">
-            <a class="moreFacets" facetname="[facet:name]">Show less</a>
+      <div class="Placeholder">
+          <div class="facet">
+              <div class="facetName@class">
+                <h1 class="facetHeader"></h1>
+                
+                <div class="FacetValues">
+                    <ul>
+                      <li class="facetRow">
+                          <a class="name@facetname value@facetvalue isActive@active displayValue" href="#">
+                          </a>
+                          
+                          <span class="count">(<span class="countValue">&nbsp;</span>)</span>
+                      </li>
+                    </ul>
+                </div>
+                
+                <div class="MoreFacetsValues">
+                </div>                
+                
+                <div class="moreFacetsTxt">
+                  <a class="moreFacets facetName@facetname">Show more</a>
+                </div>
+                
+                <div class="lessFacetsTxt">
+                  <a class="moreFacets facetName@facetname">Show less</a>
+                </div>
+              </div>
           </div>
       </div>
     </div> 
     
-    <!-- Prototype for each facet value -->
-    <div id="FacetRow_ValueRow_Prototype">
-      <li>
-          <a facetname="[facet:name]" facetvalue="[facet:value]" active="false" href="#">
-              [facet:displayValue]
-          </a>
-          
-          <span class="count">([facet:count])</span>
-      </li>
-    </div>
-    
-    <!-- Prototype for results -->
+    <!-- Prototype for results -->    
     <div id="Results_Prototype">
-      <ul>
-        [results:list]
-      </ul>
+      <div class="Placeholder">
+           <ul>
+                <li class="docs">
+                    <div class="resulttitle">
+                        <a href="#" class="title url@href"></a>
+                    </div>
+                    
+                    <div class="content">
+                    </div>
+                    
+                    <div class="resultfooter">
+                      <a href="#" class="url url@href"></a>
+                      <span class="date">&nbsp;</span>
+                    </div>
+                </li>
+            </ul> 
+        </div>
     </div>
-    
-    <!-- Prototype for each document in results -->
-    <div id="DocRow_Prototype">
-      <li>
-          <div class="resulttitle">
-              <a href="[field:url]">[field:title]</a>
-          </div>
-          
-          <div class="resultbody">
-              [field:content]
-          </div>
-          
-          <div class="resultfooter">
-            <a href="[field:url]">[field:url]</a>
-            <span class="date">[field:date]</span>
-          </div>
-      </li>
-    </div>  
     
     <!-- Prototype for empty results -->
     <div id="EmptyResults_Prototype">
@@ -104,73 +129,53 @@
     
     <!-- Prototype for search suggestions -->
     <div id="SearchSuggestions_Prototype">
-      <div id="SearchSuggestion">
-        Try: [searchsuggestion:suggestion]
+      <div class="Placeholder">
+          <div id="SearchSuggestion">
+            Try: <span class="suggestion">&nbsp;</span>
+          </div>
       </div>
     </div>  
     
     <!-- Prototype for spelling suggestions -->
     <div id="SpellingSuggestions_Prototype">
-      <div id="SpellingSuggestion">
-        Did you mean: <a href="#">[spellingsuggestion:suggestion]</a>
+      <div class="Placeholder">
+          <div id="SpellingSuggestion">
+            Did you mean: <a href="#" class="suggestion"></a>
+          </div>
       </div>
     </div> 
         
     <!-- Prototype for autocomplete -->
     <div id="Autocomplete_Prototype">
-      <ul>
-        [autocomplete:list]
-      </ul>
-    </div> 
-    
-    <!-- Prototype for autocomplete row -->
-    <div id="AutocompleteRow_Prototype">
-      <li>
-          <span>[autocomplete:value]</span> ([autocomplete:count])
-      </li>
+      <div class="Placeholder">
+        <ul>
+          <li class="term">
+              <span class="value">&nbsp;</span> (<span class="count">&nbsp;</span>)
+          </li>
+        </ul>
+      </div>
     </div>    
     
     <!-- Prototype for error message -->
     <div id="ErrorMsg_Prototype">
       <span class='error'>
           Cannot display results due to an error.
-      <span>
+      </span>
     </div>                    
 
     <!-- Prototype for paging -->
     <div id="Paging_Prototype">
-      <ul>
-        [paging:pageList]
-      </ul>
-    </div>
-        
-    <!-- Prototype for each paging row -->
-    <div id="PagingRow_Prototype">
-      <li>
-        <a href="" page="[paging:page]">[paging:page]</a>
-      </li>
-    </div>
-    
-    <!-- Prototype for current paging row -->
-    <div id="PagingCurrentRow_Prototype">
-      <li>
-        <b>[paging:page]</b>
-      </li>
-    </div>       
-    
-    <!-- Prototype for 'next' paging row -->
-    <div id="PagingNextRow_Prototype">
-      <li>
-        <a href="" page="[paging:nextPage]">Next&gt;&gt;</a>
-      </li>
-    </div>
-    
-    <!-- Prototype for 'previous' paging row -->
-    <div id="PagingPrevRow_Prototype">
-      <li>
-        <a href="" page="[paging:prevPage]">&lt;&lt;Previous</a>
-      </li>
-    </div>    
+      <div class="Placeholder">
+        <ul>
+          <li class="pageRow">
+            <a href="#" class="page@page regularPageActive@class"><span class="page">&nbsp;</span></a>
+            <b class="currentPageActive@class page">&nbsp;</b>
+            <a href="#" class="page@page nextPageActive@class">Next&gt;&gt;</a>
+            <a href="#" class="page@page prevPageActive@class">&lt;&lt;Previous</a>
+          </li>
+        </ul>
+      </div>
+    </div>   
   </div>
 
 
@@ -186,21 +191,6 @@
     </div>
     
     <div id="ResultBar_Theme">
-      <div id="sortbar">
-          <span class="left">Sort hits by: </span>
-          
-          <div id="sortByRelevans" class="sort [sortfield:relevansActive]">
-              <a sort="" href="#">
-                  <span class="text">Relevans</span>
-              </a>
-          </div>
-          
-          [sortfield:list]
-          
-          <span class="right">
-              <strong>[sortfield:hits]</strong> hits sorted by date. ([sortfield:time] ms)
-          </span>
-      </div>
     </div>
     
     <div id="SpellSuggestions_Theme"></div>   
@@ -209,7 +199,7 @@
       <div id="ResultsInProgress_Theme">
       </div>    
       
-      <div id="Results_Theme">
+      <div id="Results_Theme">     
       </div>
     </div>
     
@@ -223,9 +213,6 @@
             <h1>Active filters</h1>
             
             <div id="ActiveFacets_Theme">
-              <ul>
-                [activeFacet:list]
-              </ul>
             </div>
             
             <div id="NoActiveFacets_Theme">
@@ -234,7 +221,6 @@
         </div>
         
         <div id="InactiveFacets_Theme">
-          [facet:list]
         </div>
       </div>
       

@@ -9,6 +9,7 @@
  * Includes: 
  * jquery-1.4.min.js (http://jquery.com/)
  * date.format-1.2.3.js (http://blog.stevenlevithan.com/archives/date-time-format)
+ * pure_packed.js (http://beebole.com/pure/)
  */
  
 $(document).ready(function(){
@@ -20,7 +21,7 @@ $(document).ready(function(){
       searchFieldId: "#queryInput",
       searchBtnId: "#searchbutton", 
       autocompleteId: "#Autocomplete_Theme",
-      autocompleteValuesSelector: "li span",
+      autocompleteValuesSelector: "li span.value",
       
       theme : mytheme
     });
@@ -127,6 +128,6 @@ $(document).ready(function(){
     
     search.init("search.html");     
     
-    $("#querystring").focus();
+    $("#queryInput").focus();
 });
     
