@@ -101,7 +101,8 @@ $(document).ready(function(){
       dateEnd: "NOW/MONTH+1MONTH",
       dateGap: "+1MONTH",
       
-      dateFormat: "mmmm"
+      dateFormat: "mmmm",
+      sortDir: "asc"
     }));
     
     // News release date facet [custom range]

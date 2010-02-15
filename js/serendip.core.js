@@ -267,7 +267,8 @@ Serendip.DateFacet = Serendip.Facet.extend({
   dateStart : null,
   dateEnd : null,
   dateGap : null,
-  dateFormat: null
+  dateFormat: null,
+  sortDir: "asc"
 });
 
 Serendip.CustomDateFacet = Serendip.Facet.extend({
@@ -1068,24 +1069,38 @@ Serendip.Search = Serendip.Class.extend({
       
       var facetValues = [];
       
-      for (var k=0; k < values.length; k+=2) {   
+      if(facet.sortDir == "asc"){
+        for (var k=0; k < values.length; k+=2) {   
+            rederDateFacetValue(values, k, facetValues, dates, "asc");
+        }
+      }else{
+        for (var k=values.length-2; k > -1; k-=2) { 
+          rederDateFacetValue(values, k, facetValues, dates, "desc");
+        }        
+      }
+                
+      return renderFacet(data, facet, facetValues);    
+    }
+    
+    function rederDateFacetValue(values, k, facetValues, dates, type){
           var value = values[k];
           var count = values[k+1];
           
           var dateFacet = new Object();
           dateFacet.from = value;
           
-          if(k+2 < values.length){
-              dateFacet.to = values[k+2];
+          if(type == "asc"){
+            if(k+2 < values.length){
+                dateFacet.to = values[k+2];
+            }else{
+                dateFacet.to = dates["end"];
+            }
           }else{
-              dateFacet.to = dates["end"];
+            dateFacet.to = dates["end"];
           }
           
           facetValues.push(dateFacet);
-          facetValues.push(count);
-      }
-                    
-      return renderFacet(data, facet, facetValues);    
+          facetValues.push(count);    
     }
     
     function renderCustomDateFacet(data, facet){
