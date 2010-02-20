@@ -229,7 +229,7 @@ Serendip.Theme = Serendip.Class.extend({
   renderActiveFacet : function(facetFieldsHtml){},
   renderActiveFacetField : function(facet, value, formattedValue){},
   renderSpellSuggestions: function(suggestions){},
-  renderEmptyResult : function(searchSuggestions){},
+  renderEmptyResult : function(){},
   renderPager : function(data){},
   renderAutocompleteTerms : function(terms){},
   renderComplete : function(data){},
@@ -841,11 +841,9 @@ Serendip.Search = Serendip.Class.extend({
  
       if(data.spellcheck){
           var suggestions = data.spellcheck.suggestions;
+          
           if (suggestions.length > 1) {
-              var query = $(req.searchFieldId).val();
-
-              var suggestion = suggestions[1].suggestion;
-              suggestionsArr.push(suggestion);              
+              return suggestions[1].suggestion;             
           }
       } 
       
@@ -889,17 +887,16 @@ Serendip.Search = Serendip.Class.extend({
     }  
     
     function renderEmptyResult(data){      
-      var suggestions = getSpellSuggestions(data);
-      req.theme.renderEmptyResult(suggestions)      
+      req.theme.renderEmptyResult()      
     }
     
     function renderDocuments(data){
       var docs = data.response.docs;
-      
+            
       var docsDataArr = [];
       for (i=0; i<docs.length; i++) {
-        var data = renderDoc(docs[i], data.highlighting);
-        docsDataArr.push(data)
+        var docData = renderDoc(docs[i], data.highlighting);
+        docsDataArr.push(docData)
       }
   
       req.theme.renderDocuments(docsDataArr);      
@@ -913,7 +910,7 @@ Serendip.Search = Serendip.Class.extend({
       }
       
       for(var i = 0; i < req.highlightFields.length; i++){
-        fieldsArr[req.highlightFields[i]] = getFieldValue(doc, highlight, req.highlightFields[i]);
+        fieldsArr[req.highlightFields[i]] = getFieldValue(doc, highlight, req.highlightFields[i]); 
       }      
          
       return req.theme.renderDoc(fieldsArr);
@@ -922,7 +919,7 @@ Serendip.Search = Serendip.Class.extend({
     
     function getFieldValue(doc, highlight, field){
       var value;
-         
+      
       if( typeof(highlight) == "undefined"){
           value = doc[field];
       }else{

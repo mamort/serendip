@@ -88,7 +88,9 @@ var mytheme = new Serendip.Theme({
         this.resultbar_html = this.$resultbar.html();
         
         this.$resultsInProgress.hide();
-        this.$resultbar.fadeTo(0,0);
+        this.$resultbar.fadeTo(0,0, function(){
+          $(this).hide();
+        });
         
     },
     
@@ -154,6 +156,7 @@ var mytheme = new Serendip.Theme({
       sortValue, sortFields, sortDirection){
       
         if(numDocsFound > 0){
+          this.$resultbar.show();
           this.$resultbar.fadeTo(0, 1);
         }
       
@@ -321,7 +324,7 @@ var mytheme = new Serendip.Theme({
     
     getParamRestrictChars: function(fields, param, defaultValue, maxChars){
         var text = this.getParam(fields, param, defaultValue);
-                
+
         if(text.length > maxChars){
           text = text.substring(0, maxChars);
         }
@@ -382,12 +385,23 @@ var mytheme = new Serendip.Theme({
     },
     
     renderSpellSuggestions: function(suggestions){
-        
+    
         if(suggestions.length > 0){
-            var data = {
-              "suggestion": suggestions[0]
-            };
         
+            var suggestionLinks = [];
+        
+            for(var i = 0; i < suggestions.length; i++){
+                var suggest = {
+                  "suggestionLink": suggestions[i]
+                };
+                
+                suggestionLinks.push(suggest);
+            }
+            
+            var data = {
+              "suggestion":suggestionLinks
+            };
+            
             var spellingSuggestions = this.$spellingSuggestions_prototype.clone();
             spellingSuggestions = spellingSuggestions.find(".Placeholder").autoRender(data);
             
@@ -395,6 +409,8 @@ var mytheme = new Serendip.Theme({
               .hide()
               .html(spellingSuggestions.html())
               .fadeIn('slow');
+        }else{
+            this.$spellsuggestions.hide();
         }
     },
     
@@ -525,22 +541,11 @@ var mytheme = new Serendip.Theme({
         return data;
     },
         
-    renderEmptyResult : function(searchSuggestions){
+    renderEmptyResult : function(){
         var html = "";
         
         var emptyResultsHtml = this.emptyresults_prototype_html;
         html = emptyResultsHtml;
-        
-        var len = searchSuggestions.length;
-        if (len > 0) {
-          var data = {
-            "suggestion": searchSuggestions[0]
-          };
-          
-          var searchSuggestion = this.$searchSuggestions_Prototype.clone();
-          searchSuggestion = searchSuggestion.find(".Placeholder").autoRender(data);
-          html = searchSuggestion.html();
-        } 
     
         this.$results.html(html);
     },     
