@@ -785,6 +785,7 @@ Serendip.Search = Serendip.Class.extend({
         $.ajax({
             scriptCharset: "utf-8" , 
             type: "GET",
+            
             url: reqString,
             data: "",
             dataType: "json",
@@ -793,12 +794,14 @@ Serendip.Search = Serendip.Class.extend({
             success: handleResponse,        
             
             error: function(httpReq, ajaxOpts, thrownError) {
+
               req.theme.renderError(httpReq, ajaxOpts, thrownError);
             }
         });
       }
     
     function handleResponse(data){
+
       var numDocs = data.response.numFound; 
 	        
       req.theme.init(data);
@@ -1131,6 +1134,9 @@ Serendip.Search = Serendip.Class.extend({
         for (var i=0; i < len; i+=2) {   
             var value = facetArray[i];
             var count = facetArray[i+1];
+            
+            if(value == "")
+              continue;
             
             var isActive = isFacetFieldActive(data, facet, value);
             
