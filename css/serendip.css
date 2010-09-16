@@ -2,12 +2,12 @@
 * Generic styles
 ******************************************************************/
 body {
-	font-family: Helvetica, Arial, sans-serif;
+  font: 72.5% 'Lucida Grande',Helvetica,Arial,sans-serif;
 	min-width: 850px;
 }
 
 a{
-  color:#002EB8;
+  color:#003399;
   text-decoration:none;
 }
 
@@ -53,45 +53,80 @@ a:hover{
 * Query input
 ******************************************************************/
 #QueryInput_Theme {
-  background-color:#CCCCCC;
-  min-height:25px;
-  padding-bottom:10px;
-  padding-top:10px;
-  padding-right:5px;
+  background-color:#333333;
+  height:35px;
   width:100%;
 }
 
-#QueryInput_Theme #queryform {
-	margin: 0px;
-}
 
-#QueryInput_Theme #searchInput{
-  background-image:url('../images/searchInputBox.png');
+#topmenu  {
   float:left;
-  height:23px;
-  margin-left:10px;
-  width:210px;
+  position:relative;
+  margin:0px;
+  padding:0;
 }
 
-#QueryInput_Theme #queryInput {
-  border:0 none;
-  font-size:100%;
-  font-family:arial;
-  height:20px;
-  margin:2px 0 10px 25px;
-  padding:0 0 0 3px;
+ul, li {
+  list-style:none outside none;
 }
 
-#QueryInput_Theme #searchbutton {
-	padding: 0px;
-	margin-top:1px;
-	vertical-align: bottom;
-	width: 69px;
-	border: 0px;
-	height:22px;
-	background-image: url('../images/searchBtn.png');
-	background-repeat: no-repeat;
-	background-color: transparent;
+
+#topmenu li {
+  float:left;
+  position:relative;
+}
+
+#topmenu li a {
+  border-color:#404040 #1A1A1A #1A1A1A #505050;
+  border-style:solid;
+  border-width:1px;
+  color:#FFFFFF;
+  display:block;
+  font-family:arial,sans-serif;
+  font-size:16px;
+  font-weight:bold;
+  height:25px;
+  padding:5px 6px 3px 7px;
+  position:relative;
+  text-decoration:none;
+}
+
+#searchForm {
+  background:none repeat scroll 0 0 #333333;
+
+  float:left;
+  position:relative;
+  width:320px;
+  
+  padding-top:2px;
+  margin-right:20px;
+}
+
+#queryform  {
+  background:url("../images/search-bg.gif") no-repeat scroll 9px 2px transparent;
+  height:26px;
+  margin:2px;
+  padding-bottom:1px;
+  position:relative;
+}
+
+#queryInput {
+  border:1px solid #FFFFFF;
+  color:#000000;
+  font-size:11px;
+  margin:6px 0 0 33px;
+  padding:0;
+  width:240px;
+}
+
+#searchbutton {
+  position:absolute;
+  right:9px;
+  top:4px;
+}
+
+#searchForm input {
+  vertical-align:middle;
 }
 
 #QueryInput_Theme #searchbutton:hover {
@@ -104,7 +139,7 @@ a:hover{
 #Autocomplete_Theme {
   display: none;
   position: absolute;
-	margin-left:10px;
+	margin-left:35px;
 	padding: 1px 0px 0px 3px;
 	border: 1px solid #CCCCCC;
   background-color: white;
@@ -133,6 +168,14 @@ a:hover{
 /*****************************************************************
 * Results
 ******************************************************************/
+#Results_Theme{
+  font-size:1.2em;
+}
+
+#Results_Theme .resulttitle{
+  font-size:1.2em;
+}
+
 #Results_Theme em{
   font-style:normal;
   font-weight:bold;
@@ -160,11 +203,9 @@ a:hover{
 
 #Results_Theme .resultbody {
 	margin: 1px 0px 0px 0px;
-	font-size: 75%;
 }
 
 #Results_Theme .resultfooter{
-	font-size: 75%;
 	color: green;
 }
 
@@ -183,6 +224,7 @@ a:hover{
 ******************************************************************/
 
 #Facets_Theme{
+  font-size:1.3em;
   display:none; /* Will be enabled by theme */
   margin-top:10px;
   float:right;
@@ -197,15 +239,14 @@ a:hover{
 }
 
 #facets h1 {
-	font-size: 90%;
+  font-size:1.0em;
+  font-family:helvetica;
 	margin: 10px 0px 0px 0px;
 	padding: 0 0 3px;;
-	text-transform: uppercase;
 	
 }
 
 #facets div.facet {
-	font-size: 90%;
 	margin: 1px 0px 5px 20px;
 	padding: 0px;
 	float:left;
@@ -222,6 +263,10 @@ a:hover{
   list-style: none;
   margin: 0px;
   padding: 0px;
+}
+
+#facets div.facet ul li{
+  width:190px;
 }
 
 #facets div.facet a{
@@ -249,8 +294,10 @@ a:hover{
 }
 
 #facets #InactiveFacets_Theme a.moreFacets{
-  font-size:10px;
-  color:#700000
+  color:#700000;
+  display:block;
+  font-size:0.7em;
+  padding-top:5px;    
 }
 
 #facets #ActiveFacets_Theme span.header{
@@ -298,12 +345,16 @@ padding-right:5px;
 ******************************************************************/
 #SpellSuggestions_Theme{
   padding:3px;
-  float:left;
+
   width:100%;
   margin-left: 12px; 
-  font-size: 13px; 
+  font-size: 14px; 
   font-family: arial; 
   color: darkred;
+}
+
+#SpellSuggestions_Theme .suggestion{
+  padding-right:3px;
 }
 
 /*****************************************************************
@@ -311,8 +362,11 @@ padding-right:5px;
 ******************************************************************/
 #ResultBar_Theme {
   float:left;
-	font-size: 80%;
-	background-color: #F2F2F2;
+  clear:left;
+  color:#000000;
+	font-size: 1.1em;
+	font-family:arial;
+	
 	padding: 3px 0px 3px 6px;
 	width: 100%;
 	text-align: right;
@@ -340,6 +394,7 @@ padding-right:5px;
 }
 
 #ResultBar_Theme div.sortfield a{
+  float:left;
   font-weight:bold;
 }
 
@@ -378,7 +433,7 @@ padding-right:5px;
 #ResultBar_Theme span.left{
   float:left;
   font-weight:bold;
-  padding:3px;
+  padding:4px;
 }
 
 #ResultBar_Theme span.right{
@@ -398,10 +453,11 @@ padding-right:5px;
 * Paging
 ******************************************************************/
 #Paging_Theme {
-	clear: both;
-	float:left;
-	width: 800px;  
-	padding:0 0 0 15px;
+  font-size:1.2em;
+  clear: both;
+  float:left;
+  width: 800px;  
+  padding:20px 0 0 15px;
 }
 
 #Paging_Theme ul{
@@ -418,6 +474,23 @@ padding-right:5px;
 
 #Paging_Theme li .inactive{
   display:none;
+}
+
+#Paging_Theme li .selected{
+  background:none repeat scroll 0 0 #444444;
+  border:1px solid #333333;
+  color:#FFFFFF;
+  font-weight:bold;
+  padding:0.2em 0.5em;
+  display:block;
+}
+
+#Paging_Theme li a{
+  border:1px solid #E3E3E3;
+  color:#005A8B;
+  padding:0.2em 0.5em;
+  text-decoration:none;
+  display:block;
 }
 
 /*****************************************************************
