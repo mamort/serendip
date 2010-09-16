@@ -5,7 +5,12 @@
 	<title>Serendip</title>
 	<link href="css/serendip.css" rel="stylesheet" type="text/css" />
 	
-  <script src="js/jquery-1.4.min.js" type="text/javascript" language="javascript"></script>
+	<!--[if IE 7]>
+	<link href="css/ie7.css" rel="stylesheet" type="text/css" />
+	<![endif]-->
+
+	
+  <script src="js/jquery-1.4.2.min.js" type="text/javascript" language="javascript"></script>
   <script src="js/jquery.history.js" type="text/javascript"></script>
   <script src="js/date.format-1.2.3.js" type="text/javascript" language="javascript"></script>
   <script src="js/pure_packed.js" type="text/javascript" language="javascript"></script>
@@ -13,6 +18,7 @@
   <script src="js/serendip.theme.config.js" type="text/javascript"></script>
   <script src="js/serendip.theme.js" type="text/javascript"></script>
   <script src="js/serendip.config.js" type="text/javascript"></script>
+  
 </head> 
 
 <body>
@@ -45,7 +51,7 @@
           </div>
           
           <span class="right">
-              <strong class="numDocs">&nbsp;</strong>&nbsp;hits sorted by&nbsp;
+              <strong class="numDocs">&nbsp;</strong>&nbsp;hits sorted by
               <span class="activeName">&nbsp;</span>. (<span class="time">&nbsp;</span> ms)
           </span>
         </div>
@@ -122,8 +128,8 @@
     <!-- Prototype for empty results -->
     <div id="EmptyResults_Prototype">
       <div id="zerohits">
-        <h1>Did not find any documents.</h1>
-        Try searching with different keywords.
+        <h1>No hits</h1>
+        Try using other search terms.
       </div>
     </div> 
     
@@ -144,7 +150,7 @@
       <div class="Placeholder">
         <ul>
           <li class="term">
-              <span class="value">&nbsp;</span> (<span class="count">&nbsp;</span>)
+              <span class="value">&nbsp;</span> <span class="count">&nbsp;</span>
           </li>
         </ul>
       </div>
@@ -153,7 +159,7 @@
     <!-- Prototype for error message -->
     <div id="ErrorMsg_Prototype">
       <span class='error'>
-          Cannot display results due to an error.
+        Cannot display results due to an error. Sorry for the inconvenience.
       </span>
     </div>                    
 
@@ -163,7 +169,9 @@
         <ul>
           <li class="pageRow">
             <a href="#" class="page@page regularPageActive@class"><span class="page">&nbsp;</span></a>
-            <b class="currentPageActive@class page">&nbsp;</b>
+            
+            <span class="currentPageActive@class"><span class="selected page">&nbsp;</span></span>
+            
             <a href="#" class="page@page nextPageActive@class">Next&gt;&gt;</a>
             <a href="#" class="page@page prevPageActive@class">&lt;&lt;Previous</a>
           </li>
@@ -173,20 +181,23 @@
   </div>
 
 
+        
   <div id="searchApp">
+
     <div id="QueryInput_Theme">
-        <form action="" id="queryform">
-            <div id="searchInput">
-                <input type="text" id="queryInput" value="" />
-            </div>
-            <input type="button" id="searchbutton" value="" />
-        </form>
-        <div id="Autocomplete_Theme"></div>
+                
+        <div id="searchForm">
+            <form action="" id="queryform">
+              <input type="text" value="" id="queryInput" name="query" autocomplete="off"/>
+              <input type="image" alt="Go" src="images/searchBtn.gif" id="searchbutton"/>
+            </form>
+            <div id="Autocomplete_Theme"></div>
+        </div>
+      
+		 <div id="ResultBar_Theme">
+		</div>	  
     </div>
-    
-    <div id="ResultBar_Theme">
-    </div>
-    
+		
     <div id="SpellSuggestions_Theme"></div>   
     
     <div id="Content_Theme">
@@ -195,6 +206,9 @@
       
       <div id="Results_Theme">     
       </div>
+	  
+	  <div id="Paging_Theme">
+		</div>
     </div>
     
     <div id="Facets_Theme">
@@ -220,9 +234,6 @@
       
       <div class="t2 line"> </div>   
       <div class="t1 line"> </div>   
-    </div>
-    
-    <div id="Paging_Theme">
     </div>
     
     </div>
