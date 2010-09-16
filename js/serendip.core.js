@@ -25,7 +25,19 @@ var ISODate = {
                 Date.UTC(d[1],d[2]-1,d[3],d[4],d[5],d[6]|0,(d[6]*1000-((d[6]|0)*1000))|0,d[7]) +
                 (d[7].toUpperCase() ==="Z" ? 0 : (d[10]*3600 + d[11]*60) * (d[9]==="-" ? 1000 : -1000))
         );
+    },
+ 
+    format : function(t,utc){
+        if (typeof t === "string") t = this.convert(t);
+        if (!(t instanceof Date)) throw "ISODate, format: t is not a date object";
+        t = utc ?
+                [t.getUTCFullYear(),t.getUTCMonth(),t.getUTCDate(),t.getUTCHours(),t.getUTCMinutes(),t.getUTCSeconds()] :
+                [t.getFullYear(),t.getMonth(),t.getDate(),t.getHours(),t.getMinutes(),t.getSeconds()];
+
+        return this.month[t[1]] + " " +this.ordinal(t[2]) + ", " +t[0] +
+                " @ " + this.clock12(t[3],t[4]);
     }
+    
 };
 
 /* General purpose functions */
@@ -236,7 +248,9 @@ Serendip.Theme = Serendip.Class.extend({
   renderError : function(httpReq, ajaxOpts, thrownError){},
   
   bindPreInit : function(){},
+  bindAutocompleteClickHandler : function(handler){},
   bindSortClickHandler : function(handler){},
+  bindSuggestClickHandler : function(handler){},
   bindFacetClickHandler : function(handler){},
   bindShowMoreFacetsClickHandler : function(name){},
   bindPagingClickHandler: function(handler){}
@@ -297,6 +311,10 @@ Serendip.SuggestClickHandler = Serendip.Class.extend({
   handleSuggestClick : function(suggestion){}
 });
 
+Serendip.AutocompleteClickHandler = Serendip.Class.extend({
+  handleAutocompleteClick : function(){}
+});
+
 Serendip.Search = Serendip.Class.extend({
 
   solrBaseUrl : null,
@@ -326,13 +344,14 @@ Serendip.Search = Serendip.Class.extend({
   
   timerId: 0,
   facetQuery: "",
-  facetQueries: [],
+  facetQueries: new Object(),
   sortQuery: "",
   startDoc: 0,
   clickType: "",
   
   sortValue: "",
   cplIndex: -1,
+  lastHash: "",
   
  	// PageLoad function
 	// This function is called when:
@@ -350,8 +369,12 @@ Serendip.Search = Serendip.Class.extend({
 			}
 				
 			// Do your thing
-			if(hash.length > 0)
-        this.initFromQueryStr(hash);
+			if(hash.length > 0){
+          if(hash != this.lastHash){
+               this.lastHash = hash;
+               this.initFromQueryStr(hash);
+           }
+       }
         
 		} else {
 		
@@ -411,7 +434,7 @@ Serendip.Search = Serendip.Class.extend({
     // Facet values
     var facetsFilters = this.core.parseFacets(queryStr, this.facets);
     
-    this.facetQueries = [];
+    this.facetQueries = new Object();
     for(var i = 0; i < facetsFilters.length; i++){
       var id = facetsFilters[i].id;
       this.facetQueries[id] = facetsFilters[i];
@@ -582,6 +605,7 @@ Serendip.Search = Serendip.Class.extend({
               req.cplIndex--;
               
               if (req.cplIndex < 0) {
+				req.cplIndex = -1;
                 collapseAutocomplete();
               } else {
                 $(cplArray[req.cplIndex]).removeClass("selected").addClass("selected");
@@ -629,11 +653,21 @@ Serendip.Search = Serendip.Class.extend({
       
         function handleKeyPressOnSearchInputBox(){
           $(req.searchFieldId).unbind('keypress').bind('keypress', function (e) {
-            if (e.which > 32) {
+		  
+			var keyCode = e.keyCode ? e.keyCode : e.which;
+
+            if (keyCode > 32 || keyCode == 8) {
               clearTimeout(req.timerId);
               req.timerId = setTimeout(function() {
-                var query = decodeURIComponent($(req.searchFieldId).val());
-                getAutoCompletions(query);
+               
+                var q = decodeURIComponent($(req.searchFieldId).val());
+				
+				if(q.length > 0){
+					if ((q.indexOf("\"") == -1) && (q.indexOf("+") == -1) && (q.indexOf("-") == -1) ) {
+						getAutoCompletions(q);
+					}
+				}
+                
               }, 300);
             }
           });	
@@ -641,7 +675,7 @@ Serendip.Search = Serendip.Class.extend({
         
         function getAutoCompletions(query) {
 
-          $.getJSON(req.solrBaseUrl +"/terms/?terms=true&terms.fl=" + req.autocompleteField + "&terms.lower.incl=false&terms.lower=" + encodeURIComponent(query) + "&terms.prefix=" + encodeURIComponent(query) + "&terms.mincount=1&wt=json",
+          $.getJSON(req.solrBaseUrl +"/terms/?terms=true&terms.fl=" + req.autocompleteField + "&terms.lower.incl=false&terms.lower=" + encodeURIComponent(query) + "&terms.prefix=" + encodeURIComponent(query) + "&terms.mincount=100&wt=json",
           
             function(data){
 
@@ -657,10 +691,25 @@ Serendip.Search = Serendip.Class.extend({
               
               if(len > 0){
                 req.theme.renderAutocompleteTerms(terms);
-              }
+				handleAutocompleteClick(req);
+              }else{
+				collapseAutocomplete();
+			  }
             }
           )
         }
+		
+		function handleAutocompleteClick(self){
+			self.theme.bindAutocompleteClickHandler(new Serendip.AutocompleteClickHandler({
+          
+				handleAutocompleteClick : function(){
+				    var text = $(self.searchFieldId).val();
+            
+					self.saveHistoryItem(text, 0, self.sortQuery, self.getFacetQuery());
+					collapseAutocomplete();
+				}
+			}));
+		}
    
         function handleSuggestClick(self){
 
@@ -811,6 +860,7 @@ Serendip.Search = Serendip.Class.extend({
         renderHeader(numDocs, data.responseHeader.QTime, req.sortValue, req.sortFields);
         
         if(req.clickType != "sorting"){
+	
           renderActiveFacets();
           renderFacets(data, req.facets);  
           renderSpellSuggestions(data); 
@@ -937,7 +987,7 @@ Serendip.Search = Serendip.Class.extend({
     
     function renderActiveFacets(){      
       var activeFacetData = [];
-      
+	  
       for(var id in req.facetQueries){
           var facetQuery = req.facetQueries[id];
           var facet = req.facetIdToFacetMap[id];
@@ -1089,19 +1139,69 @@ Serendip.Search = Serendip.Class.extend({
           var dateFacet = new Object();
           dateFacet.from = value;
           
+          var gapDays = getGapAsDays(dates["gap"]);
+          
+          //TODO: Must use GAP to calculate end date from start date here
+          var date = ISODate.convert(dateFacet.from);
+          date.setDate(date.getDate() + gapDays);
+         
+          var isoDateStr = date.format("isoDateTime") + "Z";
+          
           if(type == "asc"){
             if(k+2 < values.length){
                 dateFacet.to = values[k+2];
             }else{
-                dateFacet.to = dates["end"];
+                dateFacet.to = isoDateStr;
             }
           }else{
-            dateFacet.to = dates["end"];
+            dateFacet.to = isoDateStr;
           }
           
           facetValues.push(dateFacet);
           facetValues.push(count);    
     }
+    
+    function getGapAsDays(gap){
+        var modifier = 1;
+        var dayModifier = 1;
+        var days = 0;
+        
+        if(gap[0] == "-")
+            modifier = -1;
+            
+        if(gap.match("YEARS")){
+           days = gap.substring(1, gap.length-5);
+           dayModifier = 365;
+        }
+        
+        if(gap.match("MONTHS")){
+           days = gap.substring(1, gap.length-6);
+           dayModifier = 30;
+        }
+        
+        if(gap.match("DAYS")){
+           days = gap.substring(1, gap.length-4);
+        }                
+            
+        if(gap.match("YEAR")){
+           days = gap.substring(1, gap.length-4);
+           dayModifier = 365;
+        }
+        
+        if(gap.match("MONTH")){
+           days = gap.substring(1, gap.length-5);
+           dayModifier = 30;
+        }
+        
+        if(gap.match("DAY")){
+           days = gap.substring(1, gap.length-3);
+        }                         
+ 
+        days = parseInt(days);     
+        
+        return days * modifier * dayModifier;
+    }
+        
     
     function renderCustomDateFacet(data, facet){
       var facetValues = [];
