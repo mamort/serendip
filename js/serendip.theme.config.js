@@ -24,16 +24,15 @@ serendipTranslation["Date:MonthNames"] = ["Jan", "Feb", "Mar", "Apr", "Mai", "Ju
 /* Maps fields displayed for each document to your Solr fields */
 var serendipThemeFieldMap = [];
 
-serendipThemeFieldMap["field:title"] = "key_title";
+serendipThemeFieldMap["field:title"] = "title";
 serendipThemeFieldMap["field:title:empty"] = "No title available for this document";
 
-serendipThemeFieldMap["field:content"] = "tika_paragraphs";
+serendipThemeFieldMap["field:content"] = "contents";
 serendipThemeFieldMap["field:content:empty"] = "No description available";
-serendipThemeFieldMap["field:content:maxlen"] = 600;
 
 serendipThemeFieldMap["field:url"] = "url";
 serendipThemeFieldMap["field:url:empty"] = "";
 
-serendipThemeFieldMap["field:date"] = "moddate";
+serendipThemeFieldMap["field:date"] = "date";
 serendipThemeFieldMap["field:date:empty"] = "No date available";
 serendipThemeFieldMap["field:date:format"] = "dd.mm.yyyy HH:MM";

@@ -17,6 +17,8 @@ var mytheme = new Serendip.Theme({
     translation: serendipTranslation,
     fieldMap: serendipThemeFieldMap,
     
+    useAnimation: false,
+    
     // Private variables holding JQuery references
     $searchInput: null,
     $content: null,
@@ -88,9 +90,12 @@ var mytheme = new Serendip.Theme({
         this.resultbar_html = this.$resultbar.html();
         
         this.$resultsInProgress.hide();
-        this.$resultbar.fadeTo(0,0, function(){
-          $(this).hide();
-        });
+        
+        if(this.useAnimation){
+            this.$resultbar.fadeTo(0,0, function(){
+              $(this).hide();
+            });
+        }
         
     },
     
@@ -107,18 +112,27 @@ var mytheme = new Serendip.Theme({
 
     renderInProgress : function(callback){
     
+        var self = this;
         $inProgress = this.$resultsInProgress;
-    
-        this.$results.fadeTo(200, 0, function(){
-            var height = $(this).height();
-            if(height > 0)
-                $inProgress.height(height);
-            $(this).hide();
-            $inProgress.show();
-            
+        
+        if(this.useAnimation){
+            this.$results.fadeTo(200, 0, function(){
+                self.renderInProgressIcon(self.$results, $inProgress);
+                callback();
+            });
+        }else{
+            this.renderInProgressIcon(this.$results, $inProgress);
             callback();
-        });
+        }
 
+    },
+    
+    renderInProgressIcon: function(element, $inProgress){
+        var height = element.height();
+        if(height > 0)
+            $inProgress.height(height);
+        element.hide();
+        $inProgress.show();   
     },
 
     init : function(data){
@@ -126,11 +140,17 @@ var mytheme = new Serendip.Theme({
         var $self = this;
         $inProgress = this.$resultsInProgress;
         
-        this.$results.fadeTo(0, 1, function(){
+        if(this.useAnimation){
+            this.$results.fadeTo(0, 1, function(){
+                $inProgress.hide();
+                
+                $self.continueInit(data);
+            }); 
+        }else{
+            this.$results.show();
             $inProgress.hide();
-            
             $self.continueInit(data);
-        });          
+        }         
     },
     
     continueInit: function(data){ 
@@ -138,9 +158,6 @@ var mytheme = new Serendip.Theme({
         
         dateFormat.i18n.dayNames = this.translation["Date:DayNames"];
         dateFormat.i18n.monthNames = this.translation["Date:MonthNames"];
-        
-        if(numDocs > 0)
-          this.$activeFacets.html("");
           
         this.$noActiveFacets.hide();
         
@@ -157,7 +174,10 @@ var mytheme = new Serendip.Theme({
       
         if(numDocsFound > 0){
           this.$resultbar.show();
-          this.$resultbar.fadeTo(0, 1);
+          
+          if(this.useAnimation){
+              this.$resultbar.fadeTo(0, 1);
+          }
         }
       
         var html = [];
@@ -309,6 +329,15 @@ var mytheme = new Serendip.Theme({
         }
     },
     
+    getDocParam: function(fields, param){
+        var value = this.getParam(fields, this.fieldMap["field:" + param], "");
+        if(value == ""){
+          value = this.getParam(fields, this.fieldMap["field:" + param + ":alt"], this.fieldMap["field:title:empty"]);
+        }
+        
+        return value;
+    },
+    
     getParam: function(fields, param, defaultValue){
         var value = defaultValue;
         
@@ -351,9 +380,7 @@ var mytheme = new Serendip.Theme({
           this.fieldMap["field:url"], 
           this.fieldMap["field:url:empty"]); 
           
-      var title = this.getParam(fields, 
-          this.fieldMap["field:title"], 
-          this.fieldMap["field:title:empty"]);
+      var title = this.getDocParam(fields, "title");
         
       var content = this.getParamRestrictChars(fields, 
           this.fieldMap["field:content"], 
@@ -378,9 +405,14 @@ var mytheme = new Serendip.Theme({
         var $element = this.$results_prototype.clone();
         $element = $element.find(".Placeholder").autoRender(data);
         
-        this.$results.hide()
-          .html($element.html())
-          .fadeIn('slow'); 
+        if(this.useAnimation){
+            this.$results.hide()
+              .html($element.html())
+              .fadeIn('slow'); 
+        }else{
+            this.$results
+              .html($element.html());
+        }
 
     },
     
@@ -416,10 +448,15 @@ var mytheme = new Serendip.Theme({
     
     renderFacets : function(facetsData, facets){
 
-        this.$inactiveFacets
-            .hide()
-            .html(facetsData.join(""))
-            .fadeIn('slow');
+        if(this.useAnimation){
+            this.$inactiveFacets
+                .hide()
+                .html(facetsData.join(""))
+                .fadeIn('slow');
+        }else{
+            this.$inactiveFacets
+                .html(facetsData.join(""));
+        }
     },
 
     renderFacet : function(facet, facetFieldsData, facets, moreFacetsCount, moreFacetsFieldsData){
@@ -468,6 +505,7 @@ var mytheme = new Serendip.Theme({
         "value": value,
         "displayValue": formattedValue,
         "countValue": count,
+        "countValueCls": "count"+count,
         "isActive": "false"
       };      
       
@@ -501,17 +539,19 @@ var mytheme = new Serendip.Theme({
     },
     
     getFacetContentTypeConvertions : function(){
-      var list = [];
+      var list = new Object();
       
       list["text/html"] = "Html";
       list["pdf"] = "PDF";
+      list["text/plain"] = "Text";
+      list["application/msword"] = "Word";
       
       return list;
     },    
     
     renderActiveFacet: function(facetFields){
         if(facetFields && facetFields.length > 0){
-        
+           
             var data = {
               "activeFacet": facetFields
             };
@@ -519,17 +559,26 @@ var mytheme = new Serendip.Theme({
             var prot = this.$activeFacets_prototype.clone();
             prot = prot.find(".Placeholder").autoRender(data); 
 
-            this.$activeFacets
-                .hide()
-                .html(prot.html())
-                .fadeIn('slow');
+            if(this.useAnimation){
+                this.$activeFacets
+                    .hide()
+                    .html(prot.html())
+                    .fadeIn('slow');
+            }else{
+            
+                this.$activeFacets
+                    .html(prot.html());
+            }
         }else{
-            this.$activeFacets.html("");
+        
+            this.$activeFacets.html("").hide();
         }
     },
     
     renderActiveFacetField : function(facet, value, formattedValue){
     
+        formattedValue = this.convertFacetFieldValue(facet, formattedValue);
+        
         var data = {
           "header": facet.activeHeader,
           "name": facet.id,
@@ -559,7 +608,7 @@ var mytheme = new Serendip.Theme({
       for(var i = 0; i < terms.length; i++){
         var term = {
           "value": terms[i].value,
-          "count": terms[i].count
+          "count": ""/*terms[i].count*/
         };
 
         termList.push(term);
@@ -581,9 +630,11 @@ var mytheme = new Serendip.Theme({
     renderComplete : function(data){
 
       var html = this.$activeFacets.html();
-
+      
       if(html == null || html.length == 0){
           this.$noActiveFacets.show();
+      }else{
+          this.$activeFacets.show();
       }
       
       this.$searchInput.focus();
@@ -607,6 +658,29 @@ var mytheme = new Serendip.Theme({
           .html(errorMsgHtml)
           .fadeIn('slow');
     },
+	
+	bindAutocompleteClickHandler: function(handler){
+		var $input = this.$searchInput;
+
+		this.$autocomplete.find("li")
+			.unbind("mousedown").bind("mousedown", function(){
+			
+				var value = $(this).find(".value").text();
+				$input.val(value).focus();
+				
+				handler.handleAutocompleteClick();
+			
+				return false;
+			
+			}).unbind("mouseover").bind("mouseover", function(){
+			
+				$(this).find(".value").removeClass("selected").addClass("selected");
+
+			}).unbind("mouseout").bind("mouseout", function(){
+			
+				$(this).find(".value").removeClass("selected");
+			});	
+	},
     
     bindSuggestClickHandler: function(handler){
       this.$spellSuggestionsHrefs.unbind('click').bind('click', function(){
@@ -639,6 +713,9 @@ var mytheme = new Serendip.Theme({
           var value = $(this).parent().find("a").attr("facetvalue");
           
           handler.handleFacetClick(id, value, false);
+          
+          // Return false to avoid the a:href executing
+          return false;
       });
    
       this.$activeFacetHrefs.unbind('click').bind('click',function(){
@@ -650,7 +727,7 @@ var mytheme = new Serendip.Theme({
       
       this.$inactiveFacetHrefs.unbind('click').bind('click',function(){
           handleFacetClick($(this), handler);
-          
+                   
           // Return false to avoid the a:href executing
           return false;
       });      

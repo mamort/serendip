@@ -14,9 +14,9 @@
  
 $(document).ready(function(){
     var search = new Serendip.Search({
-      solrBaseUrl: "http://localhost:8983/solr",
+      solrBaseUrl: "solr.jsp?",
       numResults: 5,
-      maxFacetsToDisplay: 4,
+      maxFacetsToDisplay: 6,
       
       searchFieldId: "#queryInput",
       searchBtnId: "#searchbutton", 
@@ -27,10 +27,10 @@ $(document).ready(function(){
     });
 
     // Set fields here or specify them in the request handler Solr config
-    search.setFields(["id", "tika_paragraphs", "key_title", "title", "description","news_release_date", "moddate", "url", "key_revisor"]);
-    search.setAutocompleteField("key_revisor");
+    search.setFields(["id", "contents", "title","date", "url"]);
+    search.setAutocompleteField("contents");
     
-    search.addSortField(new Serendip.SortField({name: "moddate", header: "date"}));
+    search.addSortField(new Serendip.SortField({name: "date", header: "date"}));
     
     // Use DISMAX request handler
     search.addQueryParam("qt", "dismax"); 
@@ -47,87 +47,57 @@ $(document).ready(function(){
     search.addQueryParam("hl.regex.pattern", "\w[^\.!\?]{40,600}[\.!\?]");
     
     // Highlighting fields (separate with ["","",""])
-    search.setHighlightFields(["key_title", "tika_paragraphs"]);
+    search.setHighlightFields(["title", "contents"]);
     
     // Number of characters to use for highlighting
-    search.addQueryParam("hl.fragsize", "500");    
-       
+    search.addQueryParam("hl.fragsize", "250"); 
+    search.addQueryParam("hl.snippets ", "3");
+      
     // Enable spellchecking 
     // Make sure to configure spellcheck component to be used in RequestHandler 
     // Issue "spellcheck.build=true" once to build the dictionary
     search.addQueryParam("spellcheck", "true");
-        
-    // Page type facet
-    search.addFacet(new Serendip.Facet({
-      id: "pagetype",
-      name: "page_type", 
-      activeHeader: "Page Type", 
-      header: "Filter by page type", 
-      minFacetsToDisplay: 5, 
-      maxFacetsToDisplay: 10
-    }));
     
-    // Key revisor facet
+    // Person facet
     search.addFacet(new Serendip.Facet({
-      id: "revisor",
-      name: "key_revisor", 
-      activeHeader: "Revisor", 
-      header: "Filter by revisor", 
+      id: "person",
+      name: "person", 
+      activeHeader: "Person", 
+      header: "Filter by person", 
       minFacetsToDisplay: 5, 
       maxFacetsToDisplay: 10
     }));
     
     // Content type facet
     search.addFacet(new Serendip.Facet({
-      id: "contenttype",
-      name: "content_type", 
-      activeHeader: "ContentType", 
-      header: "Filtery by content-type", 
+      id: "type",
+      name: "type", 
+      activeHeader: "Type", 
+      header: "Filter by type", 
       minFacetsToDisplay: 5, 
       maxFacetsToDisplay: 10
     }));    
     
     
-    // News release date facet [dynamic range]
+    // Date facet [dynamic range]
     search.addFacet(new Serendip.DateFacet({
-      id: "news",
-      name: "news_release_date", 
-      activeHeader: "Release date", 
-      header: "Filter by news release date", 
+      id: "date",
+      name: "date", 
+      activeHeader: "Date", 
+      header: "Filter by date", 
       minFacetsToDisplay: 5, 
       maxFacetsToDisplay: 10,
       
-      dateStart: "NOW/MONTH-5MONTHS",
-      dateEnd: "NOW/MONTH+1MONTH",
-      dateGap: "+1MONTH",
+      dateStart: "NOW/YEAR-5YEARS",
+      dateEnd: "NOW/YEAR+1YEAR",
+      dateGap: "+1YEAR",
       
-      dateFormat: "mmmm",
-      sortDir: "asc"
-    }));
-    
-    // News release date facet [custom range]
-    search.addFacet(new Serendip.CustomDateFacet({
-      id: "news2",
-      name: "news_release_date", 
-      activeHeader: "Release date", 
-      header: "Filter by news release date", 
-      minFacetsToDisplay: 5, 
-      maxFacetsToDisplay: 10,
-      
-      getFacetValues: function(){
-        var values = [];
-        
-        values.push(new Serendip.CustomDateFacetValue({name: "Last 3 months", value: "NOW-3MONTHS TO NOW"}));
-        values.push(new Serendip.CustomDateFacetValue({name: "Last 5 years", value: "NOW-5YEAR TO NOW"}));
-        
-        return values;
-      }
-         
+      dateFormat: "yyyy",
+      sortDir: "desc"
     }));
     
     
-    
-    search.init("search.html");     
+    search.init("index.html");     
     
     $("#queryInput").focus();
 });
