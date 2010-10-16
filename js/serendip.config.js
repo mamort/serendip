@@ -14,7 +14,7 @@
  
 $(document).ready(function(){
     var search = new Serendip.Search({
-      solrBaseUrl: "solr.jsp?",
+      solrBaseUrl: "http://localhost:8080/solr",
       numResults: 5,
       maxFacetsToDisplay: 6,
       
@@ -26,9 +26,15 @@ $(document).ready(function(){
       theme : mytheme
     });
 
-    // Set fields here or specify them in the request handler Solr config
+    // Set fields to search in here or specify them in the request handler Solr config
     search.setFields(["id", "contents", "title","date", "url"]);
-    search.setAutocompleteField("contents");
+    
+    search.setDefaultFieldValues({  contents:"No description available", 
+                                    title:"No title available"});    
+                                    
+    search.setDateFieldFormat({date: "dd.mm.yyyy HH:MM"});
+    
+    search.setAutocompleteField("title");
     
     search.addSortField(new Serendip.SortField({name: "date", header: "date"}));
     
@@ -48,6 +54,11 @@ $(document).ready(function(){
     
     // Highlighting fields (separate with ["","",""])
     search.setHighlightFields(["title", "contents"]);
+        
+    // Basically says that if we dont have a highlighted text, get the text to display from the contents field
+    // When that happens, use a maximum of 600 characters from the contents field
+    search.addQueryParam("f.contents.hl.alternateField", "contents");
+    search.addQueryParam("f.contents.hl.maxAlternateFieldLength", "600");
     
     // Number of characters to use for highlighting
     search.addQueryParam("hl.fragsize", "250"); 

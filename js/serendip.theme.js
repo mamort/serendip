@@ -15,7 +15,6 @@
 var mytheme = new Serendip.Theme({
 
     translation: serendipTranslation,
-    fieldMap: serendipThemeFieldMap,
     
     useAnimation: false,
     
@@ -329,73 +328,18 @@ var mytheme = new Serendip.Theme({
         }
     },
     
-    getDocParam: function(fields, param){
-        var value = this.getParam(fields, this.fieldMap["field:" + param], "");
-        if(value == ""){
-          value = this.getParam(fields, this.fieldMap["field:" + param + ":alt"], this.fieldMap["field:title:empty"]);
-        }
-        
-        return value;
-    },
-    
-    getParam: function(fields, param, defaultValue){
-        var value = defaultValue;
-        
-        if(fields[param])
-            value = fields[param];   
-            
-        if(isArray(value)){
-            value = value.join("");
-        }
-            
-         return value;
-    },   
-    
-    getParamRestrictChars: function(fields, param, defaultValue, maxChars){
-        var text = this.getParam(fields, param, defaultValue);
-
-        if(text.length > maxChars){
-          text = text.substring(0, maxChars);
-        }
-        
-        return text;
-    },
-    
-    getParamAsDate: function(fields, param, format, defaultValue){
-        var dateValue = this.getParam(fields, param, "")
-
-        if(dateValue != ""){
-          var date = ISODate.convert(dateValue);
-          dateValue = date.format(format);
-        }else{
-          dateValue = defaultValue;
-        }    
-        
-        return dateValue;
-    }, 
-    
     renderDoc : function(fields){ 
-      
-      var url = this.getParam(fields, 
-          this.fieldMap["field:url"], 
-          this.fieldMap["field:url:empty"]); 
-          
-      var title = this.getDocParam(fields, "title");
-        
-      var content = this.getParamRestrictChars(fields, 
-          this.fieldMap["field:content"], 
-          this.fieldMap["field:content:empty"], 
-          this.fieldMap["field:content:maxlen"]);
-            
-      var date = this.getParamAsDate(fields, 
-          this.fieldMap["field:date"], 
-          this.fieldMap["field:date:format"], 
-          this.fieldMap["field:date:empty"]);
-          
-          
-      var data = {url: url, title: title, content: content, date: date};
     
-      return data;
+        var data = {};
+        
+        for(var key in fields){
+          var value = fields[key];
+          if(value){
+              data[key] = value.toString();
+          }
+        }
+      
+        return data;
     }, 
     
     renderDocuments : function(docsData){

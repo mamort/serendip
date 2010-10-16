@@ -20,19 +20,3 @@ serendipTranslation["Date:DayNames"] = ["Søn", "Man", "Tir", "Ons", "Tor", "Fre
 serendipTranslation["Date:MonthNames"] = ["Jan", "Feb", "Mar", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Des",
 		"Januar", "Februar", "Mars", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Desember"];
 		
-		
-/* Maps fields displayed for each document to your Solr fields */
-var serendipThemeFieldMap = [];
-
-serendipThemeFieldMap["field:title"] = "title";
-serendipThemeFieldMap["field:title:empty"] = "No title available for this document";
-
-serendipThemeFieldMap["field:content"] = "contents";
-serendipThemeFieldMap["field:content:empty"] = "No description available";
-
-serendipThemeFieldMap["field:url"] = "url";
-serendipThemeFieldMap["field:url:empty"] = "";
-
-serendipThemeFieldMap["field:date"] = "date";
-serendipThemeFieldMap["field:date:empty"] = "No date available";
-serendipThemeFieldMap["field:date:format"] = "dd.mm.yyyy HH:MM";

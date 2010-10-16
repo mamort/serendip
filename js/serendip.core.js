@@ -330,6 +330,8 @@ Serendip.Search = Serendip.Class.extend({
   minPagerPages: 10,
   
   fields : [],
+  fieldDefaults:[],
+  dateFieldsFormat:[],
   highlightFields : [],
   queryParams : [],
   facets: [],
@@ -396,6 +398,14 @@ Serendip.Search = Serendip.Class.extend({
     }
     
     this.addQueryParam("fl", fieldsQueryStr);
+  },
+  
+  setDefaultFieldValues: function(fields){
+    this.fieldDefaults = fields;
+  },
+  
+  setDateFieldFormat: function(formats){
+    this.dateFieldsFormat = formats;
   },
   
   setHighlightFields: function(fields){
@@ -982,8 +992,34 @@ Serendip.Search = Serendip.Class.extend({
       if(typeof(value) == "undefined")
           value = doc[field];
           
+      if(typeof(value) == "undefined" || value == "")
+          value = getDefaultFieldValue(doc, field);
+          
+      value = formatIfIsDate(field, value);
+      
+      //alert("field: " + field + " value: " + value);
+          
       return value;      
     }  
+    
+    function getDefaultFieldValue(doc, field){
+        return req.fieldDefaults[field];
+    }
+    
+    function formatIfIsDate(field, value){
+        try{
+            var format = req.dateFieldsFormat[field];
+            
+            if(format){
+              var date = ISODate.convert(value);
+              value = date.format(format);
+            }
+            
+            return value;
+        }catch(ex){
+            return value;
+        }
+    }
     
     function renderActiveFacets(){      
       var activeFacetData = [];
