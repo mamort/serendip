@@ -11,7 +11,7 @@ $(document).ready(function(){
   facets.push(new Serendip.Facet({
       id: "name", // Must be unique for all filters/facets
       selected: true, // If it is initially displayed
-      name: "name_opf_s", // This is the name in Solr schema
+      name: "name_s", // This is the name in Solr schema
       activeHeader: "Name", // The header used when displaying active facets
       header: "Filter by name", // The header used when displaying available facets
       minFacetsToDisplay: 5, // Facets shown
@@ -22,7 +22,7 @@ $(document).ready(function(){
   facets.push(new Serendip.DateFacet({
       id: "date",
       selected: true,
-      name: "date_opf_d",
+      name: "date_d",
       activeHeader: "Date",
       header: "Filter by date",
 
