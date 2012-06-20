@@ -1,6 +1,13 @@
 ﻿
 $(document).ready(function(){
 
+    /*
+      Potentially you can modify this file, but be careful if you do so.
+      You can:
+        - Remove a view that you do not need
+        - Add your own view that is implemented like the others in js/core/components
+    */
+
     serendip.addView(new Serendip.SearchView({
             searchFieldSelector: "#queryInput",
             searchButtonSelector: "#searchbutton"
