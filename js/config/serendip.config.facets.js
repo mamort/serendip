@@ -5,37 +5,48 @@ $(document).ready(function(){
 	
 	/*
     Here you can add more facets
+	If a facet is not displayed it MIGHT be because there were NO matching values in the data
 	*/
   
   // Example simple facet / filter
   facets.push(new Serendip.Facet({
-      id: "name", // Must be unique for all filters/facets
+      id: "City", // Must be unique for all filters/facets
       selected: true, // If it is initially displayed
-      name: "name_s", // This is the name in Solr schema
-      activeHeader: "Name", // The header used when displaying active facets
-      header: "Filter by name", // The header used when displaying available facets
+      name: "City", // This is the name in Solr schema
+      activeHeader: "City", // The header used when displaying active facets
+      header: "Filter by city", // The header used when displaying available facets
       minFacetsToDisplay: 5, // Facets shown
       maxFacetsToDisplay: 30 // Facets that can be shown by by clicking "show more" link
   }));
-
-  // Date facet [dynamic range]
+  
+  facets.push(new Serendip.Facet({
+      id: "County", // Must be unique for all filters/facets
+      selected: true, // If it is initially displayed
+      name: "County", // This is the name in Solr schema
+      activeHeader: "County", // The header used when displaying active facets
+      header: "Filter by county", // The header used when displaying available facets
+      minFacetsToDisplay: 5, // Facets shown
+      maxFacetsToDisplay: 30 // Facets that can be shown by by clicking "show more" link
+  }));  
+  
+  // Date facet
   facets.push(new Serendip.DateFacet({
-      id: "date",
+      id: "Birthdate",
       selected: true,
-      name: "date_d",
-      activeHeader: "Date",
-      header: "Filter by date",
+      name: "Birthdate",
+      activeHeader: "Birthdate",
+      header: "Filter by birthdate",
 
       minFacetsToDisplay: 5,
       maxFacetsToDisplay: 10,
 
-      dateStart: "NOW/YEAR-10YEARS", // Uses Solr/Lucene constants
+      dateStart: "NOW/YEAR-100YEARS", // Uses Solr/Lucene constants
       dateEnd: "NOW/YEAR+1YEAR",
-      dateGap: "+1MONTH",
+      dateGap: "+10YEAR",
 
-      dateFormat: "mmmm yyyy", // Look in documentation for all available formats
+      dateFormat: "yyyy", // Look in documentation for all available formats
       sortDir: "desc" // Or 'asc' for ascending
-  }));
-	
+  }));  
+
 	serendip.facets = facets;
 });

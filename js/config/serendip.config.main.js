@@ -10,11 +10,16 @@ $(document).ready(function(){
     // id: unique identifier for field
     // You will want to keep name and id short if you want to support older browsers because some browsers (IE 7-) do not support arbitrarily long urls
     serendip.addFieldConfig({ name: "id", id: "id", header: "ID", selected: false, enabled: false });
-    serendip.addFieldConfig({ name: "url_s", id: "url", header: "Url", selected: false, enabled: false });
-    serendip.addFieldConfig({ name: "bda_d", id: "bda", header: "Begynt dato", selected: false, enabled: true , isDate: true, dateFormat: "dd.mmm.yyyy"});
-    serendip.addFieldConfig({ name: "sda_d", id: "sda", header: "Sluttet dato", selected: false, enabled: true , isDate: true, dateFormat: "dd.mmm.yyyy"});
-    serendip.addFieldConfig({ name: "pnr_s", id: "pnr", header: "Postnr", selected: false, enabled: true });
-    serendip.addFieldConfig({ name: "pst_s", id: "pst", header: "Poststed", selected: false, enabled: true });
+    serendip.addFieldConfig({ name: "Firstname", id: "Firstname", header: "Firstname", selected: true, enabled: true });
+    serendip.addFieldConfig({ name: "Lastname", id: "Lastname", header: "Lastname", selected: true, enabled: true});
+	serendip.addFieldConfig({ name: "Address", id: "Address", header: "Address", selected: true, enabled: true});
+	serendip.addFieldConfig({ name: "City", id: "City", header: "City", selected: true, enabled: true});
+	serendip.addFieldConfig({ name: "County", id: "County", header: "County", selected: true, enabled: true});
+	serendip.addFieldConfig({ name: "Zip", id: "Zip", header: "Zip", selected: true, enabled: true});
+	serendip.addFieldConfig({ name: "Phone", id: "Phone", header: "Phone", selected: true, enabled: true});
+	serendip.addFieldConfig({ name: "Email", id: "Email", header: "Email", selected: true, enabled: true});
+    serendip.addFieldConfig({ name: "Birthdate", id: "Birthdate", header: "Birthdate", selected: true, enabled: true , isDate: true, dateFormat: "dd.mmm.yyyy"});
+    serendip.addFieldConfig({ name: "Children", id: "Children", header: "Children", selected: true, enabled: true });
 
     serendip.setSearchAllFields(true);
  
@@ -22,4 +27,4 @@ $(document).ready(function(){
     
     $("#queryInput").focus();
 });
-    
+   

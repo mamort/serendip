@@ -145,7 +145,7 @@ Serendip.FacetsView = Serendip.Class.extend({
   renderFacetTypes: function(data, facetfields, facetdates, facetqueries, facet) {
       var html = "";
       var type = facet.facetType;
-
+	  
       if (type == "text") {
           html = this.renderTextFacet(data, facetfields, facet);
       } else if (type == "date") {
@@ -417,7 +417,9 @@ Serendip.FacetsView = Serendip.Class.extend({
       var formattedValue = "";
       if (facet.facetType == "date") {
           if (!facet.dateValue || facet.dateValue == "") {
-              formattedValue = this.convertIsoDate(value.from, facet.dateFormat);
+              var from = this.convertIsoDate(value.from, facet.dateFormat);
+			  var to = this.convertIsoDate(value.to, facet.dateFormat);
+			  formattedValue = from + " - " + to;
           } else {
               formattedValue = facet.dateValue;
           }

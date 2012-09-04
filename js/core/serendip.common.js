@@ -237,36 +237,6 @@ Serendip.Core = Serendip.Class.extend({
 
 });
 
-Serendip.Theme = Serendip.Class.extend({
-
-    preInit: function () { },
-    init: function (data) { },
-    renderInProgress: function () { },
-    renderHeader: function (numDocsFound, responseTimeInMillis, sortValue, sortFields, sortDirection) { },
-    renderDocuments: function (data) { },
-    renderDoc: function (data) { },
-    renderFacets: function (data, facets) { },
-    renderFacet: function (facet, html, facets, moreFacetsCount) { },
-    renderFacetField: function (facet, value, formattedValue, count, isActive) { },
-    renderActiveFacet: function (facetFieldsHtml) { },
-    renderActiveFacetField: function (facet, value, formattedValue) { },
-    renderSpellSuggestions: function (suggestions) { },
-    renderEmptyResult: function () { },
-    renderPager: function (data) { },
-    renderAutocompleteTerms: function (terms) { },
-    renderComplete: function (data) { },
-    renderError: function (httpReq, ajaxOpts, thrownError) { },
-
-    bindPreInit: function () { },
-    bindAutocompleteClickHandler: function (handler) { },
-    bindSortClickHandler: function (handler) { },
-    bindSuggestClickHandler: function (handler) { },
-    bindFacetClickHandler: function (handler) { },
-    bindShowMoreFacetsClickHandler: function (name) { },
-    bindPagingClickHandler: function (handler) { }
-
-});
-
 Serendip.SortField = Serendip.Class.extend({
     name: null,
     header: null
