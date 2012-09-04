@@ -34,10 +34,6 @@ that is output you can change the html prototypes that are specified in the sear
         with the sorting, paging and filtering parameters.
       - Allows you to bookmark any result.
 
-- Autocomplete on the search input box using a spesific Solr field
-
-- Spelling suggestions (ie "Did you mean") using the Solr spellchecking component
-
 - Sort results ascending/descending based on Solr fields. Possible to display/use multiple sort fields.
   
 - Display highlighted results (based on any Solr field) with easy configuration.
@@ -51,8 +47,6 @@ that is output you can change the html prototypes that are specified in the sear
     - Three types of facets supported
         - Regular text value facets
         - Dynamic date range facets created by specifying a startdate, enddate and dategap.
-        - Custom date range facets to filter results using custom date ranges. You can use custom 
-          range facets to provide filters like: "Last three months", "Last five years", etc
 
 - Add any additional Solr config options easily in configuration
 
@@ -72,8 +66,6 @@ serendip.addFieldConfig({ name: "date", id: "bda", header: "Date", selected: fal
 serendip.setSearchAllFields(true);
  
 serendip.init("index.html");     
-    
-$("#queryInput").focus();
 
 ************************************************************************************
 * Facet / Filter config (serendip.config.facets.js)                                           
@@ -89,7 +81,7 @@ facets.push(new Serendip.Facet({
     maxFacetsToDisplay: 30 // Facets that can be shown by by clicking "show more" link
 }));
 
-// Date facet [dynamic range]
+// Date facet
 facets.push(new Serendip.DateFacet({
     id: "date",
     selected: true,
@@ -137,55 +129,3 @@ ss 	Seconds; leading zero for single-digit seconds.
 
 For more dateformat options see:
 http://blog.stevenlevithan.com/archives/date-time-format
-
--------------------------------------------
-Field highlighting configuration
--------------------------------------------
-search.setHighlightFields(["text", "field2", "field3"]);
-search.addQueryParam("hl.fragsize", "500");
-
-In order for field values to include highlighting the fields must be specified as a highlighted field. All
-fields specified using the "setHighlightField" function will be returned with highlighting when available.
-In the callback functions in serendip.theme.js a "fields" array is available with the content of all regular
-fields AND highlighted fields combined. This means that fields["text"] will contain the highlighted content
-for the text field. If the field "text" is only specified as a regular field in the "setFields" method it
-will contain non-highlighted content.
-
-The "hl.fragsize" option specifies how much text from the field to use for highlighting. In this example
-we use max 500 characters from the text field to use for highlighting.
-
-************************************************************************************
-* Theme configuration (serendip.theme.config.js)                                           
-************************************************************************************
-
-In this file you can do two things. You can translate the values used for date and time and you can
-specify which Solr fields should be used when showing search result documents.
-
-Each result document consists of a document title, a document body, a document url and a document 
-date. These sections are identified by keywords used by the theme. These keywords are:
-
-Document title ("field:title")
-Document body ("field:content")
-Document url ("field:url")
-Document date ("field:date")
-
-These keywords are used in a special array "serendipThemeFieldMap" that is used by the theme to look
-up the Solr field names. Some of the fields have special configuration options as well that people
-are likely to want to change. Look at the example for the options that are available.
-
-Example config:
-var serendipThemeFieldMap = [];
-
-serendipThemeFieldMap["field:title"] = "key_title";
-serendipThemeFieldMap["field:title:empty"] = "No title available for this document";
-
-serendipThemeFieldMap["field:content"] = "tika_paragraphs";
-serendipThemeFieldMap["field:content:empty"] = "No description available";
-serendipThemeFieldMap["field:content:maxlen"] = 600;
-
-serendipThemeFieldMap["field:url"] = "url";
-serendipThemeFieldMap["field:url:empty"] = "";
-
-serendipThemeFieldMap["field:date"] = "moddate";
-serendipThemeFieldMap["field:date:empty"] = "No date available";
-serendipThemeFieldMap["field:date:format"] = "dd.mm.yyyy HH:MM";

@@ -1,0 +1,7 @@
+1. Add the fields from schema.xml to your own Solr schema
+2.Run the following command to load the data into Solr: 
+http://localhost:8080/solr/update/csv?commit=true&header=true&stream.file=F:/path/to/file/randomdata.csv&stream.contentType=text/plain;charset=utf-8
+
+  - Make sure you use correct port
+  - Make sure you set the correct path to file
+  - A local solr installation is assumed

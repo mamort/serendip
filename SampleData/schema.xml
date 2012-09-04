@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<schema name="example" version="1.2">
+<fields>  
+   <field name="id" type="string" indexed="true" stored="true" />
+   <field name="Firstname" type="string" indexed="true" stored="true" />
+   <field name="Lastname" type="string" indexed="true" stored="true" />
+   <field name="Address" type="string" indexed="true" stored="true" />
+   <field name="City" type="string" indexed="true" stored="true" />
+   <field name="County" type="string" indexed="true" stored="true" />
+   
+   <field name="Zip" type="string" indexed="true" stored="true" />
+   <field name="Phone" type="string" indexed="true" stored="true" />
+   <field name="Email" type="string" indexed="true" stored="true" />
+   
+   <field name="Children" type="tint" indexed="true" stored="true" />
+   <field name="Birthdate" type="date" indexed="true" stored="true" />
+ </fields>
+ 
+ <uniquekey>Phone</uniquekey>
+ <defaultSearchField>Firstname</defaultSearchField>
+
+ <solrQueryParser defaultOperator="OR"/>
+
+</schema>
