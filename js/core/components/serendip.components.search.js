@@ -1,71 +1,56 @@
-
 Serendip.SearchView = Serendip.Class.extend({
-  searchFieldSelector: null,
-  searchButtonSelector: null,
-  manager: null,
-  
-  init : function(manager){
-      this.manager = manager;
-      var self = this;
+    view : null,
+    serendip : null,
 
-      $(this.searchButtonSelector).unbind('click').bind('click', function () {
+    input : null,
 
-          var value = self.getSearchValue();
+    init : function(serendip) {
+        this.serendip = serendip;
+        var self = this;
 
-          // do search
-          self.manager.searchValue = value;
-          self.manager.search();
+        this.input = $(this.view).find(".input");
 
-          return false;
-      });
-  },
-  
-  initFromQueryStr: function(queryStr, params){
-      $(this.searchFieldSelector).val(params["q_param"]);
-  },  
-  
-  saveInQueryStr: function(queryStr){
-      var value = this.getSearchValue();
-      value = encodeURIComponent(value);
-      queryStr += "&q=" + value;
-      
-      return queryStr;
-  },  
-  
-  buildRequest : function(request){
-      var queryValue = this.manager.searchValue;
-      
-      // Illegal to start query with '*' or '?'
-      if (queryValue[0] == '*' || queryValue[0] == '?') {
-          queryValue = queryValue.substring(1, queryValue.length);
-          this.setSearchValue(queryValue);
-      }
+        $(this.view).find(".button").click(function() {
 
-      if (queryValue == "") {
-          queryValue = "*:*";
-      }
+            self.serendip.search(self.input.val());
 
-      var query = encodeURIComponent(queryValue);
-      
-      request += "&q=" + query;
-    
-      return request;
-  },
-  
-  renderInProgress: function(){
-  
-  },
-  
-  render : function(data){
-  
-  },
-  
-  getSearchValue : function(){
-    return $(this.searchFieldSelector).val();
-  },
-  
-  setSearchValue : function(value){
-    $(this.searchFieldSelector).val(value);
-  }
+            return false;
+        });
+    },
 
-});
+    initFromQueryStr : function(queryStr, params) {
+        this.input.val(params["q_param"]);
+    },
+
+    saveInQueryStr : function(queryStr) {
+        var value = this.input.val();
+        value = encodeURIComponent(value);
+        queryStr += "&q=" + value;
+
+        return queryStr;
+    },
+
+    buildRequest : function(request) {
+        var queryValue = this.input.val();
+
+        // Illegal to start query with '*' or '?'
+        if (queryValue[0] == '*' || queryValue[0] == '?') {
+            queryValue = queryValue.substring(1, queryValue.length);
+            this.input.val(queryValue);
+        }
+
+        if (queryValue == "") {
+            queryValue = "*:*";
+        }
+
+        var query = encodeURIComponent(queryValue);
+
+        request += "&q=" + query;
+
+        return request;
+    },
+
+    render : function(data) {
+
+    }
+}); 

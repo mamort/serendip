@@ -10,26 +10,31 @@
 	<![endif]-->
 
 	
-  <script src="js/core/lib/jquery-1.5.min.js" type="text/javascript" language="javascript"></script>
+  <script src="js/core/lib/jquery-1.8.2.min.js" type="text/javascript"></script>
   <script src="js/core/lib/jquery.history.js" type="text/javascript"></script>
-  <script src="js/core/lib/date.format-1.2.3.js" type="text/javascript" language="javascript"></script>
-  <script src="js/core/lib/pure_packed.js" type="text/javascript" language="javascript"></script>
-  <script src="js/core/lib/dragtable.js" type="text/javascript" language="javascript"></script>
-  <script src="js/core/lib/jquery.cookie.js" type="text/javascript" language="javascript"></script>
-  <script src="js/core/lib/jquery.json.js" type="text/javascript" language="javascript"></script>
-  <script src="js/core/lib/jquery.simplemodal.1.4.1.min.js" type="text/javascript" language="javascript"></script>
+  <script src="js/core/lib/date.format-1.2.3.js" type="text/javascript"></script>
+  <script src="js/core/lib/pure_packed.js" type="text/javascript"></script>
+  <script src="js/core/lib/knockout-2.1.0.js" type="text/javascript"></script>
+  <script src="js/core/lib/dragtable.js" type="text/javascript"></script>
+  <script src="js/core/lib/jquery.cookie.js" type="text/javascript"></script>
+  <script src="js/core/lib/jquery.json.js" type="text/javascript"></script>
+  <script src="js/core/lib/jquery.simplemodal.1.4.1.min.js" type="text/javascript"></script>
+  <script src="js/core/lib/Simple.js" type="text/javascript"></script>
   
   <script src="js/core/serendip.common.js" type="text/javascript"></script>  
   <script src="js/core/serendip.core.js" type="text/javascript"></script>
-  <script src="js/core/components/serendip.components.facets.core.js" type="text/javascript"></script>
-  <script src="js/core/components/serendip.components.facets.js" type="text/javascript"></script>
-  <script src="js/core/components/serendip.components.activefacets.js" type="text/javascript"></script>    
+  <script src="js/core/components/facets/serendip.facets.core.js" type="text/javascript"></script>
+  <script src="js/core/components/facets/serendip.view.facets.js" type="text/javascript"></script>
+  <script src="js/core/components/facets/serendip.view.facets.active.js" type="text/javascript"></script>    
+  <script src="js/core/components/facets/serendip.view.facets.inactive.js" type="text/javascript"></script>    
+  <script src="js/core/components/facets/serendip.view.facets.showmore.js" type="text/javascript"></script>   
   <script src="js/core/components/serendip.components.results.js" type="text/javascript"></script> 
   <script src="js/core/components/serendip.components.paging.js" type="text/javascript"></script> 
   <script src="js/core/components/serendip.components.search.js" type="text/javascript"></script> 
   <script src="js/core/components/serendip.components.sorting.js" type="text/javascript"></script> 
   <script src="js/core/components/serendip.components.resultinfo.js" type="text/javascript"></script> 
-  <script src="js/core/components/serendip.components.resultsprpage.js" type="text/javascript"></script> 
+  <script src="js/core/components/serendip.components.resultsprpage.js" type="text/javascript"></script>
+  <script src="js/core/components/serendip.components.inprogress.js" type="text/javascript"></script> 
   
   <script src="js/config/serendip.config.facets.js" type="text/javascript"></script>  
   <script src="js/config/serendip.config.views.js" type="text/javascript"></script>
@@ -204,7 +209,7 @@
 					<td></td>
 					<td><span class="Firstname"></span></td>
 					<td><span class="Lastname"></span></td>
-					<td><span class="Email"></span></td>
+					<td><a href="mailto:" class="Email Email@href+"></a></td>
 					<td><span class="City"></span></td>
 					<td><span class="County"></span></td>
 					<td><span class="Birthdate"></span></td>
@@ -214,33 +219,6 @@
 
         </div>
     </div>
-	  
-    <!-- Prototype for result info -->
-    <div id="ResultInfo_Prototype">
-		<div class="Placeholder">
-			<div id="bar">
-			  <span class="right">
-				  <strong class="numDocs">&nbsp;</strong>&nbsp;treff sortert etter relevans. (<span class="time">&nbsp;</span> ms)
-			  </span>
-		  </div>
-		</div>
-    </div> 
-	
-    <!-- Prototype for results pr page -->
-    <div id="ResultsPrPage_Prototype">
-		<div class="Placeholder">
-			<div id="SelectNumResults">
-				Resultater pr side:
-				<select>
-				  <option value="5">5</option>
-				  <option value="10">10</option>
-				  <option value="25">25</option>
-				  <option value="30">30</option>
-				  <option value="50">50</option>
-				</select>
-			</div>
-		</div>
-    </div> 
     
     <!-- Prototype for empty results -->
     <div id="EmptyResults_Prototype">
@@ -273,6 +251,17 @@
       </div>
     </div>    
     
+    <!-- Prototype for resultinfo view -->
+    <div id="ResultInfo_Prototype">
+        <div class="Placeholder">
+            <div id="bar">
+              <span class="right">
+                  <strong class="numDocs">&nbsp;</strong>&nbsp;treff sortert etter relevans. (<span class="time">&nbsp;</span> ms)
+              </span>
+            </div>
+        </div>
+    </div>
+    
     <!-- Prototype for error message -->
     <div id="ErrorMsg_Prototype">
       <span class='error'>
@@ -301,26 +290,40 @@
 
     <div id="QueryInput_Theme">
                 
-        <div id="searchForm">
+        <div id="SearchView">
             <form action="" id="queryform">
-              <input type="text" value="" id="queryInput" name="query" autocomplete="off"/>
-              <input type="image" alt="Go" src="images/searchBtn.gif" id="searchbutton"/>
+              <input type="text" value="" class="input" name="query" autocomplete="off"/>
+              <input type="image" alt="Go" src="images/searchBtn.gif" class="button"/>
             </form>
             <div id="Autocomplete_Theme"></div>
         </div>
 		
-		<div id="ResultsPrPage"></div>     
-		 <div id="ResultBar_Theme">
+		<div id="ResultsPrPage">
+          <div id="SelectNumResults">
+                Resultater pr side:
+                <select>
+                  <option value="5">5</option>
+                  <option value="10">10</option>
+                  <option value="25">25</option>
+                  <option value="30">30</option>
+                  <option value="50">50</option>
+                </select>
+            </div>
+		</div>   
+		  
+        <div id="ResultInfoView">
 		</div>	  
     </div>
 		
     <div id="SpellSuggestions_Theme"></div>   
     
     <div id="Content_Theme">
-      <div id="ResultsInProgress_Theme">
-      </div>    
       
-      <div id="ResultView" class="view">     
+      <div id="ResultsInProgressView">
+          <div class="panel"></div>
+      </div>
+      
+      <div id="ResultView" class="view">   
       </div>
 	  
       <div id="PagerView">
@@ -337,10 +340,7 @@
             <h1>Active filters</h1>
             
             <div id="ActiveFacets_Theme">
-            </div>
-            
-            <div id="NoActiveFacets_Theme">
-              No active filters.
+                <span class="inactive">No active filters.</span>
             </div>
         </div>
         

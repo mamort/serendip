@@ -1,150 +1,149 @@
 /*****************************************************************
-* Generic styles
-******************************************************************/
+ * Generic styles
+ ******************************************************************/
 body {
-  font: 72.5% 'Lucida Grande',Helvetica,Arial,sans-serif;
+	font: 72.5% 'Lucida Grande', Helvetica, Arial, sans-serif;
 	min-width: 850px;
 }
 
-a{
-  color:#003399;
-  text-decoration:none;
+a {
+	color: #003399;
+	text-decoration: none;
 }
 
-a:hover{
-  text-decoration:underline;
+a:hover {
+	text-decoration: underline;
 }
 
-.line{
-  background:#CCCCCC none repeat scroll 0 0;
+.line {
+	background: #CCCCCC none repeat scroll 0 0;
 }
 
 .t1, .t2 {
-  font-size:1px;
-  height:1px;
-  line-height:1px;
-  overflow:hidden;
+	font-size: 1px;
+	height: 1px;
+	line-height: 1px;
+	overflow: hidden;
 }
 
-.t1{
-  margin:0 2px;
+.t1 {
+	margin: 0 2px;
 }
 
 .t2 {
-  margin:0 1px;
+	margin: 0 1px;
 }
 
 /*****************************************************************
-* Page structure
-******************************************************************/
-#searchApp{
-  margin:0 auto;
-  width:1024px;
+ * Page structure
+ ******************************************************************/
+#searchApp {
+	margin: 0 auto;
+	width: 1024px;
 }
 
-#Content_Theme{
-	padding-top:10px;
-	padding-left:10px;
+#Content_Theme {
+	padding-top: 10px;
+	padding-left: 10px;
 	width: 780px;
 	float: left;
 }
 
 /*****************************************************************
-* Query input
-******************************************************************/
-#QueryInput_Theme {
-  background-color:#333333;
-  height:35px;
-  width:100%;
+ * Search View
+ ******************************************************************/
+#SearchView {
+	background: none repeat scroll 0 0 #333333;
+	float: left;
+	position: relative;
+	width: 320px;
+	padding-top: 2px;
+	margin-right: 20px;
 }
 
-
-#topmenu  {
-  float:left;
-  position:relative;
-  margin:0px;
-  padding:0;
+#SearchView input {
+	vertical-align: middle;
 }
 
-ul, li {
-  list-style:none outside none;
+#SearchView .button {
+	position: absolute;
+	right: 9px;
+	top: 4px;
 }
 
-
-#topmenu li {
-  float:left;
-  position:relative;
-}
-
-#topmenu li a {
-  border-color:#404040 #1A1A1A #1A1A1A #505050;
-  border-style:solid;
-  border-width:1px;
-  color:#FFFFFF;
-  display:block;
-  font-family:arial,sans-serif;
-  font-size:16px;
-  font-weight:bold;
-  height:25px;
-  padding:5px 6px 3px 7px;
-  position:relative;
-  text-decoration:none;
-}
-
-#searchForm {
-  background:none repeat scroll 0 0 #333333;
-
-  float:left;
-  position:relative;
-  width:320px;
-  
-  padding-top:2px;
-  margin-right:20px;
-}
-
-#queryform  {
-  background:url("../images/search-bg.gif") no-repeat scroll 9px 2px transparent;
-  height:26px;
-  margin:2px;
-  padding-bottom:1px;
-  position:relative;
-}
-
-#queryInput {
-  border:1px solid #FFFFFF;
-  color:#000000;
-  font-size:11px;
-  margin:6px 0 0 33px;
-  padding:0;
-  width:240px;
-}
-
-#searchbutton {
-  position:absolute;
-  right:9px;
-  top:4px;
-}
-
-#searchForm input {
-  vertical-align:middle;
-}
-
-#QueryInput_Theme #searchbutton:hover {
+#SearchView .button:hover {
 	cursor: pointer;
 }
 
+#SearchView form {
+	background: url("../images/search-bg.gif") no-repeat scroll 9px 2px transparent;
+	height: 26px;
+	margin: 2px;
+	padding-bottom: 1px;
+	position: relative;
+}
+
+#SearchView .input {
+	border: 1px solid #FFFFFF;
+	color: #000000;
+	font-size: 11px;
+	margin: 6px 0 0 33px;
+	padding: 0;
+	width: 240px;
+}
+
 /*****************************************************************
-* Autocomplete on search field
-******************************************************************/
+ * Query input
+ ******************************************************************/
+#QueryInput_Theme {
+	background-color: #333333;
+	height: 35px;
+	width: 100%;
+}
+
+#topmenu {
+	float: left;
+	position: relative;
+	margin: 0px;
+	padding: 0;
+}
+
+ul, li {
+	list-style: none outside none;
+}
+
+#topmenu li {
+	float: left;
+	position: relative;
+}
+
+#topmenu li a {
+	border-color: #404040 #1A1A1A #1A1A1A #505050;
+	border-style: solid;
+	border-width: 1px;
+	color: #FFFFFF;
+	display: block;
+	font-family: arial, sans-serif;
+	font-size: 16px;
+	font-weight: bold;
+	height: 25px;
+	padding: 5px 6px 3px 7px;
+	position: relative;
+	text-decoration: none;
+}
+
+/*****************************************************************
+ * Autocomplete on search field
+ ******************************************************************/
 #Autocomplete_Theme {
-  display: none;
-  position: absolute;
-	margin-left:35px;
+	display: none;
+	position: absolute;
+	margin-left: 35px;
 	padding: 1px 0px 0px 3px;
 	border: 1px solid #CCCCCC;
-  background-color: white;
+	background-color: white;
 	width: 205px;
-  z-index: 1000;
+	z-index: 1000;
 }
 
 #Autocomplete_Theme ul {
@@ -153,32 +152,50 @@ ul, li {
 	padding: 0px;
 }
 
-#Autocomplete_Theme ul .selected{
-  font-weight:bold;
+#Autocomplete_Theme ul .selected {
+	font-weight: bold;
 }
 
 /*****************************************************************
-* Results in progress
-******************************************************************/
-#ResultsInProgress_Theme{
-  height:350px;
-  background: transparent url('../images/inProgress.gif') no-repeat scroll center center;
+ * Results in progress
+ ******************************************************************/
+#ResultsInProgressView .panel{
+position:absolute;
+  left: 50%;
+  top: 50%;
+  margin-left: -50px;
+  margin-top: -100px;
+	background: transparent url('../images/loading.gif') no-repeat scroll center center;
+	width:100px;
+	height:100px;
+}
+
+#ResultsInProgressView {
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    opacity:0.85;
+    text-align:center;
+    background-color:#333333;
+    z-index:9999;
 }
 
 /*****************************************************************
-* Results
-******************************************************************/
-#ResultView{
-  font-size:1.2em;
+ * Results
+ ******************************************************************/
+#ResultView {
+	font-size: 1.2em;
 }
 
-#ResultView .resulttitle{
-  font-size:1.2em;
+#ResultView .resulttitle {
+	font-size: 1.2em;
 }
 
-#ResultView em{
-  font-style:normal;
-  font-weight:bold;
+#ResultView em {
+	font-style: normal;
+	font-weight: bold;
 }
 
 #ResultView #zerohits {
@@ -205,29 +222,29 @@ ul, li {
 	margin: 1px 0px 0px 0px;
 }
 
-#ResultView .resultfooter{
+#ResultView .resultfooter {
 	color: green;
 }
 
-#ResultView .resultfooter a{
-  color:green;
+#ResultView .resultfooter a {
+	color: green;
 }
 
-#ResultView .resultfooter span.date{
-  float: right;
-  font-size:11px;
-  color:#999999
+#ResultView .resultfooter span.date {
+	float: right;
+	font-size: 11px;
+	color: #999999
 }
 
 /*****************************************************************
-* Facets
-******************************************************************/
+ * Facets
+ ******************************************************************/
 
-#Facets_Theme{
-  font-size:1.3em;
-  display:none; /* Will be enabled by theme */
-  margin-top:10px;
-  float:right;
+#Facets_Theme {
+	font-size: 1.3em;
+	display: none; /* Will be enabled by theme */
+	margin-top: 10px;
+	float: right;
 }
 
 #facets {
@@ -235,23 +252,22 @@ ul, li {
 	margin: 0px;
 	width: 200px;
 	float: left;
-	border:2px solid #CCCCCC;
+	border: 2px solid #CCCCCC;
 }
 
 #facets h1 {
-  font-size:1.0em;
-  font-family:helvetica;
+	font-size: 1.0em;
+	font-family: helvetica;
 	margin: 10px 0px 0px 0px;
 	padding: 0 0 3px;;
-	
 }
 
 #facets div.facet {
 	margin: 1px 0px 5px 20px;
 	padding: 0px;
-	float:left;
-	clear:left;
-	width:100%;
+	float: left;
+	clear: left;
+	width: 100%;
 }
 
 #facets div.facet span, #facets div.facet a {
@@ -259,20 +275,19 @@ ul, li {
 	margin: 0px 4px 2px 0px;
 }
 
-#facets div.facet ul{
-  list-style: none;
-  margin: 0px;
-  padding: 0px;
+#facets div.facet ul {
+	list-style: none;
+	margin: 0px;
+	padding: 0px;
 }
 
-#facets div.facet ul li{
-  width:190px;
+#facets div.facet ul li {
+	width: 190px;
 }
 
-#facets div.facet a{
-  color:#005A8B;
+#facets div.facet a {
+	color: #005A8B;
 }
-
 
 #facets div.facet a:hover {
 	cursor: pointer;
@@ -284,44 +299,44 @@ ul, li {
 	padding: 0px 0px 2px 0px;
 }
 
-#facets #InactiveFacets_Theme .moreFacetsActive{
-  display:block;
-  padding-top:2px;
+#facets #InactiveFacets_Theme .moreFacetsActive {
+	display: block;
+	padding-top: 2px;
 }
 
-#facets #InactiveFacets_Theme .moreFacetsInactive{
-  display:none;
+#facets #InactiveFacets_Theme .moreFacetsInactive {
+	display: none;
 }
 
-#facets #InactiveFacets_Theme a.moreFacets{
-  color:#700000;
-  display:block;
-  font-size:0.7em;
-  padding-top:5px;    
+#facets #InactiveFacets_Theme a.moreFacets {
+	color: #700000;
+	display: block;
+	font-size: 0.7em;
+	padding-top: 5px;
 }
 
-#facets #ActiveFacets_Theme span.header{
-float:left;
-clear:left;
-padding-right:5px;
+#facets #ActiveFacets_Theme span.header {
+	float: left;
+	clear: left;
+	padding-right: 5px;
 }
 
-#facets #ActiveFacets_Theme span.remove{
-  background:transparent url('../images/remove.png') no-repeat scroll center center;
-  display:block;
-  height:7px;
-  margin-top:5px;
-  width:7px;
-  float:left;
+#facets #ActiveFacets_Theme span.remove {
+	background: transparent url('../images/remove.png') no-repeat scroll center center;
+	display: block;
+	height: 7px;
+	margin-top: 5px;
+	width: 7px;
+	float: left;
 }
 
-#facets #ActiveFacets_Theme span.remove:hover{
-  cursor: pointer;
+#facets #ActiveFacets_Theme span.remove:hover {
+	cursor: pointer;
 }
 
-#facets #ActiveFacets_Theme a{
-  clear:none;
-  float:left;
+#facets #ActiveFacets_Theme a {
+	clear: none;
+	float: left;
 }
 
 #ActiveFacets_Theme .morefacets:hover, #ActiveFacets_Theme .removefilter:hover {
@@ -329,8 +344,8 @@ padding-right:5px;
 }
 
 /*****************************************************************
-* Search suggestions
-******************************************************************/
+ * Search suggestions
+ ******************************************************************/
 #Searchsuggestion_Theme {
 	font-weight: bold;
 	color: blue;
@@ -341,226 +356,198 @@ padding-right:5px;
 }
 
 /*****************************************************************
-* Spelling suggestions
-******************************************************************/
-#SpellSuggestions_Theme{
-  padding:3px;
-
-  width:100%;
-  margin-left: 12px; 
-  font-size: 14px; 
-  font-family: arial; 
-  color: darkred;
+ * Spelling suggestions
+ ******************************************************************/
+#SpellSuggestions_Theme {
+	padding: 3px;
+	width: 100%;
+	margin-left: 12px;
+	font-size: 14px;
+	font-family: arial;
+	color: darkred;
 }
 
-#SpellSuggestions_Theme .suggestion{
-  padding-right:3px;
+#SpellSuggestions_Theme .suggestion {
+	padding-right: 3px;
 }
 
 /*****************************************************************
-* Result bar (hits, did you mean, suggestions, etc)
-******************************************************************/
-#ResultBar_Theme {
-  float:left;
-  clear:left;
-  color:#000000;
+ * ResultInfo View
+ ******************************************************************/
+
+#ResultInfoView {
+	float: left;
+	clear: left;
+	color: #000000;
 	font-size: 1.1em;
-	font-family:arial;
-	
+	font-family: arial;
 	padding: 3px 0px 3px 6px;
 	width: 100%;
 	text-align: right;
 	min-height: 15px;
 }
 
-#ResultBar_Theme #SortBar{
-  padding: 3px 8px;
+#ResultInfoView span.text {
+	float: left;
+	padding: 0px;
 }
 
-#ResultBar_Theme span.text{
-  float:left;
-  padding:0px;
+#ResultInfoView span.left {
+	float: left;
+	font-weight: bold;
+	padding: 4px;
 }
 
-#ResultBar_Theme span.left{
-  float:left;
-  font-weight:bold;
-  padding:4px;
-}
-
-#ResultBar_Theme span.right{
-  float:right;
-  padding:3px;
-}
-
-#ResultBar_Theme #sortkey {
-	color: blue;
-}
-
-#ResultBar_Theme #sortkey:hover {
-	cursor: pointer;
+#ResultInfoView span.right {
+	float: right;
+	padding: 3px;
 }
 
 /*****************************************************************
-* Sorting
-******************************************************************/
-#ResultView .view table
-{
-    border-collapse: collapse;
+ * Sorting
+ ******************************************************************/
+#ResultView .view table {
+	border-collapse: collapse;
 }
 
-#ResultView .view table td
-{
-    padding:2px;
+#ResultView .view table td {
+	padding: 2px;
 }
 
-#ResultView .view table th
-{
-    padding-bottom:2px;
+#ResultView .view table th {
+	padding-bottom: 2px;
 }
 
-#ResultView .view th .sortfield a
-{
-    white-space: nowrap;
+#ResultView .view th .sortfield a {
+	white-space: nowrap;
 }
 
-#ResultView .view th .sortfield
-{
-    margin-left:10px;
-    margin-right:10px
+#ResultView .view th .sortfield {
+	margin-left: 10px;
+	margin-right: 10px
 }
 
-#ResultView .view th .sortfield,
-#ResultView .view th .sortfield .active,
-#ResultView .view th .sortfield .active a,
-#ResultView .view th .sortfield .active a .text
-{
-    float:none;
+#ResultView .view th .sortfield, #ResultView .view th .sortfield .active, #ResultView .view th .sortfield .active a, #ResultView .view th .sortfield .active a .text {
+	float: none;
 }
 
-#ResultView .view th .sortfield .inactive,
-#ResultView .view th .sortfield .inactive a,
-#ResultView .view th .sortfield .inactive a .text
-{
-    float:none;
+#ResultView .view th .sortfield .inactive, #ResultView .view th .sortfield .inactive a, #ResultView .view th .sortfield .inactive a .text {
+	float: none;
 }
 
-#ResultView .view th .sortfield .active span.asc, 
-#ResultView .view th .sortfield .active span.desc
-{
-    display:inline-block;
-    float:none;
-    margin-top:0px;
+#ResultView .view th .sortfield .active span.asc, #ResultView .view th .sortfield .active span.desc {
+	display: inline-block;
+	float: none;
+	margin-top: 0px;
 }
 
-#ResultView table{
-  width:100%;
+#ResultView table {
+	width: 100%;
 }
 
-#ResultView table td{
-  text-align: center;
+#ResultView table td {
+	text-align: center;
 }
 
-div.sortfield .active{
-  border: 1px solid #888888;
-  -moz-border-radius: 7px;
-  -webkit-border-radius: 7px;
+div.sortfield .active {
+	border: 1px solid #888888;
+	-moz-border-radius: 7px;
+	-webkit-border-radius: 7px;
 }
 
-div.sortfield .inactive, div.sortfield .active{
-  padding:4px;
+div.sortfield .inactive, div.sortfield .active {
+	padding: 4px;
 }
 
-div.sortfield a{
-  font-weight:bold;
+div.sortfield a {
+	font-weight: bold;
 }
 
-div.sortfield .active a{
-  color:black;
+div.sortfield .active a {
+	color: black;
 }
 
-div.sortfield span.text{
-  padding:0px;
+div.sortfield span.text {
+	padding: 0px;
 }
 
-.sortfield .active span.asc, 
-.sortfield .active span.desc{
-  display:inline-block; 
-  margin-top:2px;
-  padding:0px;
-  width:12px;
-  height:12px;
+.sortfield .active span.asc, .sortfield .active span.desc {
+	display: inline-block;
+	margin-top: 2px;
+	padding: 0px;
+	width: 12px;
+	height: 12px;
 }
 
-.sortfield .active span.asc{
-  background: transparent url('../images/ascending.gif') no-repeat scroll center center;
+.sortfield .active span.asc {
+	background: transparent url('../images/ascending.gif') no-repeat scroll center center;
 }
 
-.sortfield .active span.desc{
-  background: transparent url('../images/descending.gif') no-repeat scroll center center;
+.sortfield .active span.desc {
+	background: transparent url('../images/descending.gif') no-repeat scroll center center;
 }
 
 /*****************************************************************
-* Results pr page
-******************************************************************/
+ * Results pr page
+ ******************************************************************/
 #QueryInput_Theme #SelectNumResults {
-    color: white;
-    float: right;
-    padding-right: 20px;
-    padding-top: 8px;
+	color: white;
+	float: right;
+	padding-right: 20px;
+	padding-top: 8px;
 }
 
-#QueryInput_Theme #SelectNumResults select{
-	margin-left:5px;
+#QueryInput_Theme #SelectNumResults select {
+	margin-left: 5px;
 }
 
 /*****************************************************************
-* Paging
-******************************************************************/
+ * Paging
+ ******************************************************************/
 #PagerView {
-  font-size:1.2em;
-  clear: both;
-  float:left;
-  width: 800px;  
-  padding:20px 0 0 15px;
+	font-size: 1.2em;
+	clear: both;
+	float: left;
+	width: 800px;
+	padding: 20px 0 0 15px;
 }
 
-#PagerView ul{
-  float:left;
-  list-style: none;
-  padding:0;
-  margin:0;
+#PagerView ul {
+	float: left;
+	list-style: none;
+	padding: 0;
+	margin: 0;
 }
 
-#PagerView li{
-  float:left;
-  padding-right:10px;
+#PagerView li {
+	float: left;
+	padding-right: 10px;
 }
 
-#PagerView li .inactive{
-  display:none;
+#PagerView li .inactive {
+	display: none;
 }
 
-#PagerView li .selected{
-  background:none repeat scroll 0 0 #444444;
-  border:1px solid #333333;
-  color:#FFFFFF;
-  font-weight:bold;
-  padding:0.2em 0.5em;
-  display:block;
+#PagerView li .selected {
+	background: none repeat scroll 0 0 #444444;
+	border: 1px solid #333333;
+	color: #FFFFFF;
+	font-weight: bold;
+	padding: 0.2em 0.5em;
+	display: block;
 }
 
-#PagerView li a{
-  border:1px solid #E3E3E3;
-  color:#005A8B;
-  padding:0.2em 0.5em;
-  text-decoration:none;
-  display:block;
+#PagerView li a {
+	border: 1px solid #E3E3E3;
+	color: #005A8B;
+	padding: 0.2em 0.5em;
+	text-decoration: none;
+	display: block;
 }
 
 /*****************************************************************
-* Hide prototypes
-******************************************************************/
-#Prototypes{
-  display:none;
+ * Hide prototypes
+ ******************************************************************/
+#Prototypes {
+	display: none;
 }
