@@ -1,43 +1,54 @@
-
 Serendip.FacetsCore = Serendip.Class.extend({
-    activeFacetQueries: new Object(),
-    facetIdToFacetMap: null,
-    facets: null,
-    
-    getActiveFacetsQueriesMap: function(){
+    activeFacetQueries : new Object(),
+    facetIdToFacetMap : null,
+    facets : null,
+    serendip : null,
+
+    getActiveFacetsQueriesMap : function() {
         return this.activeFacetQueries;
     },
-    
-    getActiveFacetsMap: function(){
+
+    getActiveFacetsMap : function() {
         return this.facetIdToFacetMap;
     },
-    
-    init: function(){
-      this.facetIdToFacetMap = [];
-      
-      for(var k in this.facets){
-          var facet = this.facets[k];
-          this.facetIdToFacetMap[facet.id] = facet;
-      }
+
+    init : function(serendip) {
+        var self = this;
+        
+        this.serendip = serendip;
+        this.facetIdToFacetMap = [];
+
+        for (var k in this.facets) {
+            var facet = this.facets[k];
+            this.facetIdToFacetMap[facet.id] = facet;
+        }
+
+        this.serendip.on("facet.remove", function(facet) {
+            self.handleFacetClick(facet.id, facet.value, false);
+        });
+        
+        this.serendip.on("facet.add", function(facet) {
+            self.handleFacetClick(facet.id, facet.value, true);
+        });        
     },
-    
-    initFromQueryStr: function(queryStr){
-        this.buildActiveFacetQueries(queryStr);    
+
+    initFromQueryStr : function(queryStr) {
+        this.buildActiveFacetQueries(queryStr);
     },
-    
-    buildActiveFacetQueries: function(queryStr){
+
+    buildActiveFacetQueries : function(queryStr) {
         var facetsFilters = this.parseFacets(queryStr, this.facets);
 
         this.activeFacetQueries = new Object();
         for (var i = 0; i < facetsFilters.length; i++) {
             var id = facetsFilters[i].id;
             this.activeFacetQueries[id] = facetsFilters[i];
-        }    
+        }
     },
 
-    getActiveFacetsQuery: function () {
+    getActiveFacetsQuery : function() {
         var facetQueryArr = [];
-        
+
         for (var id in this.activeFacetQueries) {
 
             var facetConfig = this.facetIdToFacetMap[id];
@@ -77,8 +88,8 @@ Serendip.FacetsCore = Serendip.Class.extend({
         else
             return "";
     },
-    
-    getFacetsAsQueryString: function (facets) {
+
+    getFacetsAsQueryString : function(facets) {
         var query = "";
 
         for (var i = 0; i < facets.length; i++) {
@@ -121,7 +132,7 @@ Serendip.FacetsCore = Serendip.Class.extend({
         return query;
     },
 
-    parseFacets: function (queryStr, configFacets) {
+    parseFacets : function(queryStr, configFacets) {
 
         var facets = [];
         for (var i = 0; i < configFacets.length; i++) {
@@ -190,24 +201,9 @@ Serendip.FacetsCore = Serendip.Class.extend({
         }
 
         return facets;
-    },    
-    
-    onFacetClick: function(facet){
+    },
 
-        var id = facet.attr("facetname");
-        var value = facet.attr("facetvalue");          
-        var isActive = facet.attr("active");
-        
-        if(isActive == "false"){
-          isActive = true;
-        }else{
-          isActive = false;         
-        }
-
-        this.handleFacetClick(id, value, isActive);
-    },  
-    
-    handleFacetClick: function (id, value, isActive) {
+    handleFacetClick : function(id, value, isActive) {
         value = decodeURIComponent(value);
 
         var facet = this.facetIdToFacetMap[id];
@@ -222,7 +218,7 @@ Serendip.FacetsCore = Serendip.Class.extend({
         if (isActive) {
             facetQuery.values.push(value);
         } else {
-        
+
             var vals = [];
 
             for (var i = 0; i < facetQuery.values.length; i++) {
@@ -236,42 +232,41 @@ Serendip.FacetsCore = Serendip.Class.extend({
 
         this.activeFacetQueries[id] = facetQuery;
     },
-    
 
-  convertFacetFieldValue : function(facet, value){
-    var converted = value;
-    
-    if(facet.id == "contenttype"){
-      converted = this.convertContentTypeFacetValue(value);
+    convertFacetFieldValue : function(facet, value) {
+        var converted = value;
+
+        if (facet.id == "contenttype") {
+            converted = this.convertContentTypeFacetValue(value);
+        }
+
+        return converted;
+    },
+
+    convertContentTypeFacetValue : function(value) {
+        var convertedValue = value;
+
+        value = value.toLowerCase();
+        var convertionList = this.getFacetContentTypeConvertions();
+
+        for (var key in convertionList) {
+            if (value.indexOf(key) > -1) {
+                convertedValue = convertionList[key];
+                break;
+            }
+        }
+
+        return convertedValue;
+    },
+
+    getFacetContentTypeConvertions : function() {
+        var list = new Object();
+
+        list["text/html"] = "Html";
+        list["pdf"] = "PDF";
+        list["text/plain"] = "Text";
+        list["application/msword"] = "Word";
+
+        return list;
     }
-    
-    return converted;
-  },
-  
-  convertContentTypeFacetValue : function(value){
-      var convertedValue = value;
-
-      value = value.toLowerCase();
-      var convertionList = this.getFacetContentTypeConvertions();
-      
-      for(var key in convertionList){
-        if(value.indexOf(key) > -1){
-          convertedValue = convertionList[key];
-          break;
-        }  
-      }
-      
-      return convertedValue;
-  },
-  
-  getFacetContentTypeConvertions : function(){
-    var list = new Object();
-    
-    list["text/html"] = "Html";
-    list["pdf"] = "PDF";
-    list["text/plain"] = "Text";
-    list["application/msword"] = "Word";
-    
-    return list;
-  }  
-});
+}); 
