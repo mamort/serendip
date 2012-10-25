@@ -1,3 +1,43 @@
+Serendip.Facet = Serendip.Class.extend({
+    facetType: "text",
+    name: null,
+    activeHeader: null,
+    header: null,
+    minFacetsToDisplay: null,
+    maxFacetsToDisplay: null
+});
+
+/* Note: Range facets not supported yet in 1.4 */
+Serendip.RangeFacet = Serendip.Facet.extend({
+    facetType: "range",
+    rangeStart: null,
+    rangeEnd: null,
+    rangeGap: null
+});
+
+Serendip.QueryFacet = Serendip.Facet.extend({
+    facetType: "query",
+    queries: null
+});
+
+
+Serendip.DateFacet = Serendip.Facet.extend({
+    facetType: "date",
+    dateStart: null,
+    dateEnd: null,
+    dateGap: null,
+    dateFormat: null,
+    sortDir: "asc",
+    
+    getFormattedValue : function(value){
+        var from = convertIsoDate(value.from, this.dateFormat);
+        var to = convertIsoDate(value.to, this.dateFormat);
+        return  from + " - " + to;
+    }
+});
+
+
+
 Serendip.FacetsCore = Serendip.Class.extend({
     activeFacetQueries : new Object(),
     facetIdToFacetMap : null,

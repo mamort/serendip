@@ -78,7 +78,38 @@ Serendip.Core = Serendip.Class.extend({
 
     solrUrl : "",
     views : [],
+    
+    facetCore: null,
+    
+    init : function(pageName) {
+        $.extend(this, Simple.Events);
+        this.facetCore.init(this);  
+        
+        function fieldSort(a, b) {
+            var x = a.header.toLowerCase();
+            var y = b.header.toLowerCase();
+            return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+        }
 
+        var self = this;
+
+        this.fieldConfig.sort(fieldSort);
+
+        this.updateFieldsQueryString();
+
+        for (var k in this.views) {
+            var view = this.views[k];
+            view.init(this);
+        }
+
+        $.historyInit(pageloadPriv, pageName);
+
+        function pageloadPriv(hash) {
+            self.pageload(hash);
+        }
+
+    },    
+    
     // PageLoad function
     // This function is called when:
     // 1. after calling $.historyInit();
@@ -201,33 +232,6 @@ Serendip.Core = Serendip.Class.extend({
         this.views.push(view);
     },
 
-    init : function(pageName) {
-
-        function fieldSort(a, b) {
-            var x = a.header.toLowerCase();
-            var y = b.header.toLowerCase();
-            return ((x < y) ? -1 : ((x > y) ? 1 : 0));
-        }
-
-        var self = this;
-
-        this.fieldConfig.sort(fieldSort);
-
-        this.updateFieldsQueryString();
-
-        for (var k in this.views) {
-            var view = this.views[k];
-            view.init(this);
-        }
-
-        $.historyInit(pageloadPriv, pageName);
-
-        function pageloadPriv(hash) {
-            self.pageload(hash);
-        }
-
-    },
-
     saveHistoryItem : function() {
         var hash = "";
 
@@ -318,6 +322,11 @@ Serendip.Core = Serendip.Class.extend({
 
 var ajax = new Serendip.Ajax({});
 var serendip = new Serendip.Core({
-    ajax : ajax
+    ajax : ajax,
+    facetCore: new Serendip.Facets({})
 });
-$.extend(serendip, Simple.Events);
+
+
+
+
+

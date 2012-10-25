@@ -36,6 +36,18 @@ function isArray(testObject) {
     return testObject && !(testObject.propertyIsEnumerable('length')) && typeof testObject === 'object' && typeof testObject.length === 'number';
 }
 
+function convertIsoDate(inputDate, format) {
+    var formattedDate = "";
+    try {
+        var date = ISODate.convert(inputDate);
+        formattedDate = date.format(format);
+    } catch(ex) {
+        formattedDate = "Could not parse date: " + inputDate;
+    }
+
+    return formattedDate;
+}
+
 /* Start Serendip library */
 var Serendip = function () { };
 
@@ -245,66 +257,4 @@ Serendip.SortField = Serendip.Class.extend({
 Serendip.Term = Serendip.Class.extend({
     value: null,
     count: null
-});
-
-Serendip.Facet = Serendip.Class.extend({
-    facetType: "text",
-    name: null,
-    activeHeader: null,
-    header: null,
-    minFacetsToDisplay: null,
-    maxFacetsToDisplay: null
-});
-
-/* Note: Range facets not supported yet in 1.4 */
-Serendip.RangeFacet = Serendip.Facet.extend({
-    facetType: "range",
-    rangeStart: null,
-    rangeEnd: null,
-    rangeGap: null
-});
-
-Serendip.QueryFacet = Serendip.Facet.extend({
-    facetType: "query",
-    queries: null
-});
-
-
-Serendip.DateFacet = Serendip.Facet.extend({
-    facetType: "date",
-    dateStart: null,
-    dateEnd: null,
-    dateGap: null,
-    dateFormat: null,
-    sortDir: "asc"
-});
-
-Serendip.CustomDateFacet = Serendip.Facet.extend({
-    facetType: "customdate",
-    getFacetValues: function () { }
-});
-
-Serendip.CustomDateFacetValue = Serendip.Class.extend({
-    name: null,
-    value: null
-});
-
-Serendip.SortClickHandler = Serendip.Class.extend({
-    handleSortClick: function (sortField, direction) { }
-});
-
-Serendip.FacetClickHandler = Serendip.Class.extend({
-    handleFacetClick: function (name, value, isActive) { }
-});
-
-Serendip.PagingClickHandler = Serendip.Class.extend({
-    handlePagingClick: function (page) { }
-});
-
-Serendip.SuggestClickHandler = Serendip.Class.extend({
-    handleSuggestClick: function (suggestion) { }
-});
-
-Serendip.AutocompleteClickHandler = Serendip.Class.extend({
-    handleAutocompleteClick: function () { }
 });
