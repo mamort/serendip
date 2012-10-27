@@ -17,7 +17,8 @@
     }));
 
     serendip.addView(new Serendip.ResultPrPageView({
-        view: $("#ResultsPrPage")
+        view: $("#ResultsPrPage"),
+        resultsToDisplay : 5
     }));
 
     serendip.addView(new Serendip.SortingView({
@@ -33,8 +34,7 @@
 
     serendip.addView(new Serendip.ResultView({
         view : $("#ResultView"),
-        prototype : $("#Results_Prototype_TableView"),
-        resultsToDisplay : 5
+        prototype : $("#Results_Prototype_TableView")
     }));
 
     serendip.addView(new Serendip.InProgressView({

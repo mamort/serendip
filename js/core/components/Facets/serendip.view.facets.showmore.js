@@ -5,28 +5,27 @@ Serendip.ShowMoreFacetsView = Serendip.Class.extend({
     init : function(serendip){
         var self = this;
         
-        serendip.on("render.facets.showmore", function(facets){
-            
-            for (var i = 0; i < facets.length; i++) {
-                var data = facets[i];
-                var facet = data.facet;
-                var values = self.getShowMoreFacetRowValues(facet, data.values);
-                
-                if(values.length > 0){
-                    var html = self.renderFacetRow(facet, values);
-                    self.view.find("." + facet.id + " .MoreFacetsValues").html(html).hide();                    
-                }else{
-                    self.view.find("." + facet.id + " .moreFacetsTxt").hide();
-                }
-            }
-      
+        serendip.on("render.facets.showmore", function(facets){  
             self.view.find(".lessFacetsTxt").hide();
-            self.view.find("a.moreFacets").off('click').on('click', function() {
-                self.handleShowMoreLess($(this));
-                return false;
-            });
+            self.renderMoreFacets(facets);
+            self.bindEvents();
         });
         
+    },
+    
+    renderMoreFacets : function(facets){
+        for (var i = 0; i < facets.length; i++) {
+            var data = facets[i];
+            var facet = data.facet;
+            var values = this.getShowMoreFacetRowValues(facet, data.values);
+            
+            if(values.length > 0){
+                var html = this.renderFacetRow(facet, values);
+                this.view.find("." + facet.id + " .MoreFacetsValues").html(html).hide();                    
+            }else{
+                this.view.find("." + facet.id + " .moreFacetsTxt").hide();
+            }
+        }      
     },
     
     renderFacetRow : function(facet, values){
@@ -51,6 +50,14 @@ Serendip.ShowMoreFacetsView = Serendip.Class.extend({
         }
         
         return visibleValues;
+    },
+    
+    bindEvents : function(){
+        var self = this;
+        this.view.find("a.moreFacets").off('click').on('click', function() {
+            self.handleShowMoreLess($(this));
+            return false;
+        });        
     },
 
     handleShowMoreLess : function(element) {

@@ -1,29 +1,17 @@
 Serendip.ResultView = Serendip.Class.extend({
     view : null,
     prototype : null,
-    resultsToDisplay : 10,
-
     serendip : null,
 
     init : function(serendip) {
         var self = this;
         this.serendip = serendip;
+        
+        this.serendip.on("render", function(data){
+            self.render(data);
+        });        
     },
-
-    initFromQueryStr : function(queryStr, params) {
-
-    },
-
-    saveInQueryStr : function(queryStr) {
-        return queryStr;
-    },
-
-    buildRequest : function(request) {
-        request += "&rows=" + this.resultsToDisplay;
-
-        return request;
-    },
-
+    
     render : function(data) {
         var docs = data.response.docs;
 

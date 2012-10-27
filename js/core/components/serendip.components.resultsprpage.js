@@ -1,6 +1,6 @@
 Serendip.ResultPrPageView = Serendip.Class.extend({
     view : null,
-    numResults : 10,
+    resultsToDisplay : 10,
     serendip : null,
 
     init : function(serendip) {
@@ -8,25 +8,30 @@ Serendip.ResultPrPageView = Serendip.Class.extend({
         this.serendip = serendip;
         
        this.view.find("select").change(function() {
-            self.numResults = $(this).val();
+            self.resultsToDisplay = $(this).val();
             self.serendip.search();
         }); 
-    },
-
-    initFromQueryStr : function(queryStr, params) {
-
-    },
-
-    saveInQueryStr : function(queryStr) {
-        return queryStr;
-    },
-
-    buildRequest : function(request) {
-        request += "&rows=" + this.numResults;
-        return request;
+        
+        this.serendip.on("render", function(data){
+            self.render(data);
+        });  
+        
+        this.serendip.on("initFromQueryStr", function(queryStr, params){
+            if (params["rows_param"]){
+                self.resultsToDisplay = params["rows_param"]; 
+            }
+        });  
+        
+        this.serendip.on("saveInQueryStr", function(save){
+            save("&rows=" + self.resultsToDisplay);
+        });         
+        
+        this.serendip.on("buildRequest", function(save){
+            save("&rows=" + self.resultsToDisplay);
+        });                
     },
 
     render : function(data) {
-        this.view.find("select").val(this.numResults);
+        this.view.find("select").val(this.resultsToDisplay);
     }
 }); 

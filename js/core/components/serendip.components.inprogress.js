@@ -8,27 +8,11 @@ Serendip.InProgressView = Serendip.Class.extend({
   	this.view.hide();
       
   	this.serendip.on("wait", function(){
-  		self.renderInProgress();
+  		self.view.show();  
   	});
-  },
-  
-  initFromQueryStr: function(queryStr, params){
-      
-  },  
-  
-  saveInQueryStr: function(queryStr){
-      return queryStr;
-  },
-  
-  buildRequest : function(request){
-      return request;
-  },   
-  
-  renderInProgress: function(){
-      this.view.show();   
-  },  
-  
-  render : function(data) {
-      this.view.hide();
+  	
+  	this.serendip.on("render", function(){
+  	    self.view.hide();
+  	});
   }
 });

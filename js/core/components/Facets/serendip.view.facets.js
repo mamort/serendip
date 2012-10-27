@@ -5,26 +5,21 @@ Serendip.FacetsView = Serendip.Class.extend({
 
     maxFacetsToDisplay : 0,
 
-    facetCore: null,
     activeFacetsView : null,
     inactiveFacetsView : null,
 
     init : function(serendip) {
+        var self = this;
         this.serendip = serendip;
 
         this.view.hide();
 
-        initFacetCore(this);
         initActiveFacetsView(this);
         initInactiveFacetsView(this);
-
-        function initFacetCore(self) {
-            self.facetCore = new Serendip.FacetsCore({
-                facets : self.serendip.facets
-            });
-
-            self.facetCore.init(self.serendip);
-        }
+        
+        this.serendip.on("render", function(data){
+            self.render(data);
+        }); 
 
         function initActiveFacetsView(self) {
             self.activeFacetsView = new Serendip.ActiveFacetsView({
@@ -35,7 +30,7 @@ Serendip.FacetsView = Serendip.Class.extend({
                 maxFacetsToDisplay : 5
             });
 
-            self.activeFacetsView.init(self.serendip, self.facetCore);
+            self.activeFacetsView.init(self.serendip);
         }
 
         function initInactiveFacetsView(self) {
@@ -47,36 +42,15 @@ Serendip.FacetsView = Serendip.Class.extend({
                 maxFacetsToDisplay : 5
             });
 
-            self.inactiveFacetsView.init(self.serendip, self.facetCore);
+            self.inactiveFacetsView.init(self.serendip);
         }
 
     },
 
-    initFromQueryStr : function(queryStr, params) {
-        this.activeFacetsView.initFromQueryStr(queryStr, params);
-        this.inactiveFacetsView.initFromQueryStr(queryStr, params);
-    },
-
-    saveInQueryStr : function(queryStr) {
-        queryStr = this.activeFacetsView.saveInQueryStr(queryStr);
-        queryStr = this.inactiveFacetsView.saveInQueryStr(queryStr);
-        return queryStr;
-    },
-
-    buildRequest : function(request) {
-        request = this.activeFacetsView.buildRequest(request);
-        request = this.inactiveFacetsView.buildRequest(request);
-        return request;
-    },
-
     render : function(data) {
-
         // Hide facet box if no facets
         if ( typeof (data.facet_counts) != "undefined") {
             this.view.fadeIn("slow");
         }
-
-        this.activeFacetsView.render(data);
-        this.inactiveFacetsView.render(data);
     }
 });

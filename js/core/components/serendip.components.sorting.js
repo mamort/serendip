@@ -12,12 +12,25 @@ Serendip.SortingView = Serendip.Class.extend({
         var self = this;
 
         this.serendip.on("renderFinished", function() {
-            self.OnRenderFinished(self);
+            self.renderFinished(self);
         });
-    },
-
-    bindEvents : function() {
-
+        
+        this.serendip.on("initFromQueryStr", function(queryStr, paramsMap){
+            self.initFromQueryStr(queryStr, paramsMap);
+        });  
+        
+        this.serendip.on("saveInQueryStr", function(save){
+            if (self.sortValue && self.sortDir && self.sortValue != "relevans") {
+                var value = "&sort=" + self.sortValue + " " + self.sortDir;
+                save(value);
+            }    
+        });  
+        
+        this.serendip.on("buildRequest", function(save){
+            if (self.sortValue && self.sortDir && self.sortValue != "relevans") {
+                save("&sort=" + self.sortValue + " " + self.sortDir);
+            }  
+        });                           
     },
 
     initFromQueryStr : function(queryStr, params) {
@@ -33,46 +46,9 @@ Serendip.SortingView = Serendip.Class.extend({
         return queryStr;
     },
 
-    handleSortClick : function(sortValue, sortDirection) {
-
-        if (sortValue && sortDirection && sortValue != "relevans") {
-            this.sortQuery = "&sort=" + sortValue + " " + sortDirection;
-        } else {
-            this.sortQuery = "";
-        }
-
-        this.sortValue = sortValue;
-        this.sortDir = sortDirection;
-
-        this.serendip.search();
-    },
-
-    saveInQueryStr : function(queryStr) {
-        if (this.sortValue && this.sortDir && this.sortValue != "relevans") {
-            queryStr += "&rows=" + "&sort=" + this.sortValue + " " + this.sortDir;
-        }
-        return queryStr;
-    },
-
-    buildRequest : function(request) {
-        if (this.sortValue && this.sortDir && this.sortValue != "relevans") {
-            request += "&rows=" + "&sort=" + this.sortValue + " " + this.sortDir;
-        }
-        return request;
-    },
-
-    render : function(data) {
-
-    },
-
-    OnRenderFinished : function(self) {
-        var sortField = self.sortValue;
-        var sortDirection = self.sortDir;
-
-        var sortFieldId = self.GetIdForFieldName(sortField);
-
-        self.setSortFieldActive(sortFieldId, sortDirection);
-
+    bindEvents : function() {
+        var self = this;
+        
         this.view.find("th .sortfield a").off('click').on('click', function() {
 
             var id = $(this).attr("sort");
@@ -85,7 +61,30 @@ Serendip.SortingView = Serendip.Class.extend({
             // Return false to avoid the a:href executing
             return false;
         });
+    },   
+
+    renderFinished : function(self) {
+        var sortField = this.sortValue;
+
+        var sortFieldId = this.GetIdForFieldName(sortField);
+
+        this.setSortFieldActive(sortFieldId, this.sortDir);
+        this.bindEvents();
     },
+    
+    handleSortClick : function(sortValue, sortDirection) {
+
+        if (sortValue && sortDirection && sortValue != "relevans") {
+            this.sortQuery = "&sort=" + sortValue + " " + sortDirection;
+        } else {
+            this.sortQuery = "";
+        }
+
+        this.sortValue = sortValue;
+        this.sortDir = sortDirection;
+
+        this.serendip.search();
+    },    
 
     setSortFieldActive : function(sortFieldId, sortDirection) {
         var cls = this.GetClassNameForRows(sortFieldId);
@@ -158,13 +157,5 @@ Serendip.SortingView = Serendip.Class.extend({
 
     GetClassNameForRows : function(cls) {
         return cls + "Row";
-    },
-
-    getSearchValue : function() {
-        return $(this.searchFieldSelector).val();
-    },
-
-    setSearchValue : function(value) {
-        $(this.searchFieldSelector).val(value);
     }
 }); 

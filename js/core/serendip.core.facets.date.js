@@ -36,7 +36,7 @@ Serendip.DateFacetCore = Serendip.Class.extend({
 
         var gapDays = this.getGapAsDays(dates["gap"]);
 
-        //TODO: Must use GAP to calculate end date from start date here
+        // Must use GAP to calculate end date from start date here
         var isoDateStr = this.formatIsoDateWithGap(dateFacet.from, gapDays);
 
         if (type == "asc") {

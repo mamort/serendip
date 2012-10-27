@@ -69,7 +69,6 @@ Serendip.Core = Serendip.Class.extend({
     core : new Serendip.Core({}),
 
     searchAllFields : false,
-    timerId : 0,
     sortQuery : "",
     clickType : "",
 
@@ -82,32 +81,33 @@ Serendip.Core = Serendip.Class.extend({
     facetCore: null,
     
     init : function(pageName) {
-        $.extend(this, Simple.Events);
-        this.facetCore.init(this);  
-        
-        function fieldSort(a, b) {
-            var x = a.header.toLowerCase();
-            var y = b.header.toLowerCase();
-            return ((x < y) ? -1 : ((x > y) ? 1 : 0));
-        }
-
         var self = this;
 
+        this.facetCore.init(this);  
+        this.facetRenderActive.init(this);
+        this.facetRenderInactive.init(this);
+        
         this.fieldConfig.sort(fieldSort);
-
         this.updateFieldsQueryString();
 
         for (var k in this.views) {
             var view = this.views[k];
             view.init(this);
         }
+        
+        this.trigger("views.init.done");
 
         $.historyInit(pageloadPriv, pageName);
+
+        function fieldSort(a, b) {
+            var x = a.header.toLowerCase();
+            var y = b.header.toLowerCase();
+            return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+        }
 
         function pageloadPriv(hash) {
             self.pageload(hash);
         }
-
     },    
     
     // PageLoad function
@@ -168,10 +168,6 @@ Serendip.Core = Serendip.Class.extend({
         this.highlightFields = fields;
     },
 
-    addSortField : function(sortField) {
-        this.sortFields.push(sortField);
-    },
-
     addQueryParam : function(name, value) {
         var param = name + "=" + value;
 
@@ -202,25 +198,8 @@ Serendip.Core = Serendip.Class.extend({
         // Add postfix to map ids to avoid using "reserved" javascript words
         // ex paramsMap["sort"] will not work (sort is already funksjon on array)
         var paramsMap = this.core.parseQueryToMap(queryStr, "_param");
+        this.trigger("initFromQueryStr", queryStr, paramsMap);
 
-        for (var k in this.views) {
-            var view = this.views[k];
-            view.initFromQueryStr(queryStr, paramsMap);
-        }
-
-        this.trigger("initFromQueryStr", paramsMap);
-
-        this.doRequest(this);
-    },
-
-    fireEvent : function(listeners) {
-        for (var key in listeners) {
-            var listener = listeners[key];
-            listener();
-        }
-    },
-
-    sendRequest : function() {
         this.doRequest(this);
     },
 
@@ -235,16 +214,11 @@ Serendip.Core = Serendip.Class.extend({
     saveHistoryItem : function() {
         var hash = "";
 
-        for (var k in this.views) {
-            var view = this.views[k];
-            hash = view.saveInQueryStr(hash);
-        }
+        this.trigger("saveInQueryStr", function(data){
+            hash = hash + data;
+        });
 
         $.historyLoad(hash);
-    },
-
-    setupEvents : function(req) {
-
     },
 
     search : function(value) {
@@ -253,8 +227,6 @@ Serendip.Core = Serendip.Class.extend({
     },
 
     doRequest : function(req) {
-        clearTimeout(req.timerId);
-
         req.trigger("wait");
         req.saveHistoryItem();
 
@@ -264,10 +236,9 @@ Serendip.Core = Serendip.Class.extend({
     getFullQuery : function() {
         var request = "";
 
-        for (var k in this.views) {
-            var view = this.views[k];
-            request = view.buildRequest(request);
-        }
+        this.trigger("buildRequest", function(data){
+            request = request + data;
+        });        
 
         var params = this.core.getParamsAsQueryString(this.queryParams);
 
@@ -298,12 +269,6 @@ Serendip.Core = Serendip.Class.extend({
             }
 
             req.trigger("renderStart");
-
-            for (var k in req.views) {
-                var view = req.views[k];
-                view.render(data);
-            }
-
             req.trigger("render", data);
             req.trigger("renderFinished");
         }
@@ -323,7 +288,9 @@ Serendip.Core = Serendip.Class.extend({
 var ajax = new Serendip.Ajax({});
 var serendip = new Serendip.Core({
     ajax : ajax,
-    facetCore: new Serendip.Facets({})
+    facetCore: new Serendip.Facets({}),
+    facetRenderActive: new Serendip.FacetsRenderActive({}),
+    facetRenderInactive: new Serendip.FacetsRenderInactive({})
 });
 
 

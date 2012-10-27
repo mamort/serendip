@@ -8,29 +8,34 @@ Serendip.SearchView = Serendip.Class.extend({
         this.serendip = serendip;
         var self = this;
 
-        this.input = $(this.view).find(".input");
+        this.input = this.view.find(".input");
 
-        $(this.view).find(".button").click(function() {
+        this.view.find(".button").click(function() {
 
             self.serendip.search(self.input.val());
 
             return false;
         });
+
+        this.serendip.on("initFromQueryStr", function(queryStr, params) {
+            self.input.val(params["q_param"]);
+        });
+
+        this.serendip.on("saveInQueryStr", function(save) {
+            var value = self.input.val();
+            value = encodeURIComponent(value);
+            if (value && value != "") {
+                save("&q=" + value);
+            }
+        });
+
+        this.serendip.on("buildRequest", function(save) {
+            var req = self.buildRequest();
+            save(req);
+        });
     },
 
-    initFromQueryStr : function(queryStr, params) {
-        this.input.val(params["q_param"]);
-    },
-
-    saveInQueryStr : function(queryStr) {
-        var value = this.input.val();
-        value = encodeURIComponent(value);
-        queryStr += "&q=" + value;
-
-        return queryStr;
-    },
-
-    buildRequest : function(request) {
+    buildRequest : function() {
         var queryValue = this.input.val();
 
         // Illegal to start query with '*' or '?'
@@ -44,13 +49,6 @@ Serendip.SearchView = Serendip.Class.extend({
         }
 
         var query = encodeURIComponent(queryValue);
-
-        request += "&q=" + query;
-
-        return request;
-    },
-
-    render : function(data) {
-
+        return "&q=" + query;
     }
-}); 
+});

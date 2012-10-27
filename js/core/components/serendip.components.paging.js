@@ -18,6 +18,22 @@ Serendip.PagerView = Serendip.Class.extend({
                 self.startDoc = 0;
             }
         });
+        
+        this.serendip.on("render", function(data){
+            self.render(data);
+        }); 
+        
+        this.serendip.on("initFromQueryStr", function(queryStr, paramsMap){
+            self.initFromQueryStr(queryStr, paramsMap);
+        });  
+        
+        this.serendip.on("saveInQueryStr", function(save){
+            save("&start=" + self.startDoc);
+        });  
+        
+        this.serendip.on("buildRequest", function(save){
+            save("&start=" + self.startDoc);
+        });                                 
     },
 
     initFromQueryStr : function(queryStr, params) {
@@ -25,17 +41,6 @@ Serendip.PagerView = Serendip.Class.extend({
             this.startDoc = params["start_param"];
         else
             this.startDoc = 0;
-    },
-
-    saveInQueryStr : function(queryStr) {
-        queryStr += "&start=" + this.startDoc;
-
-        return queryStr;
-    },
-
-    buildRequest : function(request) {
-        request += "&start=" + this.startDoc;
-        return request;
     },
 
     bindEvents : function() {

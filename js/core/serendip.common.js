@@ -51,7 +51,13 @@ function convertIsoDate(inputDate, format) {
 /* Start Serendip library */
 var Serendip = function () { };
 
-Serendip.Class = function () { };
+Serendip.Class = function () { 
+    $.extend(this, Simple.Events);
+    
+    if(typeof init2 == 'function'){
+
+    }
+};
 
 Serendip.Class.extend = function (properties) {
     var klass = this;
@@ -59,6 +65,7 @@ Serendip.Class.extend = function (properties) {
         Serendip.extend(this, new klass(options), properties, options);
     }
     subClass.extend = this.extend;
+        
     return subClass;
 };
 
@@ -98,120 +105,6 @@ Serendip.Core = Serendip.Class.extend({
         }
 
         return query;
-    },
-
-    getFacetsAsQueryString: function (facets) {
-        var query = "";
-
-        for (var i = 0; i < facets.length; i++) {
-            var facet = facets[i];
-            var name = facet.name;
-            var type = facet.facetType;
-
-            if (type == "text") {
-                query += "facet.field={!ex=" + facet.id + "}" + name;
-
-            } else if (type == "range") {
-                query += "facet.range={!ex=" + facet.id + "}" + name;
-                var datekey = "&f." + name + ".facet.range";
-                query += datekey + ".start=" + encodeURIComponent(facet.rangeStart);
-                query += datekey + ".end=" + encodeURIComponent(facet.rangeEnd);
-                query += datekey + ".gap=" + encodeURIComponent(facet.rangeGap);
-
-            } else if (type == "query") {
-                var len = facet.queries.length;
-                for (var k = 0; k < len; k++) {
-                    var facetQuery = facet.queries[k];
-                    query += "facet.query={!ex=" + facet.id + " key=" + facet.id + "range[" + k + "]}" + name + ":" + facetQuery.query;
-
-                    if (k < len - 1) {
-                        query += "&";
-                    }
-                }
-            } else if (type == "date") {
-                query += "facet.date={!ex=" + facets[i].id + "}" + name;
-                var datekey = "&f." + name + ".facet.date";
-                query += datekey + ".start=" + encodeURIComponent(facets[i].dateStart);
-                query += datekey + ".end=" + encodeURIComponent(facets[i].dateEnd);
-                query += datekey + ".gap=" + encodeURIComponent(facets[i].dateGap);
-            }
-
-            if (i < facets.length - 1)
-                query = query + "&";
-        }
-
-        return query;
-    },
-
-    parseFacets: function (queryStr, configFacets) {
-
-        var facets = [];
-        for (var i = 0; i < configFacets.length; i++) {
-            var configFacet = configFacets[i];
-
-            var paramName = "fq={!tag=" + configFacet.id + "}";
-
-            if (queryStr.indexOf(paramName) > 0) {
-                var querySplit = queryStr.split(paramName);
-                var value = querySplit[1];
-
-                if (value.indexOf("&") > 0)
-                    value = value.split("&")[0];
-
-                var facetArr = "";
-                if (value.indexOf(":(") > 0)
-                    facetArr = value.split(":(");
-                else
-                    facetArr = value.split(":[");
-
-                var facet = new Object();
-
-                facet.id = configFacet.id;
-                facet.name = facetArr[0];
-
-                facet.query = paramName + value;
-
-                if (value.indexOf(":(") > 0) {
-                    facet.values = [];
-
-                    var facetArrValues = facetArr[1].substring(0, facetArr[1].length - 1);
-                    facetArrValues = facetArrValues.trim();
-
-                    var vals = "";
-
-                    if (configFacet.facetType == "text") {
-                        vals = facetArrValues.split(/\"\s/);
-
-                        for (var k = 0; k < vals.length; k++) {
-                            var val = vals[k].replace(/\"/g, "").trim();
-                            facet.values.push(val);
-                        }
-                    } else if (configFacet.facetType == "query") {
-
-                        facet.values.push(facetArrValues.trim());
-
-                    } else if (configFacet.facetType == "date") {
-                        vals = facetArrValues.split("]");
-
-                        for (var k = 0; k < vals.length; k++) {
-                            var val = vals[k].replace(/\[/g, "");
-                            val = val.replace(/]/g, "").trim();
-
-                            if (val.length > 0)
-                                facet.values.push(val);
-                        }
-                    }
-
-                } else {
-                    facet.value = facetArr[1].substring(0, facetArr[1].length - 1);
-                }
-
-                facets.push(facet);
-            }
-
-        }
-
-        return facets;
     },
 
     parseParam: function (queryStr, name) {

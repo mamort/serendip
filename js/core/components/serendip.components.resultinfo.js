@@ -4,19 +4,12 @@ Serendip.ResultInfoView = Serendip.Class.extend({
     serendip: null,
 
     init : function(serendip) {
+        var self = this;
         this.serendip = serendip;
-    },
-
-    initFromQueryStr : function(queryStr, params) {
-
-    },
-
-    saveInQueryStr : function(queryStr) {
-        return queryStr;
-    },
-
-    buildRequest : function(request) {
-        return request;
+        
+        this.serendip.on("render", function(data){
+            self.render(data);
+        }); 
     },
 
     render : function(data) {

@@ -1,338 +1,296 @@
-Serendip.Facets = Serendip.Class.extend({
-    configuredFacets: null,
-    serendip: null,
-    init : function(serendip){
-        var self = this;
-        this.serendip = serendip;
-        this.configuredFacets = serendip.facets;
-        
-        serendip.on("render", function(data){
-            var facets = self.processFacets(data);
-            var visibleFacets = self.getOnlyVisibleFacetRowValues(facets);
-            serendip.trigger("render.facets", facets, visibleFacets);
-        });
-    },
+Serendip.Facet = Serendip.Class.extend({
+    facetType: "text",
+    name: null,
+    activeHeader: null,
+    header: null,
+    minFacetsToDisplay: null,
+    maxFacetsToDisplay: null
+});
+
+/* Note: Range facets not supported yet in 1.4 */
+Serendip.RangeFacet = Serendip.Facet.extend({
+    facetType: "range",
+    rangeStart: null,
+    rangeEnd: null,
+    rangeGap: null
+});
+
+Serendip.QueryFacet = Serendip.Facet.extend({
+    facetType: "query",
+    queries: null
+});
+
+
+Serendip.DateFacet = Serendip.Facet.extend({
+    facetType: "date",
+    dateStart: null,
+    dateEnd: null,
+    dateGap: null,
+    dateFormat: null,
+    sortDir: "asc",
     
-    processFacets : function(data){
-        var facetsData = [];
-        if ( typeof (data.facet_counts) != "undefined") {
-            var facets = this.configuredFacets;
-            var facetCount = facets.length;
-
-            for (var i = 0; i < facetCount; i++) {
-                var facetData = this.processFacetTypes(data, facets[i]);
-                if(facetData != ""){
-                    facetsData.push(facetData);   
-                }
-            }
-        }
-        
-        return facetsData;
-    },
-    
-    processFacetTypes : function(data, facet) {
-
-        var values = this.getFacetValues(data, facet);
-        
-        if(values){
-            return this.processFacet(data, facet, values);            
-        }
-        
-        return "";
-    },
-    
-    getFacetValues : function(data, facet){
-        var type = facet.facetType;
-        
-        if (type == "text") {
-            return this.processTextFacet(data, facet);
-        } else if (type == "date") {
-            var dateFacet = new Serendip.DateFacetCore({});
-            return dateFacet.processDateFacet(data, facet);
-        } else if (type == "query") {
-            return this.processQueryFacet(data, facet);
-        }
-        
-        return [];
-    },
-
-    processTextFacet : function(data, facet) {
-        var facetfields = data.facet_counts.facet_fields;
-        var facetValues = facetfields[facet.name];
-
-        if ( typeof (facetValues != "undefined")) {
-            return facetValues;
-        }
-
-        return [];
-    },
-
-    processQueryFacet : function(data, facet) {
-        var facetqueries = data.facet_counts.facet_queries;
-        var facetValues = [];
-
-        for (var k = 0; k < facet.queries.length; k++) {
-            var query = facet.queries[k];
-            var id = facet.id + "range[" + k + "]";
-            var count = facetqueries[id];
-
-            facetValues.push({
-                formattedValue : query.header,
-                value : query.query
-            });
-            
-            facetValues.push(count);
-        }
-
-        return facetValues;
-    },
-
-    processFacet : function(data, facet, facetArray) {
-        var facetRow = [];
-
-        facetArray = this.removeEmptyFacets(facetArray);
-
-        var len = facetArray.length;
-
-        var currentIndex = 0;
-        for (var i = 0; i < len; i += 2) {
-            var value = facetArray[i];
-            var count = facetArray[i + 1];
-
-            if (value == "")
-                continue;
-
-            var isActive = this.isFacetFieldActive(data, facet, value);
-
-            var facetFieldData = this.processFacetField(facet, value, count, isActive);
-            if (facetFieldData != ""){
-                facetRow.push(facetFieldData);                
-            }
-
-            currentIndex = i;
-        }
-        
-        var facetdata = {
-            facet: facet,
-            values : facetRow
-        };
-        
-        return facetdata;
-    },
-
-    addMoreFacets : function(data, facet, facetArray, len, max, currentIndex) {
-        if (max < len)
-            len = max;
-
-        var moreFacetsData = [];
-
-        var moreFacets = new Object();
-        moreFacets.count = 0;
-        moreFacets.data = "";
-
-        for (var i = currentIndex + 2; i < len; i += 2) {
-            var value = facetArray[i];
-            var count = facetArray[i + 1];
-
-            var isActive = this.isFacetFieldActive(data, facet, value);
-            var facetData = this.processFacetField(facet, value, count, isActive);
-
-            if (facetData != "") {
-                moreFacetsData.push(facetData);
-                moreFacets.count++;
-            }
-        }
-
-        if (moreFacets.count > 0) {
-            moreFacets.data = moreFacetsData;
-        }
-
-        return moreFacets;
-    },
-
-    removeEmptyFacets : function(facets) {
-        var result = [];
-        for (var i = 0; i < facets.length; i += 2) {
-            var value = facets[i];
-            var docCount = facets[i + 1];
-
-            // -1 is sentinel value for facets that cannot have count
-            if (docCount > 0 || docCount == -1) {
-                result.push(value);
-                result.push(docCount);
-            }
-        }
-
-        return result;
-    },
-
-    processFacetField : function(facet, value, count, isActive) {
-
-        var formattedValue = "";
-        if (facet.facetType == "date") {
-            formattedValue = facet.getFormattedValue(value);
-            value = value.from + " TO " + value.to;
-        } else if (facet.facetType == "query") {
-            formattedValue = value.formattedValue;
-            value = value.value;
-        } else {
-            formattedValue = value;
-        }
-
-        value = encodeURIComponent(value);
-
-        return this.processFacetFieldValue(facet, value, formattedValue, count, isActive);
-    },
-
-    isFacetFieldActive : function(data, facet, value) {
-        var activeFacets = data.responseHeader.params.fq;
-
-        if (activeFacets) {
-
-            // Might be single value and not an array...
-            if (!isArray(activeFacets) || activeFacets[0].length == 1) {
-                if (this.isFacetMatch(activeFacets, facet, value)) {
-                    return true;
-                }
-            } else {
-
-                // If not previous match, we probably have an array with multiple active facets
-                for (var i = 0; i < activeFacets.length; i++) {
-                    if (this.isFacetMatch(activeFacets[i], facet, value)) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
-    },
-
-    isFacetMatch : function(activeFacet, facet, value) {
-        var facetValue = "";
-        var prefix = "{!tag=" + facet.id + "}" + facet.name + ":(";
-
-        var activePrefix = activeFacet.substring(0, prefix.length);
-
-        if (prefix != activePrefix) {
-            return false;
-        }
-
-        var activeValue = activeFacet.substring(prefix.length, activeFacet.length - 1);
-
-        if (facet.facetType == "text") {
-            var vals = activeValue.split(/\"\s/);
-            for (var k = 0; k < vals.length; k++) {
-                var val = vals[k].replace(/\"/g, "").trim();
-
-                if (val == value)
-                    return true;
-            }
-
-        } else if (facet.facetType == "query") {
-
-            if (value.value == activeValue) {
-                return true;
-            }
-
-        } else if (facet.facetType == "date" || facet.facetType == "customdate") {
-            vals = activeValue.split("]");
-
-            for (var k = 0; k < vals.length; k++) {
-                var val = vals[k].replace(/\[/g, "");
-                val = val.replace(/]/g, "").trim();
-
-                if (val.length > 0) {
-                    var facetValue = value.from + " TO " + value.to;
-
-                    if (val == facetValue)
-                        return true;
-                }
-
-            }
-        }
-
-        return false;
-    },
-
-    processFacetFieldValue : function(facet, value, formattedValue, count, isActive) {
-        if (isActive)
-            return "";
-
-        formattedValue = this.convertFacetFieldValue(facet, formattedValue);
-        var facetFieldData = {
-            "name" : facet.id,
-            "value" : value,
-            "displayValue" : formattedValue,
-            "countValue" : count,
-            "countValueCls" : "count" + count,
-            "isActive" : "false"
-        };
-
-        return facetFieldData;
-    },
-    
-    convertFacetFieldValue : function(facet, value) {
-        var converted = value;
-
-        if (facet.id == "contenttype") {
-            converted = this.convertContentTypeFacetValue(value);
-        }
-
-        return converted;
-    },
-
-    convertContentTypeFacetValue : function(value) {
-        var convertedValue = value;
-
-        value = value.toLowerCase();
-        var convertionList = this.getFacetContentTypeConvertions();
-
-        for (var key in convertionList) {
-            if (value.indexOf(key) > -1) {
-                convertedValue = convertionList[key];
-                break;
-            }
-        }
-
-        return convertedValue;
-    },
-
-    getFacetContentTypeConvertions : function() {
-        var list = new Object();
-
-        list["text/html"] = "Html";
-        list["pdf"] = "PDF";
-        list["text/plain"] = "Text";
-        list["application/msword"] = "Word";
-
-        return list;
-    },
-    
-    getOnlyVisibleFacetRowValues : function(facets) {
-        var facetRows = [];
-        for (var i = 0; i < facets.length; i++) {
-            var data = facets[i];
-            var values = this.getVisibleFacetRowValues(data.facet, data.values);
-            var row = {
-                facet : data.facet,
-                values : values
-            }
-            facetRows.push(row);
-        }
-
-        return facetRows;
-    },
-
-    getVisibleFacetRowValues : function(facet, values) {
-        var visibleValues = [];
-
-        var len = Math.min(facet.minFacetsToDisplay, values.length);
-
-        for (var i = 0; i < len; i++) {
-            visibleValues.push(values[i]);
-        }
-
-        return visibleValues;
+    getFormattedValue : function(value){
+        var from = convertIsoDate(value.from, this.dateFormat);
+        var to = convertIsoDate(value.to, this.dateFormat);
+        return  from + " - " + to;
     }
 });
+
+Serendip.Facets = Serendip.Class.extend({
+    activeFacetQueries : new Object(),
+    facetIdToFacetMap : null,
+    facets : null,
+    serendip : null,
+
+    getActiveFacetsQueriesMap : function() {
+        return this.activeFacetQueries;
+    },
+
+    getActiveFacetsMap : function() {
+        return this.facetIdToFacetMap;
+    },
+
+    init : function(serendip) {
+        var self = this;
+        
+        this.facets = serendip.facets;
+        
+        this.serendip = serendip;
+        this.facetIdToFacetMap = [];
+
+        for (var k in this.facets) {
+            var facet = this.facets[k];
+            this.facetIdToFacetMap[facet.id] = facet;
+        }
+        
+        this.serendip.on("views.init.done", function(){
+            self.serendip.trigger("init.facets.core", self);
+        });
+        
+        this.serendip.on("initFromQueryStr", function(queryStr, paramsMap){
+            self.buildActiveFacetQueries(queryStr);
+        });                 
+        
+        this.serendip.on("saveInQueryStr", function(save){
+            var query = self.getActiveFacetsQuery();     
+            if(query && query != ""){
+                save("&" + query); 
+            }
+        });  
+        
+        this.serendip.on("buildRequest", function(save){    
+            var query = self.getFacetsAsQueryString(self.facets);
+            save("&facet=true&" + query);
+            
+            var query = self.getActiveFacetsQuery();     
+            save("&" + query);
+        });         
+
+        this.serendip.on("facet.remove", function(facet) {
+            self.handleFacetClick(facet.id, facet.value, false);
+        });
+        
+        this.serendip.on("facet.add", function(facet) {
+            self.handleFacetClick(facet.id, facet.value, true);
+        });               
+    },
+
+    buildActiveFacetQueries : function(queryStr) {
+        var facetsFilters = this.parseFacets(queryStr, this.serendip.facets);
+
+        this.activeFacetQueries = new Object();
+        for (var i = 0; i < facetsFilters.length; i++) {
+            var id = facetsFilters[i].id;
+            this.activeFacetQueries[id] = facetsFilters[i];
+        }
+    },
+
+    getActiveFacetsQuery : function() {
+        var facetQueryArr = [];
+
+        for (var id in this.activeFacetQueries) {
+
+            var facetConfig = this.facetIdToFacetMap[id];
+            var facet = this.activeFacetQueries[id];
+
+            var query = "";
+            var paramName = "fq={!tag=" + id + "}" + facetConfig.name;
+
+            if (facet.values.length > 0) {
+                query = paramName + ":(";
+
+                for (var i = 0; i < facet.values.length; i++) {
+
+                    var value = encodeURIComponent(facet.values[i]);
+
+                    if (facetConfig.facetType == "text") {
+                        query += "\"" + value + "\" ";
+                    } else if (facetConfig.facetType == "date") {
+                        query += "[" + value + "] ";
+                    }
+                }
+
+                if (facetConfig.facetType == "query") {
+                    var index = facet.values.length - 1;
+                    var value = facet.values[index];
+                    query += value;
+                }
+
+                query += ")";
+
+                facetQueryArr.push(query);
+            }
+        }
+
+        if (facetQueryArr.length > 0)
+            return "&" + facetQueryArr.join("&");
+        else
+            return "";
+    },
+
+    getFacetsAsQueryString : function(facets) {
+        var query = "";
+
+        for (var i = 0; i < facets.length; i++) {
+            var facet = facets[i];
+            var name = facet.name;
+            var type = facet.facetType;
+
+            if (type == "text") {
+                query += "facet.field={!ex=" + facet.id + "}" + name;
+
+            } else if (type == "range") {
+                query += "facet.range={!ex=" + facet.id + "}" + name;
+                var datekey = "&f." + name + ".facet.range";
+                query += datekey + ".start=" + encodeURIComponent(facet.rangeStart);
+                query += datekey + ".end=" + encodeURIComponent(facet.rangeEnd);
+                query += datekey + ".gap=" + encodeURIComponent(facet.rangeGap);
+
+            } else if (type == "query") {
+                var len = facet.queries.length;
+                for (var k = 0; k < len; k++) {
+                    var facetQuery = facet.queries[k];
+                    query += "facet.query={!ex=" + facet.id + " key=" + facet.id + "range[" + k + "]}" + name + ":" + facetQuery.query;
+
+                    if (k < len - 1) {
+                        query += "&";
+                    }
+                }
+            } else if (type == "date") {
+                query += "facet.date={!ex=" + facets[i].id + "}" + name;
+                var datekey = "&f." + name + ".facet.date";
+                query += datekey + ".start=" + encodeURIComponent(facets[i].dateStart);
+                query += datekey + ".end=" + encodeURIComponent(facets[i].dateEnd);
+                query += datekey + ".gap=" + encodeURIComponent(facets[i].dateGap);
+            }
+
+            if (i < facets.length - 1){
+                query = query + "&";
+            }
+                
+        }
+
+        return query;
+    },
+
+    parseFacets : function(queryStr, configFacets) {
+
+        var facets = [];
+        for (var i = 0; i < configFacets.length; i++) {
+            var configFacet = configFacets[i];
+
+            var paramName = "fq={!tag=" + configFacet.id + "}";
+
+            if (queryStr.indexOf(paramName) > 0) {
+                var querySplit = queryStr.split(paramName);
+                var value = querySplit[1];
+
+                if (value.indexOf("&") > 0)
+                    value = value.split("&")[0];
+
+                var facetArr = "";
+                if (value.indexOf(":(") > 0)
+                    facetArr = value.split(":(");
+                else
+                    facetArr = value.split(":[");
+
+                var facet = new Object();
+
+                facet.id = configFacet.id;
+                facet.name = facetArr[0];
+
+                facet.query = paramName + value;
+
+                if (value.indexOf(":(") > 0) {
+                    facet.values = [];
+
+                    var facetArrValues = facetArr[1].substring(0, facetArr[1].length - 1);
+                    facetArrValues = facetArrValues.trim();
+
+                    var vals = "";
+
+                    if (configFacet.facetType == "text") {
+                        vals = facetArrValues.split(/\"\s/);
+
+                        for (var k = 0; k < vals.length; k++) {
+                            var val = vals[k].replace(/\"/g, "").trim();
+                            facet.values.push(val);
+                        }
+                    } else if (configFacet.facetType == "query") {
+
+                        facet.values.push(facetArrValues.trim());
+
+                    } else if (configFacet.facetType == "date") {
+                        vals = facetArrValues.split("]");
+
+                        for (var k = 0; k < vals.length; k++) {
+                            var val = vals[k].replace(/\[/g, "");
+                            val = val.replace(/]/g, "").trim();
+
+                            if (val.length > 0)
+                                facet.values.push(val);
+                        }
+                    }
+
+                } else {
+                    facet.value = facetArr[1].substring(0, facetArr[1].length - 1);
+                }
+
+                facets.push(facet);
+            }
+
+        }
+
+        return facets;
+    },
+
+    handleFacetClick : function(id, value, isActive) {
+        value = decodeURIComponent(value);
+
+        var facet = this.facetIdToFacetMap[id];
+        var facetQuery = this.activeFacetQueries[id];
+
+        if (!facetQuery) {
+            facetQuery = new Object();
+            facetQuery.id = facet.id;
+            facetQuery.values = [];
+        }
+
+        if (isActive) {
+            facetQuery.values.push(value);
+        } else {
+
+            var vals = [];
+
+            for (var i = 0; i < facetQuery.values.length; i++) {
+                if (facetQuery.values[i] != value) {
+                    vals.push(facetQuery.values[i]);
+                }
+            }
+
+            facetQuery.values = vals;
+        }
+
+        this.activeFacetQueries[id] = facetQuery;
+    }
+}); 

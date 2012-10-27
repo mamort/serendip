@@ -22,7 +22,7 @@ $(document).ready(function(){
     serendip.addFieldConfig({ name: "Children", id: "Children", header: "Children", selected: true, enabled: true });
 
     serendip.setSearchAllFields(true);
-	
+
     serendip.init("index.html");
     
     $("#queryInput").focus();
