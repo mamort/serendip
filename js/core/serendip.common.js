@@ -132,6 +132,12 @@ Serendip.Core = Serendip.Class.extend({
             var params = split[i].split("=");
             queryParams[params[0] + postfix] = params[1];
         }
+        
+        split = queryStr.replace("!/", "").split("/");
+
+        for (var i = 0; i < split.length-1; i+=2) {
+            queryParams[split[i] + postfix] = split[i+1];
+        }        
 
         return queryParams;
     },

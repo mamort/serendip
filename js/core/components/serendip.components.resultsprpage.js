@@ -17,13 +17,14 @@ Serendip.ResultPrPageView = Serendip.Class.extend({
         });  
         
         this.serendip.on("initFromQueryStr", function(queryStr, params){
-            if (params["rows_param"]){
-                self.resultsToDisplay = params["rows_param"]; 
+            if (params["Results_param"]){
+                self.resultsToDisplay = params["Results_param"]; 
+                self.serendip.trigger("resultsPrPageChanged", self.resultsToDisplay);
             }
         });  
         
         this.serendip.on("saveInQueryStr", function(save){
-            save("&rows=" + self.resultsToDisplay);
+            save("Results", self.resultsToDisplay, 2);
         });         
         
         this.serendip.on("buildRequest", function(save){

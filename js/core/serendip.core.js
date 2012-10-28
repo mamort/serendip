@@ -73,7 +73,6 @@ Serendip.Core = Serendip.Class.extend({
     clickType : "",
 
     cplIndex : -1,
-    lastHash : "",
 
     solrUrl : "",
     views : [],
@@ -121,10 +120,7 @@ Serendip.Core = Serendip.Class.extend({
         if (hash) {
             // Do your thing
             if (hash.length > 0) {
-                if (hash != this.lastHash) {
-                    this.lastHash = hash;
-                    this.initFromQueryStr(hash);
-                }
+               this.initFromQueryStr(hash);  
             }
 
         } else {
@@ -200,7 +196,7 @@ Serendip.Core = Serendip.Class.extend({
         var paramsMap = this.core.parseQueryToMap(queryStr, "_param");
         this.trigger("initFromQueryStr", queryStr, paramsMap);
 
-        this.doRequest(this);
+        this.doRequest(this, false);
     },
 
     setSolrUrl : function(url) {
@@ -213,22 +209,44 @@ Serendip.Core = Serendip.Class.extend({
 
     saveHistoryItem : function() {
         var hash = "";
+        
+        var params = [];
+        
 
-        this.trigger("saveInQueryStr", function(data){
-            hash = hash + data;
-        });
+        this.trigger("saveInQueryStr", function(id, value, sortIndex){
+                var item = {id: id, value: value, sortIndex: sortIndex};
+                params.push(item);
+            }
+        );
+        
+        params = params.sort(sortQueryParam);
+        
+        for(var i = 0; i < params.length; i++){
+            var param = params[i];
 
-        $.historyLoad(hash);
+            hash = hash + "/" + param.id + "/" + param.value;
+        }
+
+        $.historyLoad("!" + hash);
+        
+        function sortQueryParam(a, b) {
+            var x = a.sortIndex;
+            var y = b.sortIndex;
+            return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+        }
     },
 
     search : function(value) {
         this.trigger("search");
-        this.doRequest(this);
+        this.doRequest(this, true);
     },
 
-    doRequest : function(req) {
+    doRequest : function(req, saveHistoryItem) {
         req.trigger("wait");
-        req.saveHistoryItem();
+        
+        if(saveHistoryItem){
+          req.saveHistoryItem();          
+        }
 
         req.continueRequest(req);
     },

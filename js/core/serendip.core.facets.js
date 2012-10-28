@@ -68,13 +68,36 @@ Serendip.Facets = Serendip.Class.extend({
         });
         
         this.serendip.on("initFromQueryStr", function(queryStr, paramsMap){
-            self.buildActiveFacetQueries(queryStr);
+            self.activeFacetQueries = new Object();
+            
+            for (var i = 0; i < self.facets.length; i++) {
+                var facet = self.facets[i];
+                var key = facet.id + "_param";
+                if(paramsMap[key]){
+                    var values = paramsMap[key];
+                    
+                    facetQuery = new Object();
+                    facetQuery.id = facet.id;
+                    facetQuery.values = values.split(",");
+                    
+                    self.activeFacetQueries[facet.id] = facetQuery;
+                }
+            }
+            
+
         });                 
         
         this.serendip.on("saveInQueryStr", function(save){
-            var query = self.getActiveFacetsQuery();     
-            if(query && query != ""){
-                save("&" + query); 
+            var query = "";
+            for (var id in self.activeFacetQueries) {
+
+                var facetConfig = self.facetIdToFacetMap[id];
+                var facet = self.activeFacetQueries[id];
+                var values = facet.values;
+                
+                if(values && values.length > 0){
+                    save(id, values.join(","), 6);
+                }   
             }
         });  
         
@@ -93,16 +116,6 @@ Serendip.Facets = Serendip.Class.extend({
         this.serendip.on("facet.add", function(facet) {
             self.handleFacetClick(facet.id, facet.value, true);
         });               
-    },
-
-    buildActiveFacetQueries : function(queryStr) {
-        var facetsFilters = this.parseFacets(queryStr, this.serendip.facets);
-
-        this.activeFacetQueries = new Object();
-        for (var i = 0; i < facetsFilters.length; i++) {
-            var id = facetsFilters[i].id;
-            this.activeFacetQueries[id] = facetsFilters[i];
-        }
     },
 
     getActiveFacetsQuery : function() {
@@ -191,77 +204,6 @@ Serendip.Facets = Serendip.Class.extend({
         }
 
         return query;
-    },
-
-    parseFacets : function(queryStr, configFacets) {
-
-        var facets = [];
-        for (var i = 0; i < configFacets.length; i++) {
-            var configFacet = configFacets[i];
-
-            var paramName = "fq={!tag=" + configFacet.id + "}";
-
-            if (queryStr.indexOf(paramName) > 0) {
-                var querySplit = queryStr.split(paramName);
-                var value = querySplit[1];
-
-                if (value.indexOf("&") > 0)
-                    value = value.split("&")[0];
-
-                var facetArr = "";
-                if (value.indexOf(":(") > 0)
-                    facetArr = value.split(":(");
-                else
-                    facetArr = value.split(":[");
-
-                var facet = new Object();
-
-                facet.id = configFacet.id;
-                facet.name = facetArr[0];
-
-                facet.query = paramName + value;
-
-                if (value.indexOf(":(") > 0) {
-                    facet.values = [];
-
-                    var facetArrValues = facetArr[1].substring(0, facetArr[1].length - 1);
-                    facetArrValues = facetArrValues.trim();
-
-                    var vals = "";
-
-                    if (configFacet.facetType == "text") {
-                        vals = facetArrValues.split(/\"\s/);
-
-                        for (var k = 0; k < vals.length; k++) {
-                            var val = vals[k].replace(/\"/g, "").trim();
-                            facet.values.push(val);
-                        }
-                    } else if (configFacet.facetType == "query") {
-
-                        facet.values.push(facetArrValues.trim());
-
-                    } else if (configFacet.facetType == "date") {
-                        vals = facetArrValues.split("]");
-
-                        for (var k = 0; k < vals.length; k++) {
-                            var val = vals[k].replace(/\[/g, "");
-                            val = val.replace(/]/g, "").trim();
-
-                            if (val.length > 0)
-                                facet.values.push(val);
-                        }
-                    }
-
-                } else {
-                    facet.value = facetArr[1].substring(0, facetArr[1].length - 1);
-                }
-
-                facets.push(facet);
-            }
-
-        }
-
-        return facets;
     },
 
     handleFacetClick : function(id, value, isActive) {

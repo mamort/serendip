@@ -21,8 +21,9 @@ Serendip.SortingView = Serendip.Class.extend({
         
         this.serendip.on("saveInQueryStr", function(save){
             if (self.sortValue && self.sortDir && self.sortValue != "relevans") {
-                var value = "&sort=" + self.sortValue + " " + self.sortDir;
-                save(value);
+                //var value = "&sort=" + self.sortValue + " " + self.sortDir;
+                save("SortBy", self.sortValue, 5);
+                save("OrderBy", self.sortDir, 5);
             }    
         });  
         
@@ -34,11 +35,16 @@ Serendip.SortingView = Serendip.Class.extend({
     },
 
     initFromQueryStr : function(queryStr, params) {
-        var sortParam = params["sort_param"];
-        if (sortParam) {
-            this.sortQuery = "&sort=" + sortParam;
-            this.sortValue = this.GetSortField(sortParam);
-            this.sortDir = this.GetSortDirection(sortParam);
+        var sortValue = params["SortBy_param"];
+        if (sortValue) {
+            var direction = params["OrderBy_param"];
+            if(!direction){
+                direction = "asc";
+            }
+            
+            this.sortQuery = "&sort=" + sortValue + " " + direction;
+            this.sortValue = sortValue;
+            this.sortDir = direction;
         }
 
         queryStr += this.sortQuery;

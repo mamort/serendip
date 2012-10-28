@@ -11,21 +11,20 @@ Serendip.SearchView = Serendip.Class.extend({
         this.input = this.view.find(".input");
 
         this.view.find(".button").click(function() {
-
             self.serendip.search(self.input.val());
 
             return false;
         });
 
         this.serendip.on("initFromQueryStr", function(queryStr, params) {
-            self.input.val(params["q_param"]);
+            self.input.val(params["query_param"]);
         });
 
         this.serendip.on("saveInQueryStr", function(save) {
             var value = self.input.val();
             value = encodeURIComponent(value);
             if (value && value != "") {
-                save("&q=" + value);
+                save("query", value, 1);
             }
         });
 
