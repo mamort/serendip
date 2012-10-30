@@ -4,7 +4,14 @@ Serendip.Facet = Serendip.Class.extend({
     activeHeader: null,
     header: null,
     minFacetsToDisplay: null,
-    maxFacetsToDisplay: null
+    maxFacetsToDisplay: null,
+    
+    facets: [],
+    
+    addSubFacet: function(facet){
+        this.facets.push(facet);
+    }
+    
 });
 
 /* Note: Range facets not supported yet in 1.4 */

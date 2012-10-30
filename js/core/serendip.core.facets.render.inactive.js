@@ -1,12 +1,18 @@
 Serendip.FacetsRenderInactive = Serendip.Class.extend({
     configuredFacets: null,
     serendip: null,
+    facetCore: null,
+    
     init : function(serendip){
         var self = this;
         this.serendip = serendip;
         this.configuredFacets = serendip.facets;
         
-        serendip.on("render", function(data){
+        this.serendip.on("init.facets.core", function(facetsCore) {
+            self.facetsCore = facetsCore;
+        });        
+       
+        serendip.on("render", function(data){           
             var facets = self.processFacets(data);
             var visibleFacets = self.getOnlyVisibleFacetRowValues(facets);
             serendip.trigger("render.facets.inactive", facets, visibleFacets);
@@ -16,11 +22,12 @@ Serendip.FacetsRenderInactive = Serendip.Class.extend({
     processFacets : function(data){
         var facetsData = [];
         if ( typeof (data.facet_counts) != "undefined") {
-            var facets = this.configuredFacets;
-            var facetCount = facets.length;
+            var facets = this.getValidFacets(this.configuredFacets);
 
-            for (var i = 0; i < facetCount; i++) {
-                var facetData = this.processFacetTypes(data, facets[i]);
+            for (var i = 0; i < facets.length; i++) {
+                var facet = facets[i];
+                var facetData = this.processFacetTypes(data, facet);
+                
                 if(facetData != ""){
                     facetsData.push(facetData);   
                 }
@@ -28,6 +35,64 @@ Serendip.FacetsRenderInactive = Serendip.Class.extend({
         }
         
         return facetsData;
+    },
+    
+    getValidFacets : function(facets){
+                    
+        var validFacets = [];
+        for (var i = 0; i < facets.length; i++) {
+            var facet = facets[i];
+            
+            if(this.isParentActive(facets, facet)){
+                validFacets.push(facet);
+            }
+        }
+        
+        return validFacets;
+    },
+    
+    isParentActive : function(facets, facet){
+        var parents = this.getParents(facets, facet);
+        var queries = this.facetsCore.getActiveFacetsQueriesMap();
+        
+        for(var i = 0; i < parents.length;i++){
+            var parentFacet = parents[i];
+            
+            for (var id in queries) {
+                if(id == parentFacet.id){
+                    return true;    
+                }   
+            }
+        }
+        
+        if(parents.length == 0){
+            return true;
+        }
+        
+        return false;
+    },
+    
+    getParents : function(facets, childFacet){
+        var parents = [];
+        
+        for(var i = 0; i < facets.length;i++){
+            var facet = facets[i];
+            for(var k = 0; k < facet.facets.length;k++){
+                var child = facet.facets[k];
+                if(child.id == childFacet.id){
+                    parents.push(facet);
+                    break;
+                }
+            }
+            
+            var subParents = this.getParents(facet.facets, childFacet);
+            for(var k = 0; k < subParents.length; k++){
+                var subParent = subParents[k];
+                parents.push(subParent);
+            }
+        }
+        
+        return parents;
     },
     
     processFacetTypes : function(data, facet) {

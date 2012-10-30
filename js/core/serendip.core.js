@@ -134,6 +134,19 @@ Serendip.Core = Serendip.Class.extend({
 
         }
     },
+    
+    addFacet : function(facet){
+        this.facets.push(facet);
+        
+        if(facet.facets.length > 0){
+            for(var i = 0; i < facet.facets.length;i++){
+                var subFacet = facet.facets[i];
+                this.addFacet(subFacet);
+            }
+        }
+        
+        
+    },
 
     addFieldConfig : function(config) {
         this.fieldConfig.push(config);
@@ -180,11 +193,6 @@ Serendip.Core = Serendip.Class.extend({
             this.queryParams.push(name + "=" + value);
         }
 
-    },
-
-    addFacet : function(facet) {
-        this.facets.push(facet);
-        this.facetIdToFacetMap[facet.id] = facet;
     },
 
     initFromQueryStr : function(queryStr) {

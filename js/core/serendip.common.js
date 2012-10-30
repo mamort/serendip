@@ -53,10 +53,6 @@ var Serendip = function () { };
 
 Serendip.Class = function () { 
     $.extend(this, Simple.Events);
-    
-    if(typeof init2 == 'function'){
-
-    }
 };
 
 Serendip.Class.extend = function (properties) {
@@ -80,6 +76,11 @@ Serendip.extend = function () {
                     continue;
                 }
                 if (copy && typeof copy == 'object' && !copy.nodeType) {
+                    /*
+                    if(name == "parents"){
+                        //alert("Ok"); fixme
+                    }*/
+                    
                     target[name] = Serendip.extend(src || (copy.length != null ? [] : {}), copy);
                 }
                 else if (copy !== undefined) {

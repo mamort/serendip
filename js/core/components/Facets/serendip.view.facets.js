@@ -22,11 +22,13 @@ Serendip.FacetsView = Serendip.Class.extend({
         }); 
 
         function initActiveFacetsView(self) {
+            var activeFacetsTheme = self.view.find("#ActiveFacets_Theme");
+            var activeFacetsPrototype = self.prototypes.find("#ActiveFacets_Prototype");
+            
             self.activeFacetsView = new Serendip.ActiveFacetsView({
                 configuredFacets : self.serendip.facets,
-                view : self.view.find("#ActiveFacets_Theme"),
-                prototype : self.prototypes.find("#ActiveFacets_Prototype"),
-
+                view : activeFacetsTheme,
+                prototype : activeFacetsPrototype,
                 maxFacetsToDisplay : 5
             });
 
@@ -34,11 +36,13 @@ Serendip.FacetsView = Serendip.Class.extend({
         }
 
         function initInactiveFacetsView(self) {
+            var inactiveFacetsTheme = self.view.find("#InactiveFacets_Theme");
+            var inactiveFacetsPrototype = self.prototypes.find("#FacetRow_Prototype");
+            
             self.inactiveFacetsView = new Serendip.InactiveFacetsView({
                 configuredFacets : self.serendip.facets,
-                view : self.view.find("#InactiveFacets_Theme"),
-                prototype : self.prototypes.find("#FacetRow_Prototype"),
-                
+                view : inactiveFacetsTheme,
+                prototype : inactiveFacetsPrototype,        
                 maxFacetsToDisplay : 5
             });
 
