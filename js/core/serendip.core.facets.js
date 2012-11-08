@@ -10,8 +10,11 @@ Serendip.Facet = Serendip.Class.extend({
     
     addSubFacet: function(facet){
         this.facets.push(facet);
-    }
+    },
     
+    getFormattedValue: function(value){
+        return value;
+    }
 });
 
 /* Note: Range facets not supported yet in 1.4 */

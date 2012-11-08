@@ -60,7 +60,8 @@ Serendip.FacetsRenderActive = Serendip.Class.extend({
 
     renderActiveTextFacet : function(facet, value) {
         var encodedValue = encodeURIComponent(value);
-        return this.renderActiveFacetField(facet, encodedValue, value);
+        var formattedValue = facet.getFormattedValue(value);
+        return this.renderActiveFacetField(facet, encodedValue, formattedValue);
     },
 
     renderActiveQueryFacet : function(facet, field) {
@@ -79,21 +80,13 @@ Serendip.FacetsRenderActive = Serendip.Class.extend({
     },
 
     renderActiveDateFacet : function(facet, value) {
-        var formattedValue = value;
-
-        if (!facet.dateValue || facet.dateValue == "") {
-            var facetDateStr = value.split(" TO ");
-            var fromDate = facetDateStr[0];
-            var toDate = facetDateStr[1];
-
-            var fromDateStr = convertIsoDate(fromDate, facet.dateFormat);
-            var toDateStr = convertIsoDate(toDate, facet.dateFormat);
-            
-            formattedValue = fromDateStr + " - " + toDateStr;
-        } else {
-            formattedValue = facet.dateValue;
-        }
-
+        var facetDateStr = value.split(" TO ");
+        var fromDate = facetDateStr[0];
+        var toDate = facetDateStr[1];
+        
+        var dateValue = {from: fromDate, to: toDate};
+        var formattedValue = facet.getFormattedValue(dateValue);
+        
         var encodedValue = encodeURIComponent(value);
         return this.renderActiveFacetField(facet, encodedValue, formattedValue);
     },

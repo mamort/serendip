@@ -241,7 +241,7 @@ Serendip.FacetsRenderInactive = Serendip.Class.extend({
             formattedValue = value.formattedValue;
             value = value.value;
         } else {
-            formattedValue = value;
+            formattedValue = facet.getFormattedValue(value);
         }
 
         value = encodeURIComponent(value);
