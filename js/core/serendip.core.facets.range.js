@@ -55,14 +55,12 @@ Serendip.RangeFacet = Serendip.Facet.extend({
             
             var range = {from: value};
             
-            /*
             if (i + 2 < ranges.length) {
-                range.to = ranges[i + 2];
+                range.to = value + gap - 1;   
             } else {
-                range.to = value + gap;
-            }*/  
-            
-            range.to = value + gap - 1;        
+                // TODO: Add support for last range being all additional values
+                range.to = value + gap - 1;  
+            }
             
             facetValues.push(range);
             facetValues.push(count);       

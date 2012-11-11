@@ -43,7 +43,24 @@ $(document).ready(function(){
       rangeStart: 0,
       rangeEnd: 20,
       rangeGap: 3   
-  });  
+  }); 
+  
+  
+  var childrenQuery = new Serendip.QueryFacet({
+      id: "ChildrenQuery", // Must be unique for all filters/facets. Used in the url.
+      selected: true, // If it is initially displayed
+      name: "Children", // This is the name in Solr schema
+      activeHeader: "Children", // The value used when displaying active facets
+      header: "Filter by children2", // The header used when displaying available facets
+      minFacetsToDisplay: 5, // Facets shown
+      maxFacetsToDisplay: 30, // Facets that can be shown by by clicking "show more" link
+  });    
+  
+  
+  childrenQuery.addQuery({header: "0 til 2", query: "[0 TO 2]"})
+  childrenQuery.addQuery({header: "3 til 5", query: "[3 TO 5]"})
+  
+  serendip.addFacet(childrenQuery);
     
   var dateFacet = new Serendip.DateFacet({
       id: "Birthdate",

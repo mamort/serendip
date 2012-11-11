@@ -1,13 +1,17 @@
 Serendip.QueryFacet = Serendip.Facet.extend({
     facetType : "query",
-    queries : null,
+    queries : [],
+    
+    addQuery : function(query){
+        this.queries.push(query);  
+    },
 
     getQuery : function() {
         var query = "";
         var len = this.queries.length;
         for (var k = 0; k < len; k++) {
             var facetQuery = this.queries[k];
-            query += "facet.query={!ex=" + this.id + " key=" + this.id + "range[" + k + "]}" + name + ":" + facetQuery.query;
+            query += "facet.query={!ex=" + this.id + " key=" + this.id + "range[" + k + "]}" + this.name + ":" + facetQuery.query;
 
             if (k < len - 1) {
                 query += "&";
