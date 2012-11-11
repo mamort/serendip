@@ -5,3 +5,7 @@ http://localhost:8080/solr/update/csv?commit=true&header=true&stream.file=F:/pat
   - Make sure you use correct port
   - Make sure you set the correct path to file
   - A local solr installation is assumed
+  
+  
+Local:
+http://localhost:8080/solr/Core1/update/csv?commit=true&header=true&stream.file=F:/Workspace/Serendip/SampleData/randomdata.csv&stream.contentType=text/plain;charset=utf-8

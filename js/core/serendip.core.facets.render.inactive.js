@@ -97,59 +97,13 @@ Serendip.FacetsRenderInactive = Serendip.Class.extend({
     
     processFacetTypes : function(data, facet) {
 
-        var values = this.getFacetValues(data, facet);
+        var values = facet.process(data);
         
         if(values){
             return this.processFacet(data, facet, values);            
         }
         
         return "";
-    },
-    
-    getFacetValues : function(data, facet){
-        var type = facet.facetType;
-        
-        if (type == "text") {
-            return this.processTextFacet(data, facet);
-        } else if (type == "date") {
-            var dateFacet = new Serendip.DateFacetCore({});
-            return dateFacet.processDateFacet(data, facet);
-        } else if (type == "query") {
-            return this.processQueryFacet(data, facet);
-        }
-        
-        return [];
-    },
-
-    processTextFacet : function(data, facet) {
-        var facetfields = data.facet_counts.facet_fields;
-        var facetValues = facetfields[facet.name];
-
-        if ( typeof (facetValues != "undefined")) {
-            return facetValues;
-        }
-
-        return [];
-    },
-
-    processQueryFacet : function(data, facet) {
-        var facetqueries = data.facet_counts.facet_queries;
-        var facetValues = [];
-
-        for (var k = 0; k < facet.queries.length; k++) {
-            var query = facet.queries[k];
-            var id = facet.id + "range[" + k + "]";
-            var count = facetqueries[id];
-
-            facetValues.push({
-                formattedValue : query.header,
-                value : query.query
-            });
-            
-            facetValues.push(count);
-        }
-
-        return facetValues;
     },
 
     processFacet : function(data, facet, facetArray) {
@@ -233,17 +187,8 @@ Serendip.FacetsRenderInactive = Serendip.Class.extend({
 
     processFacetField : function(facet, value, count, isActive) {
 
-        var formattedValue = "";
-        if (facet.facetType == "date") {
-            formattedValue = facet.getFormattedValue(value);
-            value = value.from + " TO " + value.to;
-        } else if (facet.facetType == "query") {
-            formattedValue = value.formattedValue;
-            value = value.value;
-        } else {
-            formattedValue = facet.getFormattedValue(value);
-        }
-
+        var formattedValue = facet.getFormattedValue(value);
+        value = facet.getFacetValue(value); 
         value = encodeURIComponent(value);
 
         return this.processFacetFieldValue(facet, value, formattedValue, count, isActive);
@@ -323,8 +268,6 @@ Serendip.FacetsRenderInactive = Serendip.Class.extend({
     processFacetFieldValue : function(facet, value, formattedValue, count, isActive) {
         if (isActive)
             return "";
-
-        this.serendip.trigger("facet.value.format", {facet: facet, value: value, formattedValue: formattedValue});
 
         var facetFieldData = {
             "name" : facet.id,

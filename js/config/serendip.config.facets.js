@@ -30,6 +30,20 @@ $(document).ready(function(){
         return value;
       }      
   });
+  
+  var childrenFacet = new Serendip.RangeFacet({
+      id: "Children", // Must be unique for all filters/facets. Used in the url.
+      selected: true, // If it is initially displayed
+      name: "Children", // This is the name in Solr schema
+      activeHeader: "Children", // The value used when displaying active facets
+      header: "Filter by children", // The header used when displaying available facets
+      minFacetsToDisplay: 5, // Facets shown
+      maxFacetsToDisplay: 30, // Facets that can be shown by by clicking "show more" link
+      
+      rangeStart: 0,
+      rangeEnd: 20,
+      rangeGap: 3   
+  });  
     
   var dateFacet = new Serendip.DateFacet({
       id: "Birthdate",
@@ -60,7 +74,7 @@ $(document).ready(function(){
   cityFacet.addSubFacet(countyFacet);
   
   serendip.addFacet(cityFacet);
-
+  serendip.addFacet(childrenFacet);
   
   // Date facet
   //serendip.addFacet(dateFacet);  

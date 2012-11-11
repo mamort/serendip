@@ -22,10 +22,13 @@
   <script src="js/core/lib/Simple.js" type="text/javascript"></script>
   
   <script src="js/core/serendip.common.js" type="text/javascript"></script>
+  <script src="js/core/serendip.core.facets.js" type="text/javascript"></script>    
+  <script src="js/core/serendip.core.facets.facet.js" type="text/javascript"></script>  
   <script src="js/core/serendip.core.facets.date.js" type="text/javascript"></script>  
+  <script src="js/core/serendip.core.facets.range.js" type="text/javascript"></script>  
+  <script src="js/core/serendip.core.facets.query.js" type="text/javascript"></script>  
   <script src="js/core/serendip.core.facets.render.inactive.js" type="text/javascript"></script>  
   <script src="js/core/serendip.core.facets.render.active.js" type="text/javascript"></script> 
-  <script src="js/core/serendip.core.facets.js" type="text/javascript"></script>  
   <script src="js/core/serendip.core.js" type="text/javascript"></script>
   <script src="js/core/components/facets/serendip.view.facets.js" type="text/javascript"></script>
   <script src="js/core/components/facets/serendip.view.facets.active.js" type="text/javascript"></script>    
@@ -134,88 +137,93 @@
           <table class="draggable forget-ordering">
             <thead>
               <tr>
-                    <th>
-                        <div class="sortfield">
+				<th class="FirstnameRow">
+					<div class="sortfield">
+						<div class="active">
+							<a class="name direction" direction="asc" href="#" sort="Firstname">
+								<span class="header text">Firstname</span>
+								<span class="desc"></span>
+							</a>
+						</div>
+					</div>
+				</th> 				
 
-						<th class="FirstnameRow">
-							<div class="sortfield">
-								<div class="active">
-									<a class="name direction" direction="asc" href="#" sort="Firstname">
-										<span class="header text">Firstname</span>
-										<span class="desc"></span>
-									</a>
-								</div>
-							</div>
-						</th> 				
+				<th class="LastnameRow">
+					<div class="sortfield">
+						<div class="inactive">
+							<a class="name direction" direction="asc" href="#" sort="Lastname">
+								<span class="header text">Lastname</span>
+								<span class="desc"></span>
+							</a>
+						</div>
+					</div>
+				</th> 						
+				
+				<th class="EmailRow">
+					<div class="sortfield">
+						<div class="inactive">
+							<a class="name direction" direction="asc" href="#" sort="Email">
+								<span class="header text">Email</span>
+								<span class="desc"></span>
+							</a>
+						</div>
+					</div>
+				</th> 
+				
+				<th class="CityRow">
+					<div class="sortfield">
+						<div class="inactive">
+							<a class="name direction" direction="asc" href="#" sort="City">
+								<span class="header text">City</span>
+								<span class="desc"></span>
+							</a>
+						</div>
+					</div>
+				</th> 
+				
+				<th class="CountyRow">
+					<div class="sortfield">
+						<div class="inactive">
+							<a class="name direction" direction="asc" href="#" sort="County">
+								<span class="header text">County</span>
+								<span class="desc"></span>
+							</a>
+						</div>
+					</div>
+				</th> 						
 
-						<th class="LastnameRow">
-							<div class="sortfield">
-								<div class="inactive">
-									<a class="name direction" direction="asc" href="#" sort="Lastname">
-										<span class="header text">Lastname</span>
-										<span class="desc"></span>
-									</a>
-								</div>
-							</div>
-						</th> 						
-						
-						<th class="EmailRow">
-							<div class="sortfield">
-								<div class="inactive">
-									<a class="name direction" direction="asc" href="#" sort="Email">
-										<span class="header text">Email</span>
-										<span class="desc"></span>
-									</a>
-								</div>
-							</div>
-						</th> 
-						
-						<th class="CityRow">
-							<div class="sortfield">
-								<div class="inactive">
-									<a class="name direction" direction="asc" href="#" sort="City">
-										<span class="header text">City</span>
-										<span class="desc"></span>
-									</a>
-								</div>
-							</div>
-						</th> 
-						
-						<th class="CountyRow">
-							<div class="sortfield">
-								<div class="inactive">
-									<a class="name direction" direction="asc" href="#" sort="County">
-										<span class="header text">County</span>
-										<span class="desc"></span>
-									</a>
-								</div>
-							</div>
-						</th> 						
-
-						<th class="BirthdateRow">
-							<div class="sortfield">
-								<div class="inactive">
-									<a class="name direction" direction="asc" href="#" sort="Birthdate">
-										<span class="header text">Birthdate</span>
-										<span class="desc"></span>
-									</a>
-								</div>
-							</div>
-						</th> 						
-												
+				<th class="BirthdateRow">
+					<div class="sortfield">
+						<div class="inactive">
+							<a class="name direction" direction="asc" href="#" sort="Birthdate">
+								<span class="header text">Birthdate</span>
+								<span class="desc"></span>
+							</a>
+						</div>
+					</div>
+				</th> 	
+                <th class="ChildrenRow">
+                    <div class="sortfield">
+                        <div class="inactive">
+                            <a class="name direction" direction="asc" href="#" sort="Children">
+                                <span class="header text">Children</span>
+                                <span class="desc"></span>
+                            </a>
                         </div>
-                    </th>
+                    </div>
+                </th> 				
+									
               </tr>
             </thead>
             <tbody>
               <tr class="docs">
-					<td></td>
 					<td><span class="Firstname"></span></td>
 					<td><span class="Lastname"></span></td>
 					<td><a href="mailto:" class="Email Email@href+"></a></td>
 					<td><span class="City"></span></td>
 					<td><span class="County"></span></td>
 					<td><span class="Birthdate"></span></td>
+					<td><span class="Children"></span></td>
               </tr>
             </tbody>
           </table>

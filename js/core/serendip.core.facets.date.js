@@ -1,8 +1,53 @@
-Serendip.DateFacetCore = Serendip.Class.extend({
+Serendip.DateFacet = Serendip.Facet.extend({
+    facetType : "date",
+    dateStart : null,
+    dateEnd : null,
+    dateGap : null,
+    dateFormat : null,
+    sortDir : "asc",
+
+    getQuery : function() {
+        var query = "facet.date={!ex=" + this.id + "}" + this.name;
+        var key = "&f." + this.name + ".facet.date";
+        query += key + ".start=" + encodeURIComponent(this.dateStart);
+        query += key + ".end=" + encodeURIComponent(this.dateEnd);
+        query += key + ".gap=" + encodeURIComponent(this.dateGap);
+        
+        return query;
+    },
     
-   processDateFacet : function(data, facet) {
+    getActiveQueryValue : function(value){
+        return "[" + value + "] ";
+    },
+    
+    getFacetValue : function(value){
+        return value.from + " TO " + value.to;
+    },
+    
+    getFormattedValue : function(value) {
+        var from = convertIsoDate(value.from, this.dateFormat);
+        var to = convertIsoDate(value.to, this.dateFormat);
+        return from + " - " + to;
+    },
+
+    processActive : function(value) {
+        var facetDateStr = value.split(" TO ");
+        var fromDate = facetDateStr[0];
+        var toDate = facetDateStr[1];
+
+        var dateValue = {
+            from : fromDate,
+            to : toDate
+        };
+        var formattedValue = this.getFormattedValue(dateValue);
+
+        var encodedValue = encodeURIComponent(value);
+        return this.processActiveField(encodedValue, formattedValue);
+    },
+
+    process : function(data) {
         var facetdates = data.facet_counts.facet_dates;
-        var dates = facetdates[facet.name];
+        var dates = facetdates[this.name];
         var values = [];
 
         for (var key in dates) {
@@ -14,7 +59,7 @@ Serendip.DateFacetCore = Serendip.Class.extend({
 
         var facetValues = [];
 
-        if (facet.sortDir == "asc") {
+        if (this.sortDir == "asc") {
             for (var k = 0; k < values.length; k += 2) {
                 this.processDateFacetValue(values, k, facetValues, dates, "asc");
             }
@@ -118,5 +163,5 @@ Serendip.DateFacetCore = Serendip.Class.extend({
         days = parseInt(days);
 
         return days * modifier * dayModifier;
-    } 
-});
+    }
+}); 

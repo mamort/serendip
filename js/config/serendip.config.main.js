@@ -3,7 +3,7 @@
 $(document).ready(function(){
 
     // Add the url to you solr server
-    serendip.setSolrUrl("http://localhost:8080/solr/select");
+    serendip.setSolrUrl("http://localhost:8080/solr/Core1/select");
 
     // Add more available fields
     // name: specifies name of field in Solr schema
