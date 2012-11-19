@@ -132,8 +132,7 @@ Serendip.PagerView = Serendip.Class.extend({
         };
 
         if (totalPages > 1) {
-            var html = this.serendip.render(this.prototype, data);
-            this.view.html(html);
+            this.serendip.trigger("render.view", this.view, this.prototype, data);
         } else {
             this.view.html("");
         }

@@ -58,9 +58,7 @@ Serendip.ActiveFacetsView = Serendip.Class.extend({
     
     renderActiveFacet : function(facetFields) {
         if (facetFields && facetFields.length > 0) {
-
-            var html = serendip.render(this.prototype, {"activeFacet" : facetFields});
-            this.view.html(html);
+            this.serendip.trigger("render.view", this.view, this.prototype, {"activeFacet" : facetFields});
         } else {
             this.view.html("");
         }

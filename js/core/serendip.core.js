@@ -299,15 +299,6 @@ Serendip.Core = Serendip.Class.extend({
             req.trigger("renderFinished");
         }
 
-    },
-
-    render : function(prototype, data) {
-        var $element = prototype.clone();
-
-        $element = $element.find(".Placeholder").autoRender(data);
-        var html = $element.html();
-
-        return html;
     }
 });
 

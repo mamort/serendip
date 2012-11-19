@@ -79,9 +79,7 @@ Serendip.ResultView = Serendip.Class.extend({
             docs : docsData
         };
         
-        var html = this.serendip.render(this.prototype, data);
-        this.view.html(html);
-
+        this.serendip.trigger("render.view", this.view, this.prototype, data);
     },
 
     getFieldValue : function(doc, highlight, field) {

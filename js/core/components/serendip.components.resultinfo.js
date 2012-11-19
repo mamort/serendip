@@ -18,7 +18,6 @@ Serendip.ResultInfoView = Serendip.Class.extend({
             time : data.responseHeader.QTime
         };
         
-        var html = this.serendip.render(this.prototype, infodata);
-        this.view.html(html);
+        this.serendip.trigger("render.view", this.view, this.prototype, infodata);
     }
 }); 
