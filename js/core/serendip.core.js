@@ -47,7 +47,7 @@ Serendip.Ajax = Serendip.Class.extend({
                     console.log(thrownError.toSource());
                 }
 
-                if ( response = "") {
+                if ( response == "") {
                     response = "Unable to contact server.";
                 }
 
