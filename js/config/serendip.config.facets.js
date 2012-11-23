@@ -80,8 +80,11 @@ $(document).ready(function(){
       sortDir: "desc", // Or 'asc' for ascending
       
       getFormattedValue : function(value){ // Override how dates are formatted
-        var from = convertIsoDate(value.from, this.dateFormat);
-        var to = convertIsoDate(value.to, this.dateFormat);
+        //var from = convertIsoDate(value.from, this.dateFormat);
+       // var to = convertIsoDate(value.to, this.dateFormat);
+        
+        var from = Serendip.Utils.formatISODate(value.from, this.dateFormat);
+        var to = Serendip.Utils.formatISODate(value.to, this.dateFormat);        
         return  from + " - " + to;
       }
   });

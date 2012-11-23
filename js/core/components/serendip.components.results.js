@@ -56,7 +56,7 @@ Serendip.ResultView = Serendip.Class.extend({
 
             if (config.isDate && value) {
                 try {
-                    var date = ISODate.convert(value);
+                    var date = Serendip.Utils.convertISOFormatToDate(value);
                     value = date.format(config.dateFormat);
                 } catch (ex) {
                     if (value == "1-01-01T00:00:00Z") {
@@ -103,7 +103,7 @@ Serendip.ResultView = Serendip.Class.extend({
         if (fields[param])
             value = fields[param];
 
-        if (isArray(value)) {
+        if (Serendip.Utils.isArray(value)) {
             value = value.join("");
         }
 

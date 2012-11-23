@@ -200,7 +200,7 @@ Serendip.FacetsRenderInactive = Serendip.Class.extend({
         if (activeFacets) {
 
             // Might be single value and not an array...
-            if (!isArray(activeFacets) || activeFacets[0].length == 1) {
+            if (!Serendip.Utils.isArray(activeFacets) || activeFacets[0].length == 1) {
                 if (this.isFacetMatch(activeFacets, facet, value)) {
                     return true;
                 }

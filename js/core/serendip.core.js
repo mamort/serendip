@@ -1,62 +1,3 @@
-/*!
- * Serendip Javascript Library v1.0
- * http://github.com/mamort/serendip
- *
- * Copyright 2010, Mats Mortensen
- * Licensed under the MIT license.
- * http://github.com/mamort/serendip/blob/master/License.txt
- *
- * Includes:
- * jquery-1.4.min.js (http://jquery.com/)
- * date.format-1.2.3.js (http://blog.stevenlevithan.com/archives/date-time-format)
- * pure_packed.js (http://beebole.com/pure/)
- */
-
-Serendip.Ajax = Serendip.Class.extend({
-
-    get : function(url, succHandler, errorHandler) {
-
-        $.ajax({
-            scriptCharset : "utf-8",
-            type : "GET",
-
-            url : url,
-            data : "",
-            dataType : "json",
-            contentType : "text/plain; charset=utf-8",
-            timeout : 5000,
-
-            success : succHandler,
-
-            error : function(httpReq, ajaxOpts, thrownError) {
-                var shouldRedirectToLogin = false;
-                try {
-                    if (thrownError.indexOf("<html") > -1) {
-                        shouldRedirectToLogin = true;
-                    }
-                } catch (ex) {
-                    if (console) {
-                        console.log(ex.toSource());
-                    }
-                }
-
-                var response = jQuery.parseJSON(httpReq.responseText);
-
-                if (console) {
-                    console.log(response);
-                    console.log(thrownError.toSource());
-                }
-
-                if ( response == "") {
-                    response = "Unable to contact server.";
-                }
-
-                errorHandler(response, shouldRedirectToLogin);
-            }
-        });
-    }
-});
-
 Serendip.Core = Serendip.Class.extend({
 
     fieldConfig : [],
@@ -95,44 +36,24 @@ Serendip.Core = Serendip.Class.extend({
         }
         
         this.trigger("views.init.done");
-
-        $.historyInit(pageloadPriv, pageName);
+        
+        this.initHistory();
 
         function fieldSort(a, b) {
             var x = a.header.toLowerCase();
             var y = b.header.toLowerCase();
             return ((x < y) ? -1 : ((x > y) ? 1 : 0));
         }
-
-        function pageloadPriv(hash) {
-            self.pageload(hash);
-        }
     },    
     
-    // PageLoad function
-    // This function is called when:
-    // 1. after calling $.historyInit();
-    // 2. after calling $.historyLoad();
-    // 3. after pushing "Go Back" button of a browser
-    pageload : function(hash) {
-
-        // hash doesn't contain the first # character.
-        if (hash) {
-            // Do your thing
-            if (hash.length > 0) {
-               this.initFromQueryStr(hash);  
-            }
-
-        } else {
-
-            // Start page
-            var queryParams = window.location.search;
-
-            if (queryParams.length > 0) {
-                this.initFromQueryStr(queryParams);
-            }
-
-        }
+    initHistory : function(){
+        var self = this;
+        
+        this.history.on("history.change", function(queryParams){
+             self.initFromQueryStr(queryParams);
+        });
+                
+        this.history.init();
     },
     
     addFacet : function(facet){
@@ -144,8 +65,6 @@ Serendip.Core = Serendip.Class.extend({
                 this.addFacet(subFacet);
             }
         }
-        
-        
     },
 
     addFieldConfig : function(config) {
@@ -235,7 +154,7 @@ Serendip.Core = Serendip.Class.extend({
             hash = hash + "/" + param.id + "/" + param.value;
         }
 
-        $.historyLoad("!" + hash);
+        this.history.load("!" + hash);
         
         function sortQueryParam(a, b) {
             var x = a.sortIndex;
@@ -305,6 +224,7 @@ Serendip.Core = Serendip.Class.extend({
 var ajax = new Serendip.Ajax({});
 var serendip = new Serendip.Core({
     ajax : ajax,
+    history : new Serendip.History({}),
     facetCore: new Serendip.Facets({}),
     facetRenderActive: new Serendip.FacetsRenderActive({}),
     facetRenderInactive: new Serendip.FacetsRenderInactive({})

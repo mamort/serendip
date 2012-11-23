@@ -1,52 +1,31 @@
-﻿
-/* 
-* The follwing ISODate code was found here:
-* http://stackoverflow.com/questions/498578/how-can-i-convert-a-date-value-in-utc-format-to-a-date-object-in-javascript
-*/
-var ISODate = {
-    convert: function (input) {
-        if (!(typeof input === "string")) throw "ISODate, convert: input must be a string";
-        var d = input.match(/^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2}):(\d{2}(?:\.\d+)?)(Z|(([+-])(\d{2}):(\d{2})))$/i);
-        if (!d) throw "ISODate, convert: Illegal format";
-        return new Date(
-                Date.UTC(d[1], d[2] - 1, d[3], d[4], d[5], d[6] | 0, (d[6] * 1000 - ((d[6] | 0) * 1000)) | 0, d[7]) +
-                (d[7].toUpperCase() === "Z" ? 0 : (d[10] * 3600 + d[11] * 60) * (d[9] === "-" ? 1000 : -1000))
-        );
-    },
-
-    format: function (t, utc) {
-        if (typeof t === "string") t = this.convert(t);
-        if (!(t instanceof Date)) throw "ISODate, format: t is not a date object";
-        t = utc ?
-                [t.getUTCFullYear(), t.getUTCMonth(), t.getUTCDate(), t.getUTCHours(), t.getUTCMinutes(), t.getUTCSeconds()] :
-                [t.getFullYear(), t.getMonth(), t.getDate(), t.getHours(), t.getMinutes(), t.getSeconds()];
-
-        return this.month[t[1]] + " " + this.ordinal(t[2]) + ", " + t[0] +
-                " @ " + this.clock12(t[3], t[4]);
+﻿var Serendip = (function () {
+    var my = {};
+    
+    function myPrivate(){
+        
     }
+    
+    my.anotherMethod1 = function () {
+        alert("1");
+    };
 
-};
+    return my;
+}());
+
+var Serendip = Serendip ? Serendip : {};
+
+var Serendip = (function (my) {
+    my.anotherMethod2 = function () {
+        alert("2");
+    };
+
+    return my;
+}(Serendip));
 
 /* General purpose functions */
 String.prototype.trim = function () { return this.replace(/^\s\s*/, '').replace(/\s\s*$/, ''); };
 String.prototype.startsWith = function (str) { return (this.match("^" + str) == str) }
 String.prototype.endsWith = function (str) { return (this.match(str + "$") == str) }
-
-function isArray(testObject) {
-    return testObject && !(testObject.propertyIsEnumerable('length')) && typeof testObject === 'object' && typeof testObject.length === 'number';
-}
-
-function convertIsoDate(inputDate, format) {
-    var formattedDate = "";
-    try {
-        var date = ISODate.convert(inputDate);
-        formattedDate = date.format(format);
-    } catch(ex) {
-        formattedDate = "Could not parse date: " + inputDate;
-    }
-
-    return formattedDate;
-}
 
 /* Start Serendip library */
 var Serendip = function () { };
@@ -132,14 +111,12 @@ Serendip.Core = Serendip.Class.extend({
         split = queryStr.replace("!/", "").split("/");
 
         for (var i = 0; i < split.length-1; i+=2) {
-            queryParams[split[i] + postfix] = split[i+1];
+            var key = split[i] + postfix;
+            var value = split[i+1];
+            queryParams[key] = value;
         }        
 
         return queryParams;
-    },
-
-    isArray: function (obj) {
-        return obj.constructor == Array;
     }
 
 });

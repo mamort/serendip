@@ -25,8 +25,8 @@ Serendip.DateFacet = Serendip.Facet.extend({
     },
     
     getFormattedValue : function(value) {
-        var from = convertIsoDate(value.from, this.dateFormat);
-        var to = convertIsoDate(value.to, this.dateFormat);
+        var from = Serendip.Utils.formatISODate(value.from, this.dateFormat);
+        var to = Serendip.Utils.formatISODate(value.to, this.dateFormat);
         return from + " - " + to;
     },
 
@@ -101,7 +101,7 @@ Serendip.DateFacet = Serendip.Facet.extend({
     formatIsoDateWithGap : function(inputDate, gapDays) {
         var isoDateStr = "";
         try {
-            var date = ISODate.convert(inputDate);
+            var date = Serendip.Utils.convertISOFormatToDate(inputDate);
             date.setDate(date.getDate() + gapDays);
 
             isoDateStr = date.format("isoDateTime") + "Z";
@@ -115,7 +115,7 @@ Serendip.DateFacet = Serendip.Facet.extend({
     convertIsoDate : function(inputDate, format) {
         var formattedDate = "";
         try {
-            var date = ISODate.convert(inputDate);
+            var date = Serendip.Utils.convertISOFormatToDate(inputDate);
             formattedDate = date.format(format);
         } catch(ex) {
             formattedDate = "Could not parse date: " + inputDate;
