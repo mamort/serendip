@@ -1,146 +1,101 @@
-Serendip.Core = Serendip.Class.extend({
-
-    fieldConfig : [],
-    fields : [],
-    facets : [],
-    highlightFields : [],
-    queryParams : [],
-
-    // Private
-    core : new Serendip.Core({}),
-
-    searchAllFields : false,
-    sortQuery : "",
-    clickType : "",
-
-    cplIndex : -1,
-
-    solrUrl : "",
-    views : [],
+Serendip.Core = (function (ajax, history, facetCore, facetRenderActive, facetRenderInactive) {
+    var my = {};
     
-    facetCore: null,
+    my.fieldConfig = [];
+    my.fields = [];
+    my.facets = [];
+    my.highlightFields = [];
     
-    init : function(pageName) {
-        var self = this;
+    queryParams = [];
 
-        this.facetCore.init(this);  
-        this.facetRenderActive.init(this);
-        this.facetRenderInactive.init(this);
+    searchAllFields = false;
+    sortQuery = "";
+    clickType = "";
+
+    cplIndex = -1;
+
+    solrUrl = "";
+    views = [];
+    
+    $.extend(my, Simple.Events);
+    
+    my.init = function(pageName) {
+
+        facetCore.init(my);  
+        facetRenderActive.init(my);
+        facetRenderInactive.init(my);
         
-        this.fieldConfig.sort(fieldSort);
-        this.updateFieldsQueryString();
-
-        for (var k in this.views) {
-            var view = this.views[k];
-            view.init(this);
+        my.fieldConfig.sort(fieldSort);
+        updateFieldsQueryString();
+        
+        for (var k in views) {
+            var view = views[k];
+            view.init(my);
         }
         
-        this.trigger("views.init.done");
+        my.trigger("views.init.done");
         
-        this.initHistory();
-
-        function fieldSort(a, b) {
-            var x = a.header.toLowerCase();
-            var y = b.header.toLowerCase();
-            return ((x < y) ? -1 : ((x > y) ? 1 : 0));
-        }
-    },    
+        initHistory();
+    };    
     
-    initHistory : function(){
-        var self = this;
-        
-        this.history.on("history.change", function(queryParams){
-             self.initFromQueryStr(queryParams);
-        });
-                
-        this.history.init();
-    },
-    
-    addFacet : function(facet){
-        this.facets.push(facet);
+    my.addFacet = function(facet){
+        my.facets.push(facet);
         
         if(facet.facets.length > 0){
             for(var i = 0; i < facet.facets.length;i++){
                 var subFacet = facet.facets[i];
-                this.addFacet(subFacet);
+                my.addFacet(subFacet);
             }
         }
-    },
+    };
 
-    addFieldConfig : function(config) {
-        this.fieldConfig.push(config);
-        this.fields.push(config.name);
-    },
+    my.addFieldConfig = function(config) {
+        my.fieldConfig.push(config);
+        my.fields.push(config.name);
+    };
 
-    setSearchAllFields : function() {
-        this.searchAllFields = true;
-        this.addQueryParam("fl", "*");
-    },
+    my.setSearchAllFields = function() {
+        searchAllFields = true;
+        my.addQueryParam("fl", "*");
+    };
 
-    updateFieldsQueryString : function() {
+    my.setHighlightFields = function(fields) {
+        addQueryParam("hl.fl", fields.join(" "));
+        highlightFields = fields;
+    };
 
-        if (this.searchAllFields == false) {
-            var fieldsQueryStr = "";
-            for (var i = 0; i < this.fields.length; i++) {
-                fieldsQueryStr += this.fields[i];
-                if (i != this.fields.length - 1)
-                    fieldsQueryStr += ",";
-            }
-
-            this.addQueryParam("fl", fieldsQueryStr);
-        }
-    },
-
-    setHighlightFields : function(fields) {
-        this.addQueryParam("hl.fl", fields.join(" "));
-        this.highlightFields = fields;
-    },
-
-    addQueryParam : function(name, value) {
+    my.addQueryParam = function(name, value) {
         var param = name + "=" + value;
 
         var found = false;
-        for (var key in this.queryParams) {
-            var p = this.queryParams[key];
+        for (var key in queryParams) {
+            var p = queryParams[key];
             if (p.indexOf(name) != -1) {
-                this.queryParams[key] = param;
+                queryParams[key] = param;
                 found = true;
             }
         }
 
         if (!found) {
-            this.queryParams.push(name + "=" + value);
+            queryParams.push(name + "=" + value);
         }
 
-    },
+    };
 
-    initFromQueryStr : function(queryStr) {
+    my.setSolrUrl = function(url) {
+        solrUrl = url;
+    };
 
-        queryStr = decodeURIComponent(queryStr);
+    my.addView = function(view) {
+        views.push(view);
+    };
 
-        // Add postfix to map ids to avoid using "reserved" javascript words
-        // ex paramsMap["sort"] will not work (sort is already funksjon on array)
-        var paramsMap = this.core.parseQueryToMap(queryStr, "_param");
-        this.trigger("initFromQueryStr", queryStr, paramsMap);
-
-        this.doRequest(this, false);
-    },
-
-    setSolrUrl : function(url) {
-        this.solrUrl = url;
-    },
-
-    addView : function(view) {
-        this.views.push(view);
-    },
-
-    saveHistoryItem : function() {
+    my.saveHistoryItem = function() {
         var hash = "";
         
         var params = [];
         
-
-        this.trigger("saveInQueryStr", function(id, value, sortIndex){
+        my.trigger("saveInQueryStr", function(id, value, sortIndex){
                 var item = {id: id, value: value, sortIndex: sortIndex};
                 params.push(item);
             }
@@ -154,81 +109,166 @@ Serendip.Core = Serendip.Class.extend({
             hash = hash + "/" + param.id + "/" + param.value;
         }
 
-        this.history.load("!" + hash);
-        
-        function sortQueryParam(a, b) {
-            var x = a.sortIndex;
-            var y = b.sortIndex;
-            return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+        history.load("!" + hash);
+    };
+    
+    function initHistory(){
+        history.on("history.change", function(queryParams){
+             initFromQueryStr(queryParams);
+        });
+                
+        history.init();
+    };
+    
+    function initFromQueryStr(queryStr) {
+
+        queryStr = decodeURIComponent(queryStr);
+
+        // Add postfix to map ids to avoid using "reserved" javascript words
+        // ex paramsMap["sort"] will not work (sort is already funksjon on array)
+        var paramsMap = parseQueryToMap(queryStr, "_param");
+        my.trigger("initFromQueryStr", queryStr, paramsMap);
+
+        doRequest(false);
+    };    
+    
+    function updateFieldsQueryString() {
+
+        if (searchAllFields == false) {
+            var fieldsQueryStr = "";
+            for (var i = 0; i < my.fields.length; i++) {
+                fieldsQueryStr += fields[i];
+                if (i != my.fields.length - 1)
+                    fieldsQueryStr += ",";
+            }
+
+            my.addQueryParam("fl", fieldsQueryStr);
         }
-    },
+    };
+    
+    
+    function fieldSort(a, b) {
+        var x = a.header.toLowerCase();
+        var y = b.header.toLowerCase();
+        return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+    };    
+        
+    
+    function sortQueryParam(a, b) {
+        var x = a.sortIndex;
+        var y = b.sortIndex;
+        return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+    }    
 
-    search : function(value) {
-        this.trigger("search");
-        this.doRequest(this, true);
-    },
+    my.search = function(value) {
+        my.trigger("search");
+        doRequest(true);
+    };
 
-    doRequest : function(req, saveHistoryItem) {
-        req.trigger("wait");
+    function doRequest(saveHistoryItem) {
+        my.trigger("wait");
         
         if(saveHistoryItem){
-          req.saveHistoryItem();          
+          my.saveHistoryItem();          
         }
 
-        req.continueRequest(req);
-    },
+        continueRequest();
+    };
 
-    getFullQuery : function() {
+    function getFullQuery() {
         var request = "";
 
-        this.trigger("buildRequest", function(data){
+        my.trigger("buildRequest", function(data){
             request = request + data;
         });        
 
-        var params = this.core.getParamsAsQueryString(this.queryParams);
+        var params = getParamsAsQueryString(queryParams);
 
-        var reqString = this.solrUrl + "?" + params;
+        var reqString = solrUrl + "?" + params;
         reqString += request + "&wt=json";
 
         return reqString;
-    },
+    };
 
-    continueRequest : function(req) {
+    function continueRequest() {
 
-        var url = req.getFullQuery();
-
+        var url = getFullQuery();
         ajax.get(url, handleResponse, handleError);
+    };
+    
+    function handleError(error, shouldRedirectToLogin) {
+        alert(error);
 
-        function handleError(error, shouldRedirectToLogin) {
-            alert(error);
+        if (shouldRedirectToLogin) {
+            redirectToLogin();
+        }
+    };
 
-            if (shouldRedirectToLogin) {
-                redirectToLogin();
-            }
+    function handleResponse(data) {
+
+        if (data == null) {
+            redirectToLogin();
         }
 
-        function handleResponse(data) {
+        my.trigger("renderStart");
+        my.trigger("render", data);
+        my.trigger("renderFinished");
+    };
+    
+   function getParamsAsQueryString(params) {
+        var query = "";
 
-            if (data == null) {
-                redirectToLogin();
-            }
-
-            req.trigger("renderStart");
-            req.trigger("render", data);
-            req.trigger("renderFinished");
+        for (var i = 0; i < params.length; i++) {
+            query = query + params[i];
+            if (i < params.length - 1)
+                query = query + "&";
         }
 
+        return query;
+    };
+
+    function parseParam(queryStr, name) {
+        var startIndex = queryStr.indexOf(name);
+
+        if (startIndex != -1) {
+            var endIndex = queryStr.indexOf("&", startIndex);
+
+            if (endIndex == -1) {
+                endIndex = queryStr.length;
+            }
+
+            return queryStr.substring(startIndex + name.length, endIndex);
+        }
+
+        return "";
+    };
+
+    function parseQueryToMap(queryStr, postfix) {
+        var split = queryStr.split("&");
+
+        var queryParams = [];
+
+        for (var i = 0; i < split.length; i++) {
+            var params = split[i].split("=");
+            queryParams[params[0] + postfix] = params[1];
+        }
+        
+        split = queryStr.replace("!/", "").split("/");
+
+        for (var i = 0; i < split.length-1; i+=2) {
+            var key = split[i] + postfix;
+            var value = split[i+1];
+            queryParams[key] = value;
+        }        
+
+        return queryParams;
     }
-});
+    
+    
+    return my;
+}(new Serendip.Ajax({}), new Serendip.History({}), new Serendip.Facets({}), new Serendip.FacetsRenderActive({}), new Serendip.FacetsRenderInactive({})));
 
-var ajax = new Serendip.Ajax({});
-var serendip = new Serendip.Core({
-    ajax : ajax,
-    history : new Serendip.History({}),
-    facetCore: new Serendip.Facets({}),
-    facetRenderActive: new Serendip.FacetsRenderActive({}),
-    facetRenderInactive: new Serendip.FacetsRenderInactive({})
-});
+var serendip = Serendip.Core;
 
 
 

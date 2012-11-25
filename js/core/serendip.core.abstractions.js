@@ -47,7 +47,7 @@ Serendip.History = Serendip.Class.extend({
     init : function(){
         var self = this;
         
-        $.historyInit(pageLoad, "");
+        $.historyInit(pageLoad, "index.html");
         
         // This function is called when:
         // 1. after calling $.historyInit();
