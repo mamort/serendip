@@ -233,7 +233,8 @@ Serendip.FacetsRenderInactive = Serendip.Class.extend({
         if (facet.facetType == "text") {
             var vals = activeValue.split(/\"\s/);
             for (var k = 0; k < vals.length; k++) {
-                var val = vals[k].replace(/\"/g, "").trim();
+                var val = vals[k].replace(/\"/g, "");
+                val = Serendip.Utils.trim(val);
 
                 if (val == value)
                     return true;
@@ -250,7 +251,8 @@ Serendip.FacetsRenderInactive = Serendip.Class.extend({
 
             for (var k = 0; k < vals.length; k++) {
                 var val = vals[k].replace(/\[/g, "");
-                val = val.replace(/]/g, "").trim();
+                val = val.replace(/]/g, "");
+                val = Serendip.Utils.trim(val);
 
                 if (val.length > 0) {
                     var facetValue = value.from + " TO " + value.to;

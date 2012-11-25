@@ -27,6 +27,10 @@
     my.isArray = function(testObject) {
         return testObject && !(testObject.propertyIsEnumerable('length')) && typeof testObject === 'object' && typeof testObject.length === 'number';
     };
+    
+    my.trim = function(str1){
+        return str1.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+    }
 
     return my;
 }());

@@ -1,8 +1,4 @@
-﻿/* General purpose functions */
-String.prototype.trim = function () { return this.replace(/^\s\s*/, '').replace(/\s\s*$/, ''); };
-String.prototype.startsWith = function (str) { return (this.match("^" + str) == str) }
-String.prototype.endsWith = function (str) { return (this.match(str + "$") == str) }
-
+﻿
 /* Start Serendip library */
 var Serendip = function () { };
 
@@ -19,7 +15,6 @@ Serendip.Class.extend = function (properties) {
         
     return subClass;
 };
-
 
 Serendip.extend = function () {
     var target = arguments[0] || {}, i = 1, length = arguments.length, options;
@@ -41,13 +36,3 @@ Serendip.extend = function () {
     }
     return target;
 };
-
-Serendip.SortField = Serendip.Class.extend({
-    name: null,
-    header: null
-});
-
-Serendip.Term = Serendip.Class.extend({
-    value: null,
-    count: null
-});
