@@ -1,7 +1,7 @@
 Serendip.FacetsRenderActive = (function(serendip){
     var my = {};
     
-    _facetsCore = null;
+    var _facetsCore = null;
     
     init(serendip);
 

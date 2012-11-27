@@ -1,9 +1,9 @@
 Serendip.Facets = (function(serendip){
     var my = {};
     
-    activeFacetQueries = new Object();
-    facetIdToFacetMap = null;
-    facets = null;
+    var activeFacetQueries = {};
+    var facetIdToFacetMap = null;
+    var facets = null;
     
     serendip.on("views.init", function() {
         init(serendip);
@@ -32,7 +32,7 @@ Serendip.Facets = (function(serendip){
         });
 
         serendip.on("initFromQueryStr", function(queryStr, paramsMap) {
-            activeFacetQueries = new Object();
+            activeFacetQueries = {};
 
             for (var i = 0; i < facets.length; i++) {
                 var facet = facets[i];
@@ -40,7 +40,7 @@ Serendip.Facets = (function(serendip){
                 if (paramsMap[key]) {
                     var values = paramsMap[key];
 
-                    facetQuery = new Object();
+                    facetQuery = {};
                     facetQuery.id = facet.id;
                     facetQuery.values = values.split(",");
 
@@ -124,7 +124,7 @@ Serendip.Facets = (function(serendip){
         var facetQuery = activeFacetQueries[id];
 
         if (!facetQuery) {
-            facetQuery = new Object();
+            facetQuery = {};
             facetQuery.id = facet.id;
             facetQuery.values = [];
         }

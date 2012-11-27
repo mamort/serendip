@@ -1,7 +1,8 @@
 Serendip.FacetsRenderInactive = (function(serendip){
     var my = {};
     
-    _facetsCore = null;
+    var _facetsCore = null;
+    
     init(serendip);
 
     function init(serendip){
@@ -142,7 +143,7 @@ Serendip.FacetsRenderInactive = (function(serendip){
 
         var moreFacetsData = [];
 
-        var moreFacets = new Object();
+        var moreFacets = {};
         moreFacets.count = 0;
         moreFacets.data = "";
 

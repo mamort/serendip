@@ -7,6 +7,16 @@ $(document).ready(function(){
   
   // Example simple facet / filter
   
+  var cityFacet = Serendip.Facet(serendip);
+  cityFacet.id = "City";
+  cityFacet.selected = true, // If it is initially displayed
+  cityFacet.name = "City", // This is the name in Solr schema
+  cityFacet.activeHeader = "City", // The header used when displaying active facets
+  cityFacet.header = "Filter by city", // The header used when displaying available facets
+  cityFacet.minFacetsToDisplay = 5, // Facets shown
+  cityFacet.maxFacetsToDisplay = 30, // Facets that can be shown by by clicking "show more" link
+
+  /*  
   var cityFacet = new Serendip.Facet({
       id: "City", // Must be unique for all filters/facets. Used in the url.
       selected: true, // If it is initially displayed
@@ -93,9 +103,12 @@ $(document).ready(function(){
   countyFacet.addSubFacet(dateFacet);
   cityFacet.addSubFacet(countyFacet);
   
-  serendip.addFacet(cityFacet);
+
   serendip.addFacet(childrenFacet);
   
   // Date facet
   //serendip.addFacet(dateFacet);  
+  */
+ 
+   serendip.addFacet(cityFacet);
 });

@@ -1,44 +1,45 @@
-Serendip.Facet = Serendip.Class.extend({
-    facetType : "text",
-    name : null,
-    activeHeader : null,
-    header : null,
-    minFacetsToDisplay : null,
-    maxFacetsToDisplay : null,
-
-    facets : [],
-
-    addSubFacet : function(facet) {
-        this.facets.push(facet);
-    },
+Serendip.Facet = (function (serendip) {
+    var my = {};
     
-    getActiveQuery : function(values){
-        var query = "fq={!tag=" + this.id + "}" + this.name;
-        var values = this.getActiveQueryValues(values);
+    my.facetType = "text";
+    my.name  = null;
+    my.activeHeader  = null;
+    my.header  = null;
+    my.minFacetsToDisplay = null;
+    my.maxFacetsToDisplay = null;
+    my.facets = [];
+
+    my.addSubFacet = function(facet) {
+        my.facets.push(facet);
+    };
+    
+    my.getActiveQuery = function(values){
+        var query = "fq={!tag=" + my.id + "}" + my.name;
+        var values = my.getActiveQueryValues(values);
         query += ":(" + values + ")";
         return query;
-    },
+    };
     
-    getActiveQueryValues : function(values){
+    my.getActiveQueryValues = function(values){
         var query = "";
         for (var i = 0; i < values.length; i++) {
             var value = encodeURIComponent(values[i]);
-            query += this.getActiveQueryValue(value);
+            query += my.getActiveQueryValue(value);
         }
         return query;
-    },        
+    };        
     
-    getActiveQueryValue : function(value){
+    my.getActiveQueryValue = function(value){
         return "\"" + value + "\" ";
-    },
+    };
     
-    getQuery : function() {
-        return "facet.field={!ex=" + this.id + "}" + this.name;
-    },
+    my.getQuery = function() {
+        return "facet.field={!ex=" + my.id + "}" + my.name;
+    };
 
-    process : function(data) {
+    my.process = function(data) {
         var facetfields = data.facet_counts.facet_fields;
-        var facetValues = facetfields[this.name];
+        var facetValues = facetfields[my.name];
 
         if ( typeof (facetValues != "undefined")) {
             return facetValues;
@@ -47,29 +48,31 @@ Serendip.Facet = Serendip.Class.extend({
         return [];
     },
 
-    processActive : function(value) {
+    my.processActive = function(value) {
         var encodedValue = encodeURIComponent(value);
-        var formattedValue = this.getFormattedValue(value);
-        return this.processActiveField(encodedValue, formattedValue);
-    },
+        var formattedValue = my.getFormattedValue(value);
+        return my.processActiveField(encodedValue, formattedValue);
+    };
 
-    processActiveField : function(value, formattedValue) {
+    my.processActiveField = function(value, formattedValue) {
         var data = {
-            "header" : this.activeHeader,
-            "name" : this.id,
+            "header" : my.activeHeader,
+            "name" : my.id,
             "value" : value,
             "displayValue" : formattedValue,
             "isActive" : "true"
         };
 
         return data;
-    },
+    };
 
-    getFacetValue : function(value){
+    my.getFacetValue = function(value){
         return value;
-    },
+    };
     
-    getFormattedValue : function(value) {
+    my.getFormattedValue = function(value) {
         return value;
-    }
+    };
+    
+    return my;
 });

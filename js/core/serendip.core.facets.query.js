@@ -1,17 +1,19 @@
-Serendip.QueryFacet = Serendip.Facet.extend({
-    facetType : "query",
-    queries : [],
+Serendip.QueryFacet = (function (serendip) {
+    var my = Serendip.Facet(serendip);
     
-    addQuery : function(query){
-        this.queries.push(query);  
-    },
+    my.facetType = "query";
+    var queries = [];
+    
+    my.addQuery = function(query){
+        queries.push(query);  
+    };
 
-    getQuery : function() {
+    my.getQuery = function() {
         var query = "";
-        var len = this.queries.length;
+        var len = queries.length;
         for (var k = 0; k < len; k++) {
-            var facetQuery = this.queries[k];
-            query += "facet.query={!ex=" + this.id + " key=" + this.id + "range[" + k + "]}" + this.name + ":" + facetQuery.query;
+            var facetQuery = queries[k];
+            query += "facet.query={!ex=" + my.id + " key=" + my.id + "range[" + k + "]}" + my.name + ":" + facetQuery.query;
 
             if (k < len - 1) {
                 query += "&";
@@ -19,29 +21,29 @@ Serendip.QueryFacet = Serendip.Facet.extend({
         }
 
         return query;
-    },
+    };
     
-    getFacetValue : function(value){
+    my.getFacetValue = function(value){
        return value.value;
-    }, 
+    };
     
-    getFormattedValue : function(value) {
+    my.getFormattedValue = function(value) {
         return value.formattedValue;
-    },       
+    };      
     
-    getActiveQueryValues : function(values){
+    my.getActiveQueryValues = function(values){
         var index = values.length - 1;
         var value = values[index];
         return value;
-    },      
+    };      
 
-    process : function(data) {
+    my.process = function(data) {
         var facetqueries = data.facet_counts.facet_queries;
         var facetValues = [];
 
-        for (var k = 0; k < this.queries.length; k++) {
-            var query = this.queries[k];
-            var id = this.id + "range[" + k + "]";
+        for (var k = 0; k < queries.length; k++) {
+            var query = queries[k];
+            var id = my.id + "range[" + k + "]";
             var count = facetqueries[id];
 
             facetValues.push({
@@ -53,13 +55,13 @@ Serendip.QueryFacet = Serendip.Facet.extend({
         }
 
         return facetValues;
-    },
+    };
 
-    processActive : function(value) {
+    my.processActive = function(value) {
 
         var formattedValue = value;
-        for (var k in this.queries) {
-            var query = this.queries[k];
+        for (var k in queries) {
+            var query = queries[k];
 
             if (query.query == value) {
                 formattedValue = query.header;
@@ -67,6 +69,8 @@ Serendip.QueryFacet = Serendip.Facet.extend({
         }
 
         var encodedValue = encodeURIComponent(value);
-        return this.processActiveField(encodedValue, formattedValue);
-    }
+        return processActiveField(encodedValue, formattedValue);
+    };
+    
+    return my;
 });

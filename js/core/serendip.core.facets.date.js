@@ -1,36 +1,38 @@
-Serendip.DateFacet = Serendip.Facet.extend({
-    facetType : "date",
-    dateStart : null,
-    dateEnd : null,
-    dateGap : null,
-    dateFormat : null,
-    sortDir : "asc",
+Serendip.DateFacet = (function (serendip) {
+    var my = Serendip.Facet(serendip);
+    
+    my.facetType = "date";
+    my.dateStart = null;
+    my.dateEnd = null;
+    my.dateGap = null;
+    my.dateFormat = null;
+    my.sortDir = "asc";
 
-    getQuery : function() {
-        var query = "facet.date={!ex=" + this.id + "}" + this.name;
-        var key = "&f." + this.name + ".facet.date";
-        query += key + ".start=" + encodeURIComponent(this.dateStart);
-        query += key + ".end=" + encodeURIComponent(this.dateEnd);
-        query += key + ".gap=" + encodeURIComponent(this.dateGap);
+    my.getQuery = function() {
+        var query = "facet.date={!ex=" + my.id + "}" + my.name;
+        var key = "&f." + my.name + ".facet.date";
+        query += key + ".start=" + encodeURIComponent(my.dateStart);
+        query += key + ".end=" + encodeURIComponent(my.dateEnd);
+        query += key + ".gap=" + encodeURIComponent(my.dateGap);
         
         return query;
-    },
+    };
     
-    getActiveQueryValue : function(value){
+    my.getActiveQueryValue = function(value){
         return "[" + value + "] ";
-    },
+    };
     
-    getFacetValue : function(value){
+    my.getFacetValue = function(value){
         return value.from + " TO " + value.to;
-    },
+    };
     
-    getFormattedValue : function(value) {
-        var from = Serendip.Utils.formatISODate(value.from, this.dateFormat);
-        var to = Serendip.Utils.formatISODate(value.to, this.dateFormat);
+    my.getFormattedValue = function(value) {
+        var from = Serendip.Utils.formatISODate(value.from, my.dateFormat);
+        var to = Serendip.Utils.formatISODate(value.to, my.dateFormat);
         return from + " - " + to;
-    },
+    };
 
-    processActive : function(value) {
+    my.processActive = function(value) {
         var facetDateStr = value.split(" TO ");
         var fromDate = facetDateStr[0];
         var toDate = facetDateStr[1];
@@ -39,15 +41,15 @@ Serendip.DateFacet = Serendip.Facet.extend({
             from : fromDate,
             to : toDate
         };
-        var formattedValue = this.getFormattedValue(dateValue);
+        var formattedValue = my.getFormattedValue(dateValue);
 
         var encodedValue = encodeURIComponent(value);
-        return this.processActiveField(encodedValue, formattedValue);
-    },
+        return processActiveField(encodedValue, formattedValue);
+    };
 
-    process : function(data) {
+    my.process = function(data) {
         var facetdates = data.facet_counts.facet_dates;
-        var dates = facetdates[this.name];
+        var dates = facetdates[my.name];
         var values = [];
 
         for (var key in dates) {
@@ -59,30 +61,30 @@ Serendip.DateFacet = Serendip.Facet.extend({
 
         var facetValues = [];
 
-        if (this.sortDir == "asc") {
+        if (my.sortDir == "asc") {
             for (var k = 0; k < values.length; k += 2) {
-                this.processDateFacetValue(values, k, facetValues, dates, "asc");
+                processDateFacetValue(values, k, facetValues, dates, "asc");
             }
         } else {
             for (var k = values.length - 2; k > -1; k -= 2) {
-                this.processDateFacetValue(values, k, facetValues, dates, "desc");
+                processDateFacetValue(values, k, facetValues, dates, "desc");
             }
         }
 
         return facetValues;
-    },
+    };
 
-    processDateFacetValue : function(values, k, facetValues, dates, type) {
+    function processDateFacetValue(values, k, facetValues, dates, type) {
         var value = values[k];
         var count = values[k + 1];
 
-        var dateFacet = new Object();
+        var dateFacet = {};
         dateFacet.from = value;
 
-        var gapDays = this.getGapAsDays(dates["gap"]);
+        var gapDays = getGapAsDays(dates["gap"]);
 
         // Must use GAP to calculate end date from start date here
-        var isoDateStr = this.formatIsoDateWithGap(dateFacet.from, gapDays);
+        var isoDateStr = formatIsoDateWithGap(dateFacet.from, gapDays);
 
         if (type == "asc") {
             if (k + 2 < values.length) {
@@ -96,9 +98,9 @@ Serendip.DateFacet = Serendip.Facet.extend({
 
         facetValues.push(dateFacet);
         facetValues.push(count);
-    },
+    };
 
-    formatIsoDateWithGap : function(inputDate, gapDays) {
+    function formatIsoDateWithGap(inputDate, gapDays) {
         var isoDateStr = "";
         try {
             var date = Serendip.Utils.convertISOFormatToDate(inputDate);
@@ -110,9 +112,9 @@ Serendip.DateFacet = Serendip.Facet.extend({
         }
 
         return isoDateStr;
-    },
+    };
 
-    convertIsoDate : function(inputDate, format) {
+    function convertIsoDate(inputDate, format) {
         var formattedDate = "";
         try {
             var date = Serendip.Utils.convertISOFormatToDate(inputDate);
@@ -122,9 +124,9 @@ Serendip.DateFacet = Serendip.Facet.extend({
         }
 
         return formattedDate;
-    },
+    };
 
-    getGapAsDays : function(gap) {
+    function getGapAsDays(gap) {
         var modifier = 1;
         var dayModifier = 1;
         var days = 0;
@@ -163,5 +165,8 @@ Serendip.DateFacet = Serendip.Facet.extend({
         days = parseInt(days);
 
         return days * modifier * dayModifier;
-    }
+    };
+    
+    return my;
+    
 }); 

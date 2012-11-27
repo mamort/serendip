@@ -1,32 +1,34 @@
-Serendip.RangeFacet = Serendip.Facet.extend({
-    facetType : "range",
-    rangeStart : null,
-    rangeEnd : null,
-    rangeGap : null,
+Serendip.RangeFacet = (function (serendip) {
+    var my = Serendip.Facet(serendip);
+    
+    my.facetType = "range";
+    my.rangeStart = null;
+    my.rangeEnd = null;
+    my.rangeGap = null;
 
-   getQuery : function() {
-        var query = "facet.range={!ex=" + this.id + "}" + this.name;
-        var key = "&f." + this.name + ".facet.range";
-        query += key + ".start=" + encodeURIComponent(this.rangeStart);
-        query += key + ".end=" + encodeURIComponent(this.rangeEnd);
-        query += key + ".gap=" + encodeURIComponent(this.rangeGap);
+   my.getQuery = function() {
+        var query = "facet.range={!ex=" + my.id + "}" + my.name;
+        var key = "&f." + my.name + ".facet.range";
+        query += key + ".start=" + encodeURIComponent(my.rangeStart);
+        query += key + ".end=" + encodeURIComponent(my.rangeEnd);
+        query += key + ".gap=" + encodeURIComponent(my.rangeGap);
         
         return query;
-    },
+    };
     
-    getActiveQueryValue : function(value){
+    my.getActiveQueryValue = function(value){
         return "[" + value + "] ";
-    },   
+    };   
     
-    getFacetValue : function(value){
+    my.getFacetValue = function(value){
         return value.from + " TO " + value.to;
-    },     
+    };     
 
-    getFormattedValue : function(value) {
+    my.getFormattedValue = function(value) {
         return value.from + " - " + value.to;
-    },
+    };
 
-    processActive : function(value) {
+    my.processActive = function(value) {
         var range = value.split(" TO ");
         var from = range[0];
         var to = range[1];
@@ -36,16 +38,16 @@ Serendip.RangeFacet = Serendip.Facet.extend({
             to : to
         };
         
-        var formattedValue = this.getFormattedValue(rangeValue);
+        var formattedValue = my.getFormattedValue(rangeValue);
 
         var encodedValue = encodeURIComponent(value);
-        return this.processActiveField(encodedValue, formattedValue);
-    },
+        return my.processActiveField(encodedValue, formattedValue);
+    };
 
-    process : function(data) {
+    my.process = function(data) {
         var facetRanges = data.facet_counts.facet_ranges;
-        var ranges = facetRanges[this.name].counts;
-        var gap = facetRanges[this.name].gap;
+        var ranges = facetRanges[my.name].counts;
+        var gap = facetRanges[my.name].gap;
         
         var facetValues = [];
         
@@ -68,4 +70,6 @@ Serendip.RangeFacet = Serendip.Facet.extend({
         
         return facetValues;
     }
+    
+    return my;
 }); 
