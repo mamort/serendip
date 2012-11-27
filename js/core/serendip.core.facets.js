@@ -1,39 +1,41 @@
-Serendip.Facets = Serendip.Class.extend({
-    activeFacetQueries : new Object(),
-    facetIdToFacetMap : null,
-    facets : null,
-    serendip : null,
+Serendip.Facets = (function(serendip){
+    var my = {};
+    
+    activeFacetQueries = new Object();
+    facetIdToFacetMap = null;
+    facets = null;
+    
+    serendip.on("views.init", function() {
+        init(serendip);
+    });
+    
+    my.getActiveFacetsQueriesMap = function() {
+        return activeFacetQueries;
+    };
 
-    getActiveFacetsQueriesMap : function() {
-        return this.activeFacetQueries;
-    },
+    my.getActiveFacetsMap = function() {
+        return facetIdToFacetMap;
+    };
 
-    getActiveFacetsMap : function() {
-        return this.facetIdToFacetMap;
-    },
+    function init(serendip) {
+        facets = serendip.facets;
 
-    init : function(serendip) {
-        var self = this;
+        facetIdToFacetMap = [];
 
-        this.facets = serendip.facets;
-
-        this.serendip = serendip;
-        this.facetIdToFacetMap = [];
-
-        for (var k in this.facets) {
-            var facet = this.facets[k];
-            this.facetIdToFacetMap[facet.id] = facet;
+        for (var k in facets) {
+            var facet = facets[k];
+            facetIdToFacetMap[facet.id] = facet;
         }
 
-        this.serendip.on("views.init.done", function() {
-            self.serendip.trigger("init.facets.core", self);
+        serendip.on("views.init.done", function() {
+            serendip.trigger("init.facets.core", my);
         });
 
-        this.serendip.on("initFromQueryStr", function(queryStr, paramsMap) {
-            self.activeFacetQueries = new Object();
+        serendip.on("initFromQueryStr", function(queryStr, paramsMap) {
+            activeFacetQueries = new Object();
 
-            for (var i = 0; i < self.facets.length; i++) {
-                var facet = self.facets[i];
+            for (var i = 0; i < facets.length; i++) {
+                var facet = facets[i];
                 var key = facet.id + "_param";
                 if (paramsMap[key]) {
                     var values = paramsMap[key];
@@ -42,18 +44,18 @@ Serendip.Facets = Serendip.Class.extend({
                     facetQuery.id = facet.id;
                     facetQuery.values = values.split(",");
 
-                    self.activeFacetQueries[facet.id] = facetQuery;
+                    activeFacetQueries[facet.id] = facetQuery;
                 }
             }
 
         });
 
-        this.serendip.on("saveInQueryStr", function(save) {
+        serendip.on("saveInQueryStr", function(save) {
             var query = "";
-            for (var id in self.activeFacetQueries) {
+            for (var id in activeFacetQueries) {
 
-                var facetConfig = self.facetIdToFacetMap[id];
-                var facet = self.activeFacetQueries[id];
+                var facetConfig = facetIdToFacetMap[id];
+                var facet = activeFacetQueries[id];
                 var values = facet.values;
 
                 if (values && values.length > 0) {
@@ -62,30 +64,30 @@ Serendip.Facets = Serendip.Class.extend({
             }
         });
 
-        this.serendip.on("buildRequest", function(save) {
-            var query = self.getFacetsAsQueryString(self.facets);
+        serendip.on("buildRequest", function(save) {
+            var query = getFacetsAsQueryString(facets);
             save("&facet=true&" + query);
 
-            var query = self.getActiveFacetsQuery();
+            var query = getActiveFacetsQuery();
             save("&" + query);
         });
 
-        this.serendip.on("facet.remove", function(facet) {
-            self.handleFacetClick(facet.id, facet.value, false);
+        serendip.on("facet.remove", function(facet) {
+            handleFacetClick(facet.id, facet.value, false);
         });
 
-        this.serendip.on("facet.add", function(facet) {
-            self.handleFacetClick(facet.id, facet.value, true);
+        serendip.on("facet.add", function(facet) {
+            handleFacetClick(facet.id, facet.value, true);
         });
-    },
+    };
 
-    getActiveFacetsQuery : function() {
+    function getActiveFacetsQuery() {
         var facetQueryArr = [];
 
-        for (var id in this.activeFacetQueries) {
+        for (var id in activeFacetQueries) {
 
-            var facet = this.facetIdToFacetMap[id];
-            var facetQuery = this.activeFacetQueries[id];
+            var facet = facetIdToFacetMap[id];
+            var facetQuery = activeFacetQueries[id];
 
             if (facetQuery.values.length > 0) {
                 var query = facet.getActiveQuery(facetQuery.values);
@@ -97,9 +99,9 @@ Serendip.Facets = Serendip.Class.extend({
             return "&" + facetQueryArr.join("&");
         else
             return "";
-    },
+    };
 
-    getFacetsAsQueryString : function(facets) {
+    function getFacetsAsQueryString(facets) {
         var query = "";
 
         for (var i = 0; i < facets.length; i++) {
@@ -113,13 +115,13 @@ Serendip.Facets = Serendip.Class.extend({
         }
 
         return query;
-    },
+    };
 
-    handleFacetClick : function(id, value, isActive) {
+    function handleFacetClick(id, value, isActive) {
         value = decodeURIComponent(value);
 
-        var facet = this.facetIdToFacetMap[id];
-        var facetQuery = this.activeFacetQueries[id];
+        var facet = facetIdToFacetMap[id];
+        var facetQuery = activeFacetQueries[id];
 
         if (!facetQuery) {
             facetQuery = new Object();
@@ -142,6 +144,8 @@ Serendip.Facets = Serendip.Class.extend({
             facetQuery.values = vals;
         }
 
-        this.activeFacetQueries[id] = facetQuery;
-    }
-});
+        activeFacetQueries[id] = facetQuery;
+    };
+    
+    return my;
+}(serendip));

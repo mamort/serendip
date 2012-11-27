@@ -1,27 +1,26 @@
-Serendip.FacetsRenderActive = Serendip.Class.extend({
-    serendip : null,
-    facetsCore : null,
+Serendip.FacetsRenderActive = (function(serendip){
+    var my = {};
+    
+    _facetsCore = null;
+    
+    init(serendip);
 
-    init : function(serendip) {
-        var self = this;
-
-        this.serendip = serendip;
-
-        this.serendip.on("init.facets.core", function(facetsCore) {
-            self.facetsCore = facetsCore;
+    function init(serendip) {
+        serendip.on("init.facets.core", function(facetsCore) {
+            _facetsCore = facetsCore;
         });
 
-        this.serendip.on("render", function(data) {
-            var activeFacets = self.createActiveFacets();
-            self.serendip.trigger("render.facets.active", activeFacets);
+        serendip.on("render", function(data) {
+            var activeFacets = createActiveFacets();
+            serendip.trigger("render.facets.active", activeFacets);
         });
-    },
+    };
 
-    createActiveFacets : function() {
+    function createActiveFacets() {
         var activeFacetData = [];
 
-        var queries = this.facetsCore.getActiveFacetsQueriesMap();
-        var facetMap = this.facetsCore.getActiveFacetsMap();
+        var queries = _facetsCore.getActiveFacetsQueriesMap();
+        var facetMap = _facetsCore.getActiveFacetsMap();
 
         for (var id in queries) {
             var facetQuery = queries[id];
@@ -40,5 +39,7 @@ Serendip.FacetsRenderActive = Serendip.Class.extend({
         }
 
         return activeFacetData;
-    }
-});
+    };
+    
+    return my;
+}(serendip));

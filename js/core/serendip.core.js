@@ -1,4 +1,4 @@
-Serendip.Core = (function (ajax, history, facetCore, facetRenderActive, facetRenderInactive) {
+Serendip.Core = (function (ajax, history) {
     var my = {};
     
     my.fieldConfig = [];
@@ -20,10 +20,7 @@ Serendip.Core = (function (ajax, history, facetCore, facetRenderActive, facetRen
     $.extend(my, Simple.Events);
     
     my.init = function(pageName) {
-
-        facetCore.init(my);  
-        facetRenderActive.init(my);
-        facetRenderInactive.init(my);
+        my.trigger("views.init");
         
         my.fieldConfig.sort(fieldSort);
         updateFieldsQueryString();
@@ -266,7 +263,7 @@ Serendip.Core = (function (ajax, history, facetCore, facetRenderActive, facetRen
     
     
     return my;
-}(new Serendip.Ajax({}), new Serendip.History({}), new Serendip.Facets({}), new Serendip.FacetsRenderActive({}), new Serendip.FacetsRenderInactive({})));
+}(new Serendip.Ajax({}), new Serendip.History({})));
 
 var serendip = Serendip.Core;
 

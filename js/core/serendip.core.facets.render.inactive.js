@@ -1,32 +1,29 @@
-Serendip.FacetsRenderInactive = Serendip.Class.extend({
-    configuredFacets: null,
-    serendip: null,
-    facetCore: null,
+Serendip.FacetsRenderInactive = (function(serendip){
+    var my = {};
     
-    init : function(serendip){
-        var self = this;
-        this.serendip = serendip;
-        this.configuredFacets = serendip.facets;
-        
-        this.serendip.on("init.facets.core", function(facetsCore) {
-            self.facetsCore = facetsCore;
+    _facetsCore = null;
+    init(serendip);
+
+    function init(serendip){
+        serendip.on("init.facets.core", function(facetsCore) {
+            _facetsCore = facetsCore;
         });        
        
         serendip.on("render", function(data){           
-            var facets = self.processFacets(data);
-            var visibleFacets = self.getOnlyVisibleFacetRowValues(facets);
+            var facets = processFacets(data);
+            var visibleFacets = getOnlyVisibleFacetRowValues(facets);
             serendip.trigger("render.facets.inactive", facets, visibleFacets);
         });
-    },
+    };
     
-    processFacets : function(data){
+    function processFacets(data){
         var facetsData = [];
         if ( typeof (data.facet_counts) != "undefined") {
-            var facets = this.getValidFacets(this.configuredFacets);
+            var facets = getValidFacets(serendip.facets);
 
             for (var i = 0; i < facets.length; i++) {
                 var facet = facets[i];
-                var facetData = this.processFacetTypes(data, facet);
+                var facetData = processFacetTypes(data, facet);
                 
                 if(facetData != ""){
                     facetsData.push(facetData);   
@@ -35,25 +32,25 @@ Serendip.FacetsRenderInactive = Serendip.Class.extend({
         }
         
         return facetsData;
-    },
+    };
     
-    getValidFacets : function(facets){
+    function getValidFacets(facets){
                     
         var validFacets = [];
         for (var i = 0; i < facets.length; i++) {
             var facet = facets[i];
             
-            if(this.isParentActive(facets, facet)){
+            if(isParentActive(facets, facet)){
                 validFacets.push(facet);
             }
         }
         
         return validFacets;
-    },
+    };
     
-    isParentActive : function(facets, facet){
-        var parents = this.getParents(facets, facet);
-        var queries = this.facetsCore.getActiveFacetsQueriesMap();
+    function isParentActive(facets, facet){
+        var parents = getParents(facets, facet);
+        var queries = _facetsCore.getActiveFacetsQueriesMap();
         
         for(var i = 0; i < parents.length;i++){
             var parentFacet = parents[i];
@@ -70,9 +67,9 @@ Serendip.FacetsRenderInactive = Serendip.Class.extend({
         }
         
         return false;
-    },
+    };
     
-    getParents : function(facets, childFacet){
+    function getParents(facets, childFacet){
         var parents = [];
         
         for(var i = 0; i < facets.length;i++){
@@ -85,7 +82,7 @@ Serendip.FacetsRenderInactive = Serendip.Class.extend({
                 }
             }
             
-            var subParents = this.getParents(facet.facets, childFacet);
+            var subParents = getParents(facet.facets, childFacet);
             for(var k = 0; k < subParents.length; k++){
                 var subParent = subParents[k];
                 parents.push(subParent);
@@ -93,23 +90,23 @@ Serendip.FacetsRenderInactive = Serendip.Class.extend({
         }
         
         return parents;
-    },
+    };
     
-    processFacetTypes : function(data, facet) {
+    function processFacetTypes(data, facet) {
 
         var values = facet.process(data);
         
         if(values){
-            return this.processFacet(data, facet, values);            
+            return processFacet(data, facet, values);            
         }
         
         return "";
-    },
+    };
 
-    processFacet : function(data, facet, facetArray) {
+    function processFacet(data, facet, facetArray) {
         var facetRow = [];
 
-        facetArray = this.removeEmptyFacets(facetArray);
+        facetArray = removeEmptyFacets(facetArray);
 
         var len = facetArray.length;
 
@@ -121,9 +118,9 @@ Serendip.FacetsRenderInactive = Serendip.Class.extend({
             if (value == "")
                 continue;
 
-            var isActive = this.isFacetFieldActive(data, facet, value);
+            var isActive = isFacetFieldActive(data, facet, value);
 
-            var facetFieldData = this.processFacetField(facet, value, count, isActive);
+            var facetFieldData = processFacetField(facet, value, count, isActive);
             if (facetFieldData != ""){
                 facetRow.push(facetFieldData);                
             }
@@ -137,9 +134,9 @@ Serendip.FacetsRenderInactive = Serendip.Class.extend({
         };
         
         return facetdata;
-    },
+    };
 
-    addMoreFacets : function(data, facet, facetArray, len, max, currentIndex) {
+    function addMoreFacets(data, facet, facetArray, len, max, currentIndex) {
         if (max < len)
             len = max;
 
@@ -153,8 +150,8 @@ Serendip.FacetsRenderInactive = Serendip.Class.extend({
             var value = facetArray[i];
             var count = facetArray[i + 1];
 
-            var isActive = this.isFacetFieldActive(data, facet, value);
-            var facetData = this.processFacetField(facet, value, count, isActive);
+            var isActive = isFacetFieldActive(data, facet, value);
+            var facetData = processFacetField(facet, value, count, isActive);
 
             if (facetData != "") {
                 moreFacetsData.push(facetData);
@@ -167,9 +164,9 @@ Serendip.FacetsRenderInactive = Serendip.Class.extend({
         }
 
         return moreFacets;
-    },
+    };
 
-    removeEmptyFacets : function(facets) {
+    function removeEmptyFacets(facets) {
         var result = [];
         for (var i = 0; i < facets.length; i += 2) {
             var value = facets[i];
@@ -183,32 +180,32 @@ Serendip.FacetsRenderInactive = Serendip.Class.extend({
         }
 
         return result;
-    },
+    };
 
-    processFacetField : function(facet, value, count, isActive) {
+    function processFacetField(facet, value, count, isActive) {
 
         var formattedValue = facet.getFormattedValue(value);
         value = facet.getFacetValue(value); 
         value = encodeURIComponent(value);
 
-        return this.processFacetFieldValue(facet, value, formattedValue, count, isActive);
-    },
+        return processFacetFieldValue(facet, value, formattedValue, count, isActive);
+    };
 
-    isFacetFieldActive : function(data, facet, value) {
+    function isFacetFieldActive(data, facet, value) {
         var activeFacets = data.responseHeader.params.fq;
 
         if (activeFacets) {
 
             // Might be single value and not an array...
             if (!Serendip.Utils.isArray(activeFacets) || activeFacets[0].length == 1) {
-                if (this.isFacetMatch(activeFacets, facet, value)) {
+                if (isFacetMatch(activeFacets, facet, value)) {
                     return true;
                 }
             } else {
 
                 // If not previous match, we probably have an array with multiple active facets
                 for (var i = 0; i < activeFacets.length; i++) {
-                    if (this.isFacetMatch(activeFacets[i], facet, value)) {
+                    if (isFacetMatch(activeFacets[i], facet, value)) {
                         return true;
                     }
                 }
@@ -216,9 +213,9 @@ Serendip.FacetsRenderInactive = Serendip.Class.extend({
         }
 
         return false;
-    },
+    };
 
-    isFacetMatch : function(activeFacet, facet, value) {
+    function isFacetMatch(activeFacet, facet, value) {
         var facetValue = "";
         var prefix = "{!tag=" + facet.id + "}" + facet.name + ":(";
 
@@ -265,9 +262,9 @@ Serendip.FacetsRenderInactive = Serendip.Class.extend({
         }
 
         return false;
-    },
+    };
 
-    processFacetFieldValue : function(facet, value, formattedValue, count, isActive) {
+    function processFacetFieldValue(facet, value, formattedValue, count, isActive) {
         if (isActive)
             return "";
 
@@ -281,13 +278,13 @@ Serendip.FacetsRenderInactive = Serendip.Class.extend({
         };
 
         return facetFieldData;
-    },
+    };
     
-    getOnlyVisibleFacetRowValues : function(facets) {
+    function getOnlyVisibleFacetRowValues(facets) {
         var facetRows = [];
         for (var i = 0; i < facets.length; i++) {
             var data = facets[i];
-            var values = this.getVisibleFacetRowValues(data.facet, data.values);
+            var values = getVisibleFacetRowValues(data.facet, data.values);
             var row = {
                 facet : data.facet,
                 values : values
@@ -296,9 +293,9 @@ Serendip.FacetsRenderInactive = Serendip.Class.extend({
         }
 
         return facetRows;
-    },
+    };
 
-    getVisibleFacetRowValues : function(facet, values) {
+    function getVisibleFacetRowValues(facet, values) {
         var visibleValues = [];
 
         var len = Math.min(facet.minFacetsToDisplay, values.length);
@@ -308,5 +305,8 @@ Serendip.FacetsRenderInactive = Serendip.Class.extend({
         }
 
         return visibleValues;
-    }
-});
+    };
+    
+    return my;
+    
+}(serendip));
