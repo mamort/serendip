@@ -30,7 +30,24 @@
     
     my.trim = function(str1){
         return str1.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
-    }
+    };
+    
+    my.splitSolrMultiValue = function(multiValue){
+        var parsedValues = [];
+        var vals = multiValue.split("]");
+
+        for (var k = 0; k < vals.length; k++) {
+            var val = vals[k].replace(/\[/g, "");
+            val = val.replace(/]/g, "");
+            val = my.trim(val);
+
+            if (val.length > 0) {
+                parsedValues.push(val);
+            }
+        }
+        
+        return parsedValues;
+    };
 
     return my;
 }());

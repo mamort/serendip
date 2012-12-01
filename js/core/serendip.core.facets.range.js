@@ -27,6 +27,21 @@ Serendip.RangeFacet = (function (serendip) {
     my.getFormattedValue = function(value) {
         return value.from + " - " + value.to;
     };
+    
+    my.parseActiveFacetValue = function(activeValue){
+        var value = my.parseActiveValue(activeValue);
+        if(value != ""){
+            return Serendip.Utils.splitSolrMultiValue(value);
+        }
+        
+        return [];
+    };
+    
+    my.isFacetFieldActive = function(facetActiveValue, facetValue){
+
+        
+        return false;
+    };
 
     my.processActive = function(value) {
         var range = value.split(" TO ");

@@ -216,49 +216,15 @@ Serendip.FacetsRenderInactive = (function(serendip){
         return false;
     };
 
-    function isFacetMatch(activeFacet, facet, value) {
-        var facetValue = "";
-        var prefix = "{!tag=" + facet.id + "}" + facet.name + ":(";
-
-        var activePrefix = activeFacet.substring(0, prefix.length);
-
-        if (prefix != activePrefix) {
-            return false;
-        }
-
-        var activeValue = activeFacet.substring(prefix.length, activeFacet.length - 1);
-
-        if (facet.facetType == "text") {
-            var vals = activeValue.split(/\"\s/);
-            for (var k = 0; k < vals.length; k++) {
-                var val = vals[k].replace(/\"/g, "");
-                val = Serendip.Utils.trim(val);
-
-                if (val == value)
-                    return true;
-            }
-
-        } else if (facet.facetType == "query") {
-
-            if (value.value == activeValue) {
+    function isFacetMatch(activeFacetValue, facet, value) {
+        
+        var facetValue = facet.getFacetValue(value);
+        var activeValues = facet.parseActiveFacetValue(activeFacetValue);
+        
+        for(var i = 0; i < activeValues.length;i++){
+            var active = activeValues[i];
+            if(facetValue == active){
                 return true;
-            }
-
-        } else if (facet.facetType == "date" || facet.facetType == "customdate") {
-            vals = activeValue.split("]");
-
-            for (var k = 0; k < vals.length; k++) {
-                var val = vals[k].replace(/\[/g, "");
-                val = val.replace(/]/g, "");
-                val = Serendip.Utils.trim(val);
-
-                if (val.length > 0) {
-                    var facetValue = value.from + " TO " + value.to;
-
-                    if (val == facetValue)
-                        return true;
-                }
-
             }
         }
 

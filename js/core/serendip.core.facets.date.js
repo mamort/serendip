@@ -31,6 +31,15 @@ Serendip.DateFacet = (function (serendip) {
         var to = Serendip.Utils.formatISODate(value.to, my.dateFormat);
         return from + " - " + to;
     };
+    
+    my.parseActiveFacetValue = function(activeValue){
+        var value = my.parseActiveValue(activeValue);
+        if(value != ""){
+            return Serendip.Utils.splitSolrMultiValue(value);
+        }
+        
+        return [];
+    };    
 
     my.processActive = function(value) {
         var facetDateStr = value.split(" TO ");
@@ -44,7 +53,7 @@ Serendip.DateFacet = (function (serendip) {
         var formattedValue = my.getFormattedValue(dateValue);
 
         var encodedValue = encodeURIComponent(value);
-        return processActiveField(encodedValue, formattedValue);
+        return my.processActiveField(encodedValue, formattedValue);
     };
 
     my.process = function(data) {

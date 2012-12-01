@@ -35,7 +35,18 @@ Serendip.QueryFacet = (function (serendip) {
         var index = values.length - 1;
         var value = values[index];
         return value;
-    };      
+    };   
+    
+    my.parseActiveFacetValue = function(activeValue){
+        var parsedValues = [];
+        
+        var value = my.parseActiveValue(activeValue);
+        if(value != ""){
+            parsedValues.push(value);
+        }         
+        
+        return parsedValues;
+    };           
 
     my.process = function(data) {
         var facetqueries = data.facet_counts.facet_queries;
@@ -69,7 +80,7 @@ Serendip.QueryFacet = (function (serendip) {
         }
 
         var encodedValue = encodeURIComponent(value);
-        return processActiveField(encodedValue, formattedValue);
+        return my.processActiveField(encodedValue, formattedValue);
     };
     
     return my;
