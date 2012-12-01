@@ -40,14 +40,8 @@
     serendip.addView(new Serendip.InProgressView({
         view : $("#ResultsInProgressView"),
     }));
-
-    var facetView = new Serendip.FacetsView({
-        view: $("#Facets_Theme"),
-        prototypes: $("#Prototypes"),
-
-        maxFacetsToDisplay : 5
-    });
     
-    serendip.addView(facetView);
+    Serendip.FacetsView(serendip, $("#Facets_Theme"), $("#Prototypes"));
+
 });
 

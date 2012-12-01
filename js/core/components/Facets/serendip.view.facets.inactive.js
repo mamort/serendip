@@ -1,73 +1,68 @@
-Serendip.InactiveFacetsView = Serendip.Class.extend({
-    configuredFacets : null,
+Serendip.InactiveFacetsView = (function(serendip, view, prototype){
+    var my = {};
+    
+    var maxFacetsToDisplay = 5;
+    var showMoreFacetsView = null;
+    
+    serendip.on("views.init", function(){
+        init();    
+    }); 
+    
+    serendip.on("render.facets.inactive", function(facets, visibleFacets) {
+        var html = renderAllFacets(visibleFacets);
+        view.html(html);
+        
+        serendip.trigger("render.facets.showmore", facets);
+        bindEvents();
+    });     
 
-    serendip : null,
-    view : null,
-    prototype : null,
-
-    maxFacetsToDisplay : 5,
-    showMoreFacetsView : null,
-
-    init : function(serendip) {
-        var self = this;
-
-        this.serendip = serendip;  
-        this.showMoreFacetsView = this.createMoreFacetsView();
-
-        this.serendip.on("render.facets.inactive", function(facets, visibleFacets) {
-            var html = self.renderAllFacets(visibleFacets);
-            self.view.html(html);
-            
-            serendip.trigger("render.facets.showmore", facets);
-            self.bindEvents();
-        });             
-    },
+    function init() {
+        showMoreFacetsView = createMoreFacetsView();           
+    };
    
-    createMoreFacetsView : function(){
+    function createMoreFacetsView(){
         var showMoreFacetsView = new Serendip.ShowMoreFacetsView({
-            view : this.view,
-            prototype : this.prototype
+            view : view,
+            prototype : prototype
         });
         
-        showMoreFacetsView.init(this.serendip);    
+        showMoreFacetsView.init(serendip);    
         
         return showMoreFacetsView;
-    },
+    };
 
-    bindEvents : function() {
-        var self = this;
-
-        this.view.find(".facetRow a").off('click').on('click', function() {
+    function bindEvents() {
+        view.find(".facetRow a").off('click').on('click', function() {
             var facet = $(this);
 
             var id = facet.attr("facetname");
             var value = facet.attr("facetvalue");
             var isActive = facet.attr("active");
 
-            self.serendip.trigger("facet.add", {id: id, value: value});
-            self.serendip.search();
+            serendip.trigger("facet.add", {id: id, value: value});
+            serendip.search();
 
             // Return false to avoid the a:href executing
             return false;
         });
-    },
+    };
     
-    renderAllFacets : function(facets){
+    function renderAllFacets(facets){
         var facetHtmlRows = [];
         for (var i = 0; i < facets.length; i++) {
             var data = facets[i];
-            var html = this.renderFacet(data.facet, data.values);
+            var html = renderFacet(data.facet, data.values);
             facetHtmlRows.push(html);
         }
 
         return facetHtmlRows.join("");
-    },    
+    };
 
-    renderFacet : function(facet, facetFieldsData) {
+    function renderFacet(facet, facetFieldsData) {
         if (facetFieldsData == "")
             return "";
 
-        var facets = this.configuredFacets;
+        var facets = serendip.facets;
 
         var facetData = {
             "facetName" : facet.id,
@@ -78,11 +73,13 @@ Serendip.InactiveFacetsView = Serendip.Class.extend({
             "facetRow" : facetFieldsData
         };
 
-        var facetsElement = this.prototype.clone();
+        var facetsElement = prototype.clone();
         facetsElement = facetsElement.find(".Placeholder").autoRender(facetData);
         var facetValues = facetsElement.find(".FacetValues");
         facetValues.autoRender(facetRowData);
 
         return facetsElement.html();
-    }
+    };
+    
+    return my;
 });

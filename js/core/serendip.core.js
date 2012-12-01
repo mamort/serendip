@@ -263,7 +263,7 @@ Serendip.Core = (function (ajax, history) {
     
     
     return my;
-}(new Serendip.Ajax({}), new Serendip.History({})));
+}(Serendip.Ajax, Serendip.History));
 
 var serendip = Serendip.Core;
 

@@ -1,60 +1,41 @@
-Serendip.FacetsView = Serendip.Class.extend({
-    serendip : null,
-    view : null,
-    prototypes : null,
+Serendip.FacetsView = (function(serendip, view, prototypes){
+    var my = {};
 
-    maxFacetsToDisplay : 0,
+    initActiveFacetsView();
+    initInactiveFacetsView();
 
-    activeFacetsView : null,
-    inactiveFacetsView : null,
+    serendip.on("views.init", function(){
+        init();    
+    });
+    
+    serendip.on("render", function(data){
+        render(data);
+    });    
 
-    init : function(serendip) {
-        var self = this;
-        this.serendip = serendip;
+    function init() {
+        view.hide(); 
+    };
+    
+    function initInactiveFacetsView(self) {
+        var inactiveFacetsView = view.find("#InactiveFacets_Theme");
+        var inactiveFacetsPrototype = prototypes.find("#FacetRow_Prototype");
 
-        this.view.hide();
-
-        initActiveFacetsView(this);
-        initInactiveFacetsView(this);
+        Serendip.InactiveFacetsView(serendip, inactiveFacetsView, inactiveFacetsPrototype);
+    };
+    
+    function initActiveFacetsView(self) {
+        var activeFacetsView = view.find("#ActiveFacets_Theme");
+        var activeFacetsPrototype = prototypes.find("#ActiveFacets_Prototype");
         
-        this.serendip.on("render", function(data){
-            self.render(data);
-        }); 
+        Serendip.ActiveFacetsView(serendip, activeFacetsView, activeFacetsPrototype);
+    };
 
-        function initActiveFacetsView(self) {
-            var activeFacetsTheme = self.view.find("#ActiveFacets_Theme");
-            var activeFacetsPrototype = self.prototypes.find("#ActiveFacets_Prototype");
-            
-            self.activeFacetsView = new Serendip.ActiveFacetsView({
-                configuredFacets : self.serendip.facets,
-                view : activeFacetsTheme,
-                prototype : activeFacetsPrototype,
-                maxFacetsToDisplay : 5
-            });
-
-            self.activeFacetsView.init(self.serendip);
-        }
-
-        function initInactiveFacetsView(self) {
-            var inactiveFacetsTheme = self.view.find("#InactiveFacets_Theme");
-            var inactiveFacetsPrototype = self.prototypes.find("#FacetRow_Prototype");
-            
-            self.inactiveFacetsView = new Serendip.InactiveFacetsView({
-                configuredFacets : self.serendip.facets,
-                view : inactiveFacetsTheme,
-                prototype : inactiveFacetsPrototype,        
-                maxFacetsToDisplay : 5
-            });
-
-            self.inactiveFacetsView.init(self.serendip);
-        }
-
-    },
-
-    render : function(data) {
+    function render(data) {
         // Hide facet box if no facets
         if ( typeof (data.facet_counts) != "undefined") {
-            this.view.fadeIn("slow");
+            view.fadeIn("slow");
         }
-    }
+    };
+    
+    return my;
 });

@@ -1,29 +1,26 @@
-Serendip.ActiveFacetsView = Serendip.Class.extend({
-    configuredFacets : null,
+Serendip.ActiveFacetsView = (function(serendip, view, prototype){
+    var my = {};
+    
+    var inactiveElement = null;
+    
+    serendip.on("views.init", function(){
+        init();    
+    });
+    
+    serendip.on("render.facets.active", function(activeFacets){
+        renderActiveFacets(activeFacets);
+        bindEvents();
+    }); 
 
-    view : null,
-    prototype : null,
+    function init() {
+        inactiveElement = view.find(".inactive");
+        inactiveElement.hide();                  
+    };
 
-    serendip : null,
-    inactiveElement : null,
-
-    init : function(serendip) {
-        var self = this;
-        this.serendip = serendip;
-
-        this.inactiveElement = this.view.find(".inactive");
-        this.inactiveElement.hide();
-        
-        this.serendip.on("render.facets.active", function(activeFacets){
-            self.renderActiveFacets(activeFacets);
-            self.bindEvents();
-        });                   
-    },
-
-    bindEvents : function() {
+    function bindEvents() {
         var self = this;
 
-        this.view.find("span.remove").off('click').on('click', function() {
+        view.find("span.remove").off('click').on('click', function() {
             var facet = $(this).parent().find("a");
             triggerFacetClick(facet);
 
@@ -31,36 +28,37 @@ Serendip.ActiveFacetsView = Serendip.Class.extend({
             return false;
         });
 
-        this.view.find("a").off('click').on('click', function() {
+        view.find("a").off('click').on('click', function() {
             triggerFacetClick($(this));
 
             // Return false to avoid the a:href executing
             return false;
         });
+    };
+    
+    function triggerFacetClick(facet) {
+        var id = facet.attr("facetname");
+        var value = facet.attr("facetvalue");
 
-        function triggerFacetClick(facet) {
-            var id = facet.attr("facetname");
-            var value = facet.attr("facetvalue");
+        serendip.trigger("facet.remove", {id : id, value : value});
+        serendip.search();
+    };
 
-            self.serendip.trigger("facet.remove", {id : id, value : value});
-            self.serendip.search();
-        }
-
-    },
-
-    renderActiveFacets : function(activeFacets) {
-        this.renderActiveFacet(activeFacets);
+    function renderActiveFacets(activeFacets) {
+        renderActiveFacet(activeFacets);
 
         if (activeFacets.length == 0) {
-            this.view.html(this.inactiveElement.html());
+            view.html(inactiveElement.html());
         }
-    },
+    };
     
-    renderActiveFacet : function(facetFields) {
+    function renderActiveFacet(facetFields) {
         if (facetFields && facetFields.length > 0) {
-            this.serendip.trigger("render.view", this.view, this.prototype, {"activeFacet" : facetFields});
+            serendip.trigger("render.view", view, prototype, {"activeFacet" : facetFields});
         } else {
-            this.view.html("");
+            view.html("");
         }
-    }
+    };
+    
+    return my;
 });

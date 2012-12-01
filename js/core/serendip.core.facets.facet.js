@@ -8,7 +8,7 @@ Serendip.Facet = (function (serendip) {
     my.minFacetsToDisplay = null;
     my.maxFacetsToDisplay = null;
     my.facets = [];
-    //my.parents = [];
+    my.parents = [];
 
     my.addSubFacet = function(facet) {
         my.facets.push(facet);
@@ -16,7 +16,7 @@ Serendip.Facet = (function (serendip) {
     };
     
     my.addParent = function(parent){
-        //my.parents.push(parent); Wont work until .extend is removed completely
+        my.parents.push(parent); 
     };
     
     my.getActiveQuery = function(values){

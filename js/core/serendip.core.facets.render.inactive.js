@@ -50,7 +50,7 @@ Serendip.FacetsRenderInactive = (function(serendip){
     };
     
     function isParentActive(facets, facet){
-        var parents = getParents(facets, facet);
+        var parents = facet.parents;
         var queries = _facetsCore.getActiveFacetsQueriesMap();
         
         for(var i = 0; i < parents.length;i++){
@@ -70,31 +70,7 @@ Serendip.FacetsRenderInactive = (function(serendip){
         return false;
     };
     
-    function getParents(facets, childFacet){
-        var parents = [];
-        
-        for(var i = 0; i < facets.length;i++){
-            var facet = facets[i];
-            for(var k = 0; k < facet.facets.length;k++){
-                var child = facet.facets[k];
-                if(child.id == childFacet.id){
-                    parents.push(facet);
-                    break;
-                }
-            }
-            
-            var subParents = getParents(facet.facets, childFacet);
-            for(var k = 0; k < subParents.length; k++){
-                var subParent = subParents[k];
-                parents.push(subParent);
-            }
-        }
-        
-        return parents;
-    };
-    
     function processFacetTypes(data, facet) {
-
         var values = facet.process(data);
         
         if(values){
