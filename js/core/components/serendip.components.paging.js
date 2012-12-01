@@ -16,8 +16,8 @@ Serendip.PagerView = (function(serendip, view, prototype) {
     });
 
     serendip.on("initFromQueryStr", function(queryStr, params) {
-        if (params["Page_param"])
-            _startDoc = (params["Page_param"] - 1) * _resultsPrPage;
+        if (params["Page"])
+            _startDoc = (params["Page"] - 1) * _resultsPrPage;
         else
             _startDoc = 0;
     });

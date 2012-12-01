@@ -36,7 +36,7 @@ Serendip.Facets = (function(serendip){
 
             for (var i = 0; i < facets.length; i++) {
                 var facet = facets[i];
-                var key = facet.id + "_param";
+                var key = facet.id + "";
                 if (paramsMap[key]) {
                     var values = paramsMap[key];
 

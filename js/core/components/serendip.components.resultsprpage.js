@@ -17,8 +17,8 @@ Serendip.ResultPrPageView = (function(serendip, view, prototype) {
         });  
         
         serendip.on("initFromQueryStr", function(queryStr, params){
-            if (params["Results_param"]){
-                resultsToDisplay = params["Results_param"]; 
+            if (params["Results"]){
+                resultsToDisplay = params["Results"]; 
                 serendip.trigger("resultsPrPageChanged", resultsToDisplay);
             }
         });  

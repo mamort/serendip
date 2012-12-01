@@ -6,7 +6,7 @@ Serendip.SearchView = (function(serendip, view, prototype) {
     });
     
     serendip.on("initFromQueryStr", function(queryStr, params) {
-        input.val(params["query_param"]);
+        input.val(params["query"]);
     });
 
     serendip.on("saveInQueryStr", function(save) {

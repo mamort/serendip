@@ -45,14 +45,25 @@ Serendip.Core = (function (ajax, history) {
         my.fields.push(config.name);
     };
 
-    my.setSearchAllFields = function() {
-        searchAllFields = true;
-        my.addQueryParam("fl", "*");
+    my.setSearchAllFields = function(shouldSearchAllFields) {
+        searchAllFields = shouldSearchAllFields;
+        
+        if(shouldSearchAllFields){
+            my.addQueryParam("fl", "*");
+        }else{
+            my.removeQueryParam("fl");
+        }
+        
+        updateFieldsQueryString();
     };
 
     my.setHighlightFields = function(fields) {
         addQueryParam("hl.fl", fields.join(" "));
         highlightFields = fields;
+    };
+    
+    my.removeQueryParam = function(key){
+        delete queryParams[key];
     };
 
     my.addQueryParam = function(name, value) {
@@ -113,23 +124,24 @@ Serendip.Core = (function (ajax, history) {
 
         // Add postfix to map ids to avoid using "reserved" javascript words
         // ex paramsMap["sort"] will not work (sort is already funksjon on array)
-        var paramsMap = parseQueryToMap(queryStr, "_param");
+        var paramsMap = parseQueryToMap(queryStr, "");
         my.trigger("initFromQueryStr", queryStr, paramsMap);
 
         doRequest(false);
     };    
     
     function updateFieldsQueryString() {
-
         if (searchAllFields == false) {
-            var fieldsQueryStr = "";
-            for (var i = 0; i < my.fields.length; i++) {
-                fieldsQueryStr += fields[i];
-                if (i != my.fields.length - 1)
-                    fieldsQueryStr += ",";
+            var enabledFields = [];
+            for(var i = 0; i < my.fieldConfig.length; i++){
+                var config = my.fieldConfig[i];
+                if(config.isEnabled){
+                    enabledFields.push(config.name);
+                }
             }
-
-            my.addQueryParam("fl", fieldsQueryStr);
+            
+            my.removeQueryParam("fl");
+            my.addQueryParam("fl", enabledFields.join(","));
         }
     };
     
@@ -230,22 +242,22 @@ Serendip.Core = (function (ajax, history) {
         return "";
     };
 
-    function parseQueryToMap(queryStr, postfix) {
+    function parseQueryToMap(queryStr) {
         var split = queryStr.split("&");
 
-        var queryParams = [];
+        var queryParams = {};
 
         for (var i = 0; i < split.length; i++) {
             var params = split[i].split("=");
-            queryParams[params[0] + postfix] = params[1];
+            queryParams[params[0]] = params[1];
         }
         
         split = queryStr.replace("!/", "").split("/");
 
         for (var i = 0; i < split.length-1; i+=2) {
-            var key = split[i] + postfix;
+            var key = split[i];
             var value = split[i+1];
-            queryParams[key] = value;
+            queryParams["" + key + ""] = value;
         }        
 
         return queryParams;

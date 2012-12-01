@@ -26,9 +26,9 @@ Serendip.SortingView = (function(serendip, view) {
     }); 
     
     function initFromQueryStr(queryStr, params) {
-        var sortValue = params["SortBy_param"];
+        var sortValue = params["SortBy"];
         if (sortValue) {
-            var direction = params["OrderBy_param"];
+            var direction = params["OrderBy"];
             if (!direction) {
                 direction = "asc";
             }
