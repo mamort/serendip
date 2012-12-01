@@ -15,21 +15,15 @@ Serendip.Core = (function (ajax, history) {
     cplIndex = -1;
 
     solrUrl = "";
-    views = [];
     
-    $.extend(my, Simple.Events);
+    Serendip.Utils.setupEvents(my);
     
     my.init = function(pageName) {
         my.trigger("views.init");
         
         my.fieldConfig.sort(fieldSort);
         updateFieldsQueryString();
-        
-        for (var k in views) {
-            var view = views[k];
-            view.init(my);
-        }
-        
+  
         my.trigger("views.init.done");
         
         initHistory();
@@ -81,10 +75,6 @@ Serendip.Core = (function (ajax, history) {
 
     my.setSolrUrl = function(url) {
         solrUrl = url;
-    };
-
-    my.addView = function(view) {
-        views.push(view);
     };
 
     my.saveHistoryItem = function() {

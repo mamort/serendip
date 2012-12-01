@@ -49,7 +49,7 @@ Serendip.Ajax = (function(){
 Serendip.History = (function(){
     var my = {};
     
-    $.extend(my, Simple.Events);
+    Serendip.Utils.setupEvents(my);
     
     my.init = function(){
         $.historyInit(pageLoad, "index.html");

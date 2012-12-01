@@ -48,6 +48,11 @@
         
         return parsedValues;
     };
+    
+    my.setupEvents = function(obj){
+        obj.on = Serendip.Events.on;
+        obj.trigger = Serendip.Events.trigger;
+    };
 
     return my;
 }());
