@@ -1,45 +1,38 @@
-Serendip.ShowMoreFacetsView = Serendip.Class.extend({
-    view : null,
-    prototype: null,
-    
-    init : function(serendip){
-        var self = this;
+Serendip.ShowMoreFacetsView = (function(serendip, view, prototype) {
+
+    serendip.on("render.facets.showmore", function(facets){  
+        view.find(".moreFacetsTxt").show();
+        renderMoreFacets(facets);
+        bindEvents();
+    });
         
-        serendip.on("render.facets.showmore", function(facets){  
-            self.view.find(".lessFacetsTxt").hide();
-            self.renderMoreFacets(facets);
-            self.bindEvents();
-        });
-        
-    },
-    
-    renderMoreFacets : function(facets){
+    function renderMoreFacets(facets){
         for (var i = 0; i < facets.length; i++) {
             var data = facets[i];
             var facet = data.facet;
-            var values = this.getShowMoreFacetRowValues(facet, data.values);
+            var values = getShowMoreFacetRowValues(facet, data.values);
             
             if(values.length > 0){
-                var html = this.renderFacetRow(facet, values);
-                this.view.find("." + facet.id + " .MoreFacetsValues").html(html).hide();                    
+                var html = renderFacetRow(facet, values);
+                view.find("." + facet.id + " .MoreFacetsValues").html(html).hide();                    
             }else{
-                this.view.find("." + facet.id + " .moreFacetsTxt").hide();
+                view.find("." + facet.id + " .moreFacetsTxt").hide();
             }
         }      
-    },
+    };
     
-    renderFacetRow : function(facet, values){
+    function renderFacetRow(facet, values){
         var facetRowData = {
             "facetRow" : values
         };
-        var facetsElement = this.prototype.clone();
+        var facetsElement = prototype.clone();
         var facetValues = facetsElement.find(".FacetValues");
         facetValues = facetValues.autoRender(facetRowData);   
         
         return facetValues.html();
-    },
+    };
     
-    getShowMoreFacetRowValues : function(facet, values){
+    function getShowMoreFacetRowValues(facet, values){
         var visibleValues = [];
         
         var start = facet.minFacetsToDisplay;
@@ -50,27 +43,26 @@ Serendip.ShowMoreFacetsView = Serendip.Class.extend({
         }
         
         return visibleValues;
-    },
+    };
     
-    bindEvents : function(){
-        var self = this;
-        this.view.find("a.moreFacets").off('click').on('click', function() {
-            self.handleShowMoreLess($(this));
+    function bindEvents(){
+        view.find("a.moreFacets").off('click').on('click', function() {
+            handleShowMoreLess($(this));
             return false;
         });        
-    },
+    };
 
-    handleShowMoreLess : function(element) {
+    function handleShowMoreLess(element) {
         var id = element.attr("facetname");
 
         var selector = "." + id + " .MoreFacetsValues";
-        var $moreFacets = this.view.find(selector);
+        var $moreFacets = view.find(selector);
 
         selector = "." + id + " .moreFacetsTxt";
-        var $moreFacetsTxt = this.view.find(selector);
+        var $moreFacetsTxt = view.find(selector);
 
         selector = "." + id + " .lessFacetsTxt";
-        var $lessFacetsTxt = this.view.find(selector);
+        var $lessFacetsTxt = view.find(selector);
 
         if ($moreFacets.css("display") == "none") {
 
@@ -90,5 +82,5 @@ Serendip.ShowMoreFacetsView = Serendip.Class.extend({
             $lessFacetsTxt.hide();
             $moreFacetsTxt.show();
         }
-    }
+    };
 });

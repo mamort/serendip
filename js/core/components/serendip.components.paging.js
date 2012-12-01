@@ -1,99 +1,95 @@
-Serendip.PagerView = Serendip.Class.extend({
-    view : null,
-    prototype : null,
+Serendip.PagerView = (function(serendip, view, prototype) {
+    var _windowSize = 5;
+    var _pages = 10;
+    var _resultsPrPage = 10;
+    var _startDoc = 0;
+    var _isTrigger = false;
 
-    windowSize : 5,
-    pages : 10,
-    resultsPrPage : 10,
-    startDoc : 0,
-    isTrigger : false,
-    serendip : null,
+    serendip.on("search", function() {
+        if (!_isTrigger) {
+            _startDoc = 0;
+        }
+    });
 
-    init : function(serendip) {
-        var self = this;
-        this.serendip = serendip;
-        
-        this.serendip.on("search", function(){
-            if(!self.isTrigger){
-                self.startDoc = 0;
-            }
-        });
-        
-        this.serendip.on("render", function(data){
-            self.render(data);
-        }); 
-        
-        this.serendip.on("initFromQueryStr", function(queryStr, params){
-            if (params["Page_param"])
-                self.startDoc = (params["Page_param"]-1) * self.resultsPrPage;
-            else
-                self.startDoc = 0;
-        });  
-        
-        this.serendip.on("saveInQueryStr", function(save){
-            var page = (self.startDoc / self.resultsPrPage) + 1;
-            save("Page", page, 2);
-        });  
-        
-        this.serendip.on("buildRequest", function(save){
-            save("&start=" + self.startDoc);
-        });  
-        
-        this.serendip.on("resultsPrPageChanged", function(resultsPrPage){
-            self.resultsPrPage = resultsPrPage;
-        });                                        
-    },
+    serendip.on("render", function(data) {
+        render(data);
+    });
 
-    bindEvents : function() {
-        var self = this;
-        var $pagingHrefs = this.view.find("li a");
+    serendip.on("initFromQueryStr", function(queryStr, params) {
+        if (params["Page_param"])
+            _startDoc = (params["Page_param"] - 1) * _resultsPrPage;
+        else
+            _startDoc = 0;
+    });
+
+    serendip.on("saveInQueryStr", function(save) {
+        var page = (_startDoc / _resultsPrPage) + 1;
+        save("Page", page, 2);
+    });
+
+    serendip.on("buildRequest", function(save) {
+        save("&start=" + _startDoc);
+    });
+
+    serendip.on("resultsPrPageChanged", function(resultsPrPage) {
+        _resultsPrPage = resultsPrPage;
+    });
+
+    function bindEvents() {
+        var $pagingHrefs = view.find("li a");
 
         $pagingHrefs.off('click').on('click', function() {
             var page = $(this).attr("page");
 
             page = page - 1;
-            self.startDoc = page * self.resultsPrPage;
-            self.isTrigger = true;
-            self.serendip.search();
-            self.isTrigger = false;
+            _startDoc = page * _resultsPrPage;
+            _isTrigger = true;
+            serendip.search();
+            _isTrigger = false;
 
             // Return false to avoid the a:href executing
             return false;
         });
-    },
+    };
 
-    render : function(data) {
-        this.startDoc = data.response.start;
+    function render(data) {
+        _startDoc = data.response.start;
         var numDocs = data.response.numFound;
 
-        var totalPages = Math.ceil(numDocs / this.resultsPrPage);
-        var currentPage = Math.ceil(this.startDoc / this.resultsPrPage) + 1;
+        var totalPages = Math.ceil(numDocs / _resultsPrPage);
+        var currentPage = Math.ceil(_startDoc / _resultsPrPage) + 1;
 
-        var start = (currentPage - this.windowSize) + 1;
-        var end = (currentPage + this.windowSize) + 1;
+        var start = (currentPage - _windowSize) + 1;
+        var end = (currentPage + _windowSize) + 1;
 
-        if (start < 1)
-            start = 1;
-        if (end > totalPages)
-            end = totalPages + 1;
+        if (start < 1){
+           start = 1; 
+        }
+            
+        if (end > totalPages){
+            end = totalPages + 1;    
+        }
 
         var dif = end - start;
 
-        if (dif < this.pages) {
-            end += this.pages - dif + 1;
+        if (dif < _pages) {
+            end += _pages - dif + 1;
         }
 
-        if (start < 1)
+        if (start < 1) {
             start = 1;
-        if (end > totalPages)
+        }
+
+        if (end > totalPages) {
             end = totalPages + 1;
+        }
 
-        this.renderPagerImpl(currentPage, totalPages, start, end);
+        renderPagerImpl(currentPage, totalPages, start, end);
 
-        this.bindEvents();
-    },
+        bindEvents();
+    };
 
-    renderPagerImpl : function(currentPage, totalPages, windowStart, windowEnd) {
+    function renderPagerImpl(currentPage, totalPages, windowStart, windowEnd) {
         var pagingRowsData = [];
 
         // Render previous page
@@ -132,22 +128,21 @@ Serendip.PagerView = Serendip.Class.extend({
         };
 
         if (totalPages > 1) {
-            this.serendip.trigger("render.view", this.view, this.prototype, data);
+            serendip.trigger("render.view", view, prototype, data);
         } else {
-            this.view.html("");
+            view.html("");
         }
+    };
 
-        function createPageData(page, regularPageActive, currentPageActive, nextPageActive, prevPageActive) {
-            var pageData = {
-                "page" : page,
-                "regularPageActive" : regularPageActive,
-                "currentPageActive" : currentPageActive,
-                "nextPageActive" : nextPageActive,
-                "prevPageActive" : prevPageActive
-            };
+    function createPageData(page, regularPageActive, currentPageActive, nextPageActive, prevPageActive) {
+        var pageData = {
+            "page" : page,
+            "regularPageActive" : regularPageActive,
+            "currentPageActive" : currentPageActive,
+            "nextPageActive" : nextPageActive,
+            "prevPageActive" : prevPageActive
+        };
 
-            return pageData;
-        }
-
-    }
-}); 
+        return pageData;
+    };
+});

@@ -1,23 +1,11 @@
-Serendip.ResultInfoView = Serendip.Class.extend({
-    view : null,
-    prototype: null,
-    serendip: null,
+Serendip.ResultInfoView = (function(serendip, view, prototype) {
 
-    init : function(serendip) {
-        var self = this;
-        this.serendip = serendip;
-        
-        this.serendip.on("render", function(data){
-            self.render(data);
-        }); 
-    },
-
-    render : function(data) {
+    serendip.on("render", function(data) {
         var infodata = {
             numDocs : data.response.numFound,
             time : data.responseHeader.QTime
         };
-        
-        this.serendip.trigger("render.view", this.view, this.prototype, infodata);
-    }
-}); 
+
+        serendip.trigger("render.view", view, prototype, infodata);
+    });
+});

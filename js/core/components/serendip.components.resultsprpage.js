@@ -1,38 +1,38 @@
-Serendip.ResultPrPageView = Serendip.Class.extend({
-    view : null,
-    resultsToDisplay : 10,
-    serendip : null,
+Serendip.ResultPrPageView = (function(serendip, view, prototype) {
+    var resultsToDisplay = 10;
+    
+    serendip.on("views.init", function(){
+        init();
+    });
 
-    init : function(serendip) {
-        var self = this;
-        this.serendip = serendip;
+    function init() {
         
-       this.view.find("select").change(function() {
-            self.resultsToDisplay = $(this).val();
-            self.serendip.search();
+       view.find("select").change(function() {
+            resultsToDisplay = $(this).val();
+            serendip.search();
         }); 
         
-        this.serendip.on("render", function(data){
-            self.render(data);
+        serendip.on("render", function(data){
+            render(data);
         });  
         
-        this.serendip.on("initFromQueryStr", function(queryStr, params){
+        serendip.on("initFromQueryStr", function(queryStr, params){
             if (params["Results_param"]){
-                self.resultsToDisplay = params["Results_param"]; 
-                self.serendip.trigger("resultsPrPageChanged", self.resultsToDisplay);
+                resultsToDisplay = params["Results_param"]; 
+                serendip.trigger("resultsPrPageChanged", resultsToDisplay);
             }
         });  
         
-        this.serendip.on("saveInQueryStr", function(save){
-            save("Results", self.resultsToDisplay, 2);
+        serendip.on("saveInQueryStr", function(save){
+            save("Results", resultsToDisplay, 2);
         });         
         
-        this.serendip.on("buildRequest", function(save){
-            save("&rows=" + self.resultsToDisplay);
+        serendip.on("buildRequest", function(save){
+            save("&rows=" + resultsToDisplay);
         });                
-    },
+    };
 
-    render : function(data) {
-        this.view.find("select").val(this.resultsToDisplay);
-    }
+    function render(data) {
+        view.find("select").val(resultsToDisplay);
+    };
 }); 

@@ -1,50 +1,42 @@
-Serendip.ResultView = Serendip.Class.extend({
-    view : null,
-    prototype : null,
-    serendip : null,
+Serendip.ResultView = (function(serendip, view, prototype) {
 
-    init : function(serendip) {
-        var self = this;
-        this.serendip = serendip;
-        
-        this.serendip.on("render", function(data){
-            self.render(data);
-        });        
-    },
+    serendip.on("render", function(data){
+        render(data);
+    });
     
-    render : function(data) {
+    function render(data) {
         var docs = data.response.docs;
 
-        var fieldConfig = this.serendip.fieldConfig;
+        var fieldConfig = serendip.fieldConfig;
 
         var docsDataArr = [];
         for ( i = 0; i < docs.length; i++) {
-            var docData = this.processDoc(docs[i], data.highlighting);
+            var docData = processDoc(docs[i], data.highlighting);
             docsDataArr.push(docData)
         }
 
-        this.renderDocuments(docsDataArr);
-    },
+        renderDocuments(docsDataArr);
+    };
 
-    processDoc : function(doc, highlight) {
+    function processDoc(doc, highlight) {
 
-        var fieldConfig = this.serendip.fieldConfig;
-        var fields = this.serendip.fields;
-        var highlightFields = this.serendip.highlightFields;
+        var fieldConfig = serendip.fieldConfig;
+        var fields = serendip.fields;
+        var highlightFields = serendip.highlightFields;
 
         var fieldsArr = {};
         for (var i = 0; i < fields.length; i++) {
-            fieldsArr[fields[i]] = this.getFieldValue(doc, highlight, fields[i]);
+            fieldsArr[fields[i]] = getFieldValue(doc, highlight, fields[i]);
         }
 
         for (var i = 0; i < highlightFields.length; i++) {
-            fieldsArr[highlightFields[i]] = this.getFieldValue(doc, highlight, highlightFields[i]);
+            fieldsArr[highlightFields[i]] = getFieldValue(doc, highlight, highlightFields[i]);
         }
 
-        return this.processDocData(fieldsArr, fields, fieldConfig);
-    },
+        return processDocData(fieldsArr, fields, fieldConfig);
+    };
 
-    processDocData : function(fields, fieldNames, fieldConfig) {
+    function processDocData(fields, fieldNames, fieldConfig) {
 
         var data = {};
 
@@ -52,7 +44,7 @@ Serendip.ResultView = Serendip.Class.extend({
 
             var config = fieldConfig[k];
 
-            var value = this.getParam(fields, config.name);
+            var value = getParam(fields, config.name);
 
             if (config.isDate && value) {
                 try {
@@ -60,7 +52,7 @@ Serendip.ResultView = Serendip.Class.extend({
                     value = date.format(config.dateFormat);
                 } catch (ex) {
                     if (value == "1-01-01T00:00:00Z") {
-                        value = "Ingen verdi";
+                        value = "";
                     } else {
                         value = "Warning: expected date value, but got: " + value;
                     }
@@ -71,18 +63,18 @@ Serendip.ResultView = Serendip.Class.extend({
         }
 
         return data;
-    },
+    };
 
-    renderDocuments : function(docsData) {
+    function renderDocuments(docsData) {
 
         var data = {
             docs : docsData
         };
         
-        this.serendip.trigger("render.view", this.view, this.prototype, data);
-    },
+        serendip.trigger("render.view", view, prototype, data);
+    };
 
-    getFieldValue : function(doc, highlight, field) {
+    function getFieldValue(doc, highlight, field) {
         var value;
 
         if ( typeof (highlight) == "undefined") {
@@ -95,9 +87,9 @@ Serendip.ResultView = Serendip.Class.extend({
             value = doc[field];
 
         return value;
-    },
+    };
 
-    getParam : function(fields, param, defaultValue) {
+    function getParam(fields, param, defaultValue) {
         var value = defaultValue;
 
         if (fields[param])
@@ -108,5 +100,5 @@ Serendip.ResultView = Serendip.Class.extend({
         }
 
         return value;
-    }
+    };
 }); 

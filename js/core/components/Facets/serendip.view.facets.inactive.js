@@ -4,9 +4,7 @@ Serendip.InactiveFacetsView = (function(serendip, view, prototype){
     var maxFacetsToDisplay = 5;
     var showMoreFacetsView = null;
     
-    serendip.on("views.init", function(){
-        init();    
-    }); 
+    Serendip.ShowMoreFacetsView(serendip, view, prototype);
     
     serendip.on("render.facets.inactive", function(facets, visibleFacets) {
         var html = renderAllFacets(visibleFacets);
@@ -15,21 +13,6 @@ Serendip.InactiveFacetsView = (function(serendip, view, prototype){
         serendip.trigger("render.facets.showmore", facets);
         bindEvents();
     });     
-
-    function init() {
-        showMoreFacetsView = createMoreFacetsView();           
-    };
-   
-    function createMoreFacetsView(){
-        var showMoreFacetsView = new Serendip.ShowMoreFacetsView({
-            view : view,
-            prototype : prototype
-        });
-        
-        showMoreFacetsView.init(serendip);    
-        
-        return showMoreFacetsView;
-    };
 
     function bindEvents() {
         view.find(".facetRow a").off('click').on('click', function() {

@@ -1,121 +1,110 @@
-Serendip.SortingView = Serendip.Class.extend({
-    view : null,
-    serendip : null,
+Serendip.SortingView = (function(serendip, view) {
+    var _sortQuery = "";
+    var _sortValue = "";
+    var _sortDir = "";
+    var _sortFields = null;
 
-    sortQuery : "",
-    sortValue : "",
-    sortDir : "",
-    sortFields : null,
+    serendip.on("renderFinished", function() {
+        renderFinished();
+    });
 
-    init : function(serendip) {
-        this.serendip = serendip;
-        var self = this;
+    serendip.on("initFromQueryStr", function(queryStr, paramsMap) {
+        initFromQueryStr(queryStr, paramsMap);
+    });
 
-        this.serendip.on("renderFinished", function() {
-            self.renderFinished(self);
-        });
-        
-        this.serendip.on("initFromQueryStr", function(queryStr, paramsMap){
-            self.initFromQueryStr(queryStr, paramsMap);
-        });  
-        
-        this.serendip.on("saveInQueryStr", function(save){
-            if (self.sortValue && self.sortDir && self.sortValue != "relevans") {
-                //var value = "&sort=" + self.sortValue + " " + self.sortDir;
-                save("SortBy", self.sortValue, 5);
-                save("OrderBy", self.sortDir, 5);
-            }    
-        });  
-        
-        this.serendip.on("buildRequest", function(save){
-            if (self.sortValue && self.sortDir && self.sortValue != "relevans") {
-                save("&sort=" + self.sortValue + " " + self.sortDir);
-            }  
-        });                           
-    },
+    serendip.on("saveInQueryStr", function(save) {
+        if (_sortValue && _sortDir && _sortValue != "relevans") {
+            save("SortBy", _sortValue, 5);
+            save("OrderBy", _sortDir, 5);
+        }
+    });
 
-    initFromQueryStr : function(queryStr, params) {
+    serendip.on("buildRequest", function(save) {
+        if (_sortValue && _sortDir && _sortValue != "relevans") {
+            save("&sort=" + _sortValue + " " + _sortDir);
+        }
+    }); 
+    
+    function initFromQueryStr(queryStr, params) {
         var sortValue = params["SortBy_param"];
         if (sortValue) {
             var direction = params["OrderBy_param"];
-            if(!direction){
+            if (!direction) {
                 direction = "asc";
             }
-            
-            this.sortQuery = "&sort=" + sortValue + " " + direction;
-            this.sortValue = sortValue;
-            this.sortDir = direction;
+
+            _sortQuery = "&sort=" + sortValue + " " + direction;
+            _sortValue = sortValue;
+            _sortDir = direction;
         }
 
-        queryStr += this.sortQuery;
+        queryStr += _sortQuery;
 
         return queryStr;
-    },
-
-    bindEvents : function() {
-        var self = this;
-        
-        this.view.find("th .sortfield a").off('click').on('click', function() {
+    };
+    
+    function bindEvents() {
+        view.find("th .sortfield a").off('click').on('click', function() {
 
             var id = $(this).attr("sort");
             var dir = $(this).attr("direction");
 
-            var fieldname = self.GetFieldNameForId(id);
+            var fieldname = GetFieldNameForId(id);
 
-            self.handleSortClick(fieldname, dir);
+            handleSortClick(fieldname, dir);
 
             // Return false to avoid the a:href executing
             return false;
         });
-    },   
-
-    renderFinished : function(self) {
-        var sortField = this.sortValue;
-
-        var sortFieldId = this.GetIdForFieldName(sortField);
-
-        this.setSortFieldActive(sortFieldId, this.sortDir);
-        this.bindEvents();
-    },
+    };
     
-    handleSortClick : function(sortValue, sortDirection) {
+    function renderFinished() {
+        var sortField = _sortValue;
+
+        var sortFieldId = GetIdForFieldName(sortField);
+
+        setSortFieldActive(sortFieldId, _sortDir);
+        bindEvents();
+    };
+    
+    function handleSortClick(sortValue, sortDirection) {
 
         if (sortValue && sortDirection && sortValue != "relevans") {
-            this.sortQuery = "&sort=" + sortValue + " " + sortDirection;
+            _sortQuery = "&sort=" + sortValue + " " + sortDirection;
         } else {
-            this.sortQuery = "";
+            _sortQuery = "";
         }
 
-        this.sortValue = sortValue;
-        this.sortDir = sortDirection;
+        _sortValue = sortValue;
+        _sortDir = sortDirection;
 
-        this.serendip.search();
-    },    
-
-    setSortFieldActive : function(sortFieldId, sortDirection) {
-        var cls = this.GetClassNameForRows(sortFieldId);
+        serendip.search();
+    };
+    
+    function setSortFieldActive(sortFieldId, sortDirection) {
+        var cls = GetClassNameForRows(sortFieldId);
 
         // Remove all active sortfields
-        this.view.find(".sortfield .active").removeClass("active").addClass("inactive");
+        view.find(".sortfield .active").removeClass("active").addClass("inactive");
 
         // Make current sortfield active
         var row = $("." + cls);
 
-        var newSortDirection = this.ReverseSortDirection(sortDirection);
+        var newSortDirection = ReverseSortDirection(sortDirection);
 
         var dirElement = row.find(".sortfield ." + sortDirection);
         dirElement.removeClass(sortDirection).addClass(newSortDirection);
 
         row.find(".sortfield .inactive").removeClass("inactive").addClass("active");
         row.find(".sortfield a").attr("direction", newSortDirection);
-    },
-
-    GetSortField : function(value) {
+    };
+    
+    function GetSortField(value) {
         var values = value.split(" ");
         return values[0];
-    },
-
-    GetSortDirection : function(sortValue) {
+    };
+    
+    function GetSortDirection(sortValue) {
         var sortDirection = "asc";
         var values = sortValue.split(" ");
         if (values.length > 0) {
@@ -125,17 +114,17 @@ Serendip.SortingView = Serendip.Class.extend({
         }
 
         return sortDirection;
-    },
-
-    ReverseSortDirection : function(direction) {
+    };
+    
+    function ReverseSortDirection(direction) {
         if (direction == "asc") {
             return "desc";
         } else {
             return "asc";
         }
-    },
-
-    GetFieldNameForId : function(id) {
+    };
+    
+    function GetFieldNameForId(id) {
         var fieldConfig = serendip.fieldConfig;
 
         for (var i = 0; i < fieldConfig.length; i++) {
@@ -146,9 +135,9 @@ Serendip.SortingView = Serendip.Class.extend({
         }
 
         return "";
-    },
-
-    GetIdForFieldName : function(name) {
+    };
+    
+    function GetIdForFieldName(name) {
         var fieldConfig = serendip.fieldConfig;
 
         for (var i = 0; i < fieldConfig.length; i++) {
@@ -159,9 +148,9 @@ Serendip.SortingView = Serendip.Class.extend({
         }
 
         return "";
-    },
-
-    GetClassNameForRows : function(cls) {
+    };
+    
+    function GetClassNameForRows(cls) {
         return cls + "Row";
-    }
-}); 
+    };
+});

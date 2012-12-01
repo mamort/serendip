@@ -1,18 +1,19 @@
-Serendip.InProgressView = Serendip.Class.extend({
-  view: null,
-  serendip: null,
-  
-  init : function(serendip){
-  	var self = this;
- 	this.serendip = serendip;
-  	this.view.hide();
-      
-  	this.serendip.on("wait", function(){
-  		self.view.show();  
-  	});
-  	
-  	this.serendip.on("render", function(){
-  	    self.view.hide();
-  	});
-  }
-});
+Serendip.InProgressView = (function(serendip, view) {
+
+    serendip.on("views.init", function() {
+        init();
+    });
+
+    serendip.on("wait", function() {
+        view.show();
+    });
+
+    serendip.on("render", function() {
+        view.hide();
+    });
+
+    function init() {
+        view.hide();
+    };
+
+}); 

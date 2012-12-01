@@ -6,42 +6,13 @@
      - Remove a view that you do not need
      - Add your own view that is implemented like the others in js/core/components
      */
-
-    serendip.addView(new Serendip.SearchView({
-        view: $("#SearchView")
-    }));
-
-    serendip.addView(new Serendip.ResultInfoView({
-        view: $("#ResultInfoView"),
-        prototype: $("#ResultInfo_Prototype")
-    }));
-
-    serendip.addView(new Serendip.ResultPrPageView({
-        view: $("#ResultsPrPage"),
-        resultsToDisplay : 5
-    }));
-
-    serendip.addView(new Serendip.SortingView({
-        view: $(".view")
-    }));
-
-    serendip.addView(new Serendip.PagerView({
-        view : $("#PagerView"),
-        prototype : $("#Pager_Prototype"),
-        windowSize : 5,
-        pages : 10
-    }));
-
-    serendip.addView(new Serendip.ResultView({
-        view : $("#ResultView"),
-        prototype : $("#Results_Prototype_TableView")
-    }));
-
-    serendip.addView(new Serendip.InProgressView({
-        view : $("#ResultsInProgressView"),
-    }));
-    
+    Serendip.SearchView(serendip, $("#SearchView"));
+    Serendip.SortingView(serendip, $(".view"));
+    Serendip.ResultPrPageView(serendip, $("#ResultsPrPage"));
+    Serendip.ResultView(serendip, $("#ResultView"), $("#Results_Prototype_TableView"));
+    Serendip.ResultInfoView(serendip, $("#ResultInfoView"), $("#ResultInfo_Prototype"));
+    Serendip.InProgressView(serendip, $("#ResultsInProgressView"));
+    Serendip.PagerView(serendip, $("#PagerView"), $("#Pager_Prototype"));
     Serendip.FacetsView(serendip, $("#Facets_Theme"), $("#Prototypes"));
-
 });
 
