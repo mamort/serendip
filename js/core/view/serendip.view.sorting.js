@@ -1,4 +1,11 @@
 Serendip.SortingView = (function(serendip, view) {
+    var my = {};
+    
+    my.sortValueName = "SortBy";
+    my.sortDirectionName = "OrderBy";
+    my.sortAscName = "asc";
+    my.sortDescName = "desc";    
+    
     var _sortQuery = "";
     var _sortValue = "";
     var _sortDir = "";
@@ -14,8 +21,10 @@ Serendip.SortingView = (function(serendip, view) {
 
     serendip.on("saveInQueryStr", function(save) {
         if (_sortValue && _sortDir && _sortValue != "relevans") {
-            save("SortBy", _sortValue, 5);
-            save("OrderBy", _sortDir, 5);
+            var direction = getSortDirectionName(_sortDir);
+            
+            save(my.sortValueName, _sortValue, 5);
+            save(my.sortDirectionName, direction, 5);
         }
     });
 
@@ -25,50 +34,21 @@ Serendip.SortingView = (function(serendip, view) {
         }
     }); 
     
-    function initFromQueryStr(queryStr, params) {
-        var sortValue = params["SortBy"];
-        if (sortValue) {
-            var direction = params["OrderBy"];
-            if (!direction) {
-                direction = "asc";
-            }
-
-            _sortQuery = "&sort=" + sortValue + " " + direction;
-            _sortValue = sortValue;
-            _sortDir = direction;
-        }
-
-        queryStr += _sortQuery;
-
-        return queryStr;
+    my.bindEvents = function(){
+        // Implementations should override this method
     };
     
-    function bindEvents() {
-        view.find("th .sortfield a").off('click').on('click', function() {
-
-            var id = $(this).attr("sort");
-            var dir = $(this).attr("direction");
-
-            var fieldname = serendip.getFieldNameForId(id);
-
-            handleSortClick(fieldname, dir);
-
-            // Return false to avoid the a:href executing
-            return false;
-        });
-    };
+    my.removeAllActiveSortfields = function(){
+        // Implementations should override this method
+    };    
     
-    function renderFinished() {
-        var sortField = _sortValue;
-
-        var sortFieldId = serendip.getIdForFieldName(sortField);
-
-        setSortFieldActive(sortFieldId, _sortDir);
-        bindEvents();
-    };
+    my.makeCurrentSortfieldActive = function(sortFieldId, sortDirection){
+        // Implementations should override this method
+    }    
     
-    function handleSortClick(sortValue, sortDirection) {
-
+    my.sort = function(sortFieldId, sortDirection){   
+        var sortValue = serendip.getFieldNameForId(sortFieldId);
+        
         if (sortValue && sortDirection && sortValue != "relevans") {
             _sortQuery = "&sort=" + sortValue + " " + sortDirection;
         } else {
@@ -78,37 +58,10 @@ Serendip.SortingView = (function(serendip, view) {
         _sortValue = sortValue;
         _sortDir = sortDirection;
 
-        serendip.search();
+        serendip.search();       
     };
     
-    function setSortFieldActive(sortFieldId, sortDirection) {
-        removeAllActiveSortfields();
-        makeCurrentSortfieldActive(sortFieldId, sortDirection);
-    };
-    
-    function removeAllActiveSortfields(){
-        view.find(".sortfield .active").removeClass("active").addClass("inactive");
-    };
-    
-    function makeCurrentSortfieldActive(sortFieldId, sortDirection){
-        var cls = GetClassNameForRows(sortFieldId);
-        var row = $("." + cls);
-
-        var newSortDirection = ReverseSortDirection(sortDirection);
-
-        var dirElement = row.find(".sortfield ." + sortDirection);
-        dirElement.removeClass(sortDirection).addClass(newSortDirection);
-
-        row.find(".sortfield .inactive").removeClass("inactive").addClass("active");
-        row.find(".sortfield a").attr("direction", newSortDirection);
-    }
-    
-    function GetSortField(value) {
-        var values = value.split(" ");
-        return values[0];
-    };
-    
-    function GetSortDirection(sortValue) {
+    my.GetSortDirection = function(sortValue) {
         var sortDirection = "asc";
         var values = sortValue.split(" ");
         if (values.length > 0) {
@@ -120,15 +73,52 @@ Serendip.SortingView = (function(serendip, view) {
         return sortDirection;
     };
     
-    function ReverseSortDirection(direction) {
+    my.ReverseSortDirection = function(direction) {
         if (direction == "asc") {
             return "desc";
         } else {
             return "asc";
         }
+    };    
+    
+    function initFromQueryStr(queryStr, params) {
+        var sortValue = params[my.sortValueName];
+        if (sortValue) {
+            var direction = getSortDirection(params[my.sortDirectionName]);
+
+            _sortQuery = "&sort=" + sortValue + " " + direction;
+            _sortValue = sortValue;
+            _sortDir = direction;
+        }
+
+        queryStr += _sortQuery;
+
+        return queryStr;
     };
     
-    function GetClassNameForRows(cls) {
-        return cls + "Row";
+    function getSortDirection(sortDirectionParam){
+        if(sortDirectionParam == my.sortDescName){
+            return "desc";
+        }else{
+            return "asc";
+        }
+    }
+    
+    function getSortDirectionName(sortDirection){
+        if(sortDirection == "desc"){
+            return my.sortDescName;
+        }else{
+            return my.sortAscName;
+        }
+    }
+    
+    function renderFinished() {
+        var sortFieldId = serendip.getIdForFieldName(_sortValue);
+
+        my.removeAllActiveSortfields();
+        my.makeCurrentSortfieldActive(sortFieldId, _sortDir);        
+        my.bindEvents();
     };
+    
+    return my;
 });

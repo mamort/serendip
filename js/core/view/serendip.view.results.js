@@ -1,8 +1,13 @@
 Serendip.ResultView = (function(serendip, view, prototype) {
-
+    var my = {};
+    
     serendip.on("render", function(data){
         render(data);
     });
+    
+    my.render = function(){
+        // Implementations should override this method
+    };
     
     function render(data) {
         var docs = data.response.docs;
@@ -15,7 +20,7 @@ Serendip.ResultView = (function(serendip, view, prototype) {
             docsDataArr.push(docData)
         }
 
-        renderDocuments(docsDataArr);
+        my.render(docsDataArr);
     };
 
     function processDoc(doc, highlight) {
@@ -65,15 +70,6 @@ Serendip.ResultView = (function(serendip, view, prototype) {
         return data;
     };
 
-    function renderDocuments(docsData) {
-
-        var data = {
-            docs : docsData
-        };
-        
-        Serendip.View.Render.render(view, prototype, data);
-    };
-
     function getFieldValue(doc, highlight, field) {
         var value;
 
@@ -101,4 +97,6 @@ Serendip.ResultView = (function(serendip, view, prototype) {
 
         return value;
     };
+    
+    return my;
 }); 

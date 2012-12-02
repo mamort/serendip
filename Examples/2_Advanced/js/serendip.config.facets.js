@@ -1,9 +1,7 @@
-﻿
-$(document).ready(function(){
-	/*
+﻿    /*
     Here you can add more facets
-	If a facet is not displayed it MIGHT be because there were NO matching values in the data
-	*/
+    If a facet is not displayed it MIGHT be because there were NO matching values in the data
+    */
   
   // Example simple facet / filter
   var cityFacet = Serendip.Facet(serendip);
@@ -83,4 +81,3 @@ $(document).ready(function(){
     serendip.addFacet(childrenQueryFacet);
     serendip.addFacet(childrenFacet);
     serendip.addFacet(cityFacet);
-});

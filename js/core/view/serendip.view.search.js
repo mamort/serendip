@@ -1,16 +1,21 @@
-Serendip.SearchView = (function(serendip, view, prototype) {
-    var input = null;
+Serendip.SearchView = (function(serendip) {
+    var my = {};
     
-    serendip.on("views.init", function(){
-        init();
-    });
+    my.getSearchValue = function(){
+        // Implementations must override this method
+        return "";
+    }
+    
+    my.setSearchValue = function(value){
+        // Implementations must override this method
+    }    
     
     serendip.on("initFromQueryStr", function(queryStr, params) {
-        input.val(params["query"]);
+        my.setSearchValue(params["query"]);
     });
 
     serendip.on("saveInQueryStr", function(save) {
-        var value = input.val();
+        var value = my.getSearchValue();
         value = encodeURIComponent(value);
         if (value && value != "") {
             save("query", value, 1);
@@ -22,23 +27,13 @@ Serendip.SearchView = (function(serendip, view, prototype) {
         save(req);
     });
 
-    function init() {
-        input = view.find(".input");
-
-        view.find(".button").click(function() {
-            serendip.search(input.val());
-
-            return false;
-        });
-    };
-
     function buildRequest() {
-        var queryValue = input.val();
+        var queryValue = my.getSearchValue();
 
         // Illegal to start query with '*' or '?'
         if (queryValue[0] == '*' || queryValue[0] == '?') {
             queryValue = queryValue.substring(1, queryValue.length);
-            input.val(queryValue);
+            my.setSearchValue(queryValue);
         }
 
         if (queryValue == "") {
@@ -48,4 +43,6 @@ Serendip.SearchView = (function(serendip, view, prototype) {
         var query = encodeURIComponent(queryValue);
         return "&q=" + query;
     };
+    
+    return my;
 });
