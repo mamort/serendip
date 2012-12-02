@@ -58,6 +58,7 @@ Serendip.InactiveFacetsView = (function(serendip, view, prototype){
 
         var facetsElement = prototype.clone();
         facetsElement = facetsElement.find(".Placeholder").autoRender(facetData);
+        
         var facetValues = facetsElement.find(".FacetValues");
         facetValues.autoRender(facetRowData);
 

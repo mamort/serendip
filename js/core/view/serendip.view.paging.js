@@ -128,7 +128,7 @@ Serendip.PagerView = (function(serendip, view, prototype) {
         };
 
         if (totalPages > 1) {
-            serendip.trigger("render.view", view, prototype, data);
+            Serendip.View.Render.render(view, prototype, data);
         } else {
             view.html("");
         }

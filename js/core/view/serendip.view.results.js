@@ -71,7 +71,7 @@ Serendip.ResultView = (function(serendip, view, prototype) {
             docs : docsData
         };
         
-        serendip.trigger("render.view", view, prototype, data);
+        Serendip.View.Render.render(view, prototype, data);
     };
 
     function getFieldValue(doc, highlight, field) {

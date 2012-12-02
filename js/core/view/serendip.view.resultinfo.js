@@ -6,6 +6,6 @@ Serendip.ResultInfoView = (function(serendip, view, prototype) {
             time : data.responseHeader.QTime
         };
 
-        serendip.trigger("render.view", view, prototype, infodata);
+        Serendip.View.Render.render(view, prototype, infodata);
     });
 });
