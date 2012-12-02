@@ -49,7 +49,7 @@ Serendip.SortingView = (function(serendip, view) {
             var id = $(this).attr("sort");
             var dir = $(this).attr("direction");
 
-            var fieldname = GetFieldNameForId(id);
+            var fieldname = serendip.getFieldNameForId(id);
 
             handleSortClick(fieldname, dir);
 
@@ -61,7 +61,7 @@ Serendip.SortingView = (function(serendip, view) {
     function renderFinished() {
         var sortField = _sortValue;
 
-        var sortFieldId = GetIdForFieldName(sortField);
+        var sortFieldId = serendip.getIdForFieldName(sortField);
 
         setSortFieldActive(sortFieldId, _sortDir);
         bindEvents();
@@ -82,12 +82,16 @@ Serendip.SortingView = (function(serendip, view) {
     };
     
     function setSortFieldActive(sortFieldId, sortDirection) {
-        var cls = GetClassNameForRows(sortFieldId);
-
-        // Remove all active sortfields
+        removeAllActiveSortfields();
+        makeCurrentSortfieldActive(sortFieldId, sortDirection);
+    };
+    
+    function removeAllActiveSortfields(){
         view.find(".sortfield .active").removeClass("active").addClass("inactive");
-
-        // Make current sortfield active
+    };
+    
+    function makeCurrentSortfieldActive(sortFieldId, sortDirection){
+        var cls = GetClassNameForRows(sortFieldId);
         var row = $("." + cls);
 
         var newSortDirection = ReverseSortDirection(sortDirection);
@@ -97,7 +101,7 @@ Serendip.SortingView = (function(serendip, view) {
 
         row.find(".sortfield .inactive").removeClass("inactive").addClass("active");
         row.find(".sortfield a").attr("direction", newSortDirection);
-    };
+    }
     
     function GetSortField(value) {
         var values = value.split(" ");
@@ -122,32 +126,6 @@ Serendip.SortingView = (function(serendip, view) {
         } else {
             return "asc";
         }
-    };
-    
-    function GetFieldNameForId(id) {
-        var fieldConfig = serendip.fieldConfig;
-
-        for (var i = 0; i < fieldConfig.length; i++) {
-            var config = fieldConfig[i];
-            if (config.id == id) {
-                return config.name;
-            }
-        }
-
-        return "";
-    };
-    
-    function GetIdForFieldName(name) {
-        var fieldConfig = serendip.fieldConfig;
-
-        for (var i = 0; i < fieldConfig.length; i++) {
-            var config = fieldConfig[i];
-            if (config.name == name) {
-                return config.id;
-            }
-        }
-
-        return "";
     };
     
     function GetClassNameForRows(cls) {

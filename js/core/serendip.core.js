@@ -109,6 +109,28 @@ Serendip.Core = (function (ajax, history) {
         history.load("!" + hash);
     };
     
+    my.getIdForFieldName = function(name) {
+        for (var i = 0; i < my.fieldConfig.length; i++) {
+            var config = my.fieldConfig[i];
+            if (config.name == name) {
+                return config.id;
+            }
+        }
+
+        return "";
+    };    
+    
+    my.getFieldNameForId = function(id) {
+        for (var i = 0; i < my.fieldConfig.length; i++) {
+            var config = my.fieldConfig[i];
+            if (config.id == id) {
+                return config.name;
+            }
+        }
+
+        return "";
+    };
+        
     function initHistory(){
         history.on("history.change", function(queryParams){
              initFromQueryStr(queryParams);
