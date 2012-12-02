@@ -32,7 +32,9 @@ $(document).ready(function(){
     Example.ResultInfoView(serendip, $("#ResultInfoView"), $("#ResultInfo_Prototype"));
     Example.InProgressView(serendip, $("#ResultsInProgressView"));
     Example.PagerView(serendip, $("#PagerView"), $("#Pager_Prototype"));
-    Serendip.FacetsView(serendip, $("#Facets_Theme"), $("#Prototypes"));
+    Example.FacetsView(serendip, $("#Facets_Theme"));
+    Example.InactiveFacetsView(serendip, $("#InactiveFacets_Theme"), $("#FacetRow_Prototype"));
+    Example.ActiveFacetsView(serendip, $("#ActiveFacets_Theme"), $("#ActiveFacets_Prototype"));
 
     serendip.init();    
     $("#queryInput").focus();

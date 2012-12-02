@@ -1,30 +1,25 @@
-Serendip.InactiveFacetsView = (function(serendip, view, prototype){
-    var my = {};
+Example.InactiveFacetsView = (function(serendip, view, prototype){
+    var my = Serendip.InactiveFacetsView(serendip, view, prototype);
     
-    var showMoreFacetsView = null;
-    
-    Serendip.ShowMoreFacetsView(serendip, view, prototype);
-    
-    serendip.on("render.facets.inactive", function(facets, visibleFacets) {
-        my.render(visibleFacets);
-        
-        serendip.trigger("render.facets.showmore", facets);
-        my.bindEvents();
-    });     
-    
-    my.filter = function(id, value){
-        serendip.trigger("facet.add", {id: id, value: value});
-        serendip.search();
+    my.bindEvents = function() {
+        view.find(".facetRow a").off('click').on('click', function() {
+            var facet = $(this);
+
+            var id = facet.attr("facetname");
+            var value = facet.attr("facetvalue");
+
+            my.filter(id, value);
+
+            // Return false to avoid the a:href executing
+            return false;
+        });
     };
 
-    my.bindEvents = function() {
-        // Implementations must override this method
+    my.render = function(facets){
+        var html = renderAllFacets(facets);
+        view.html(html);        
     };
-    
-    my.render = function(){
-        // Implementations must override this method
-    };    
-    
+
     function renderAllFacets(facets){
         var facetHtmlRows = [];
         for (var i = 0; i < facets.length; i++) {
@@ -59,6 +54,7 @@ Serendip.InactiveFacetsView = (function(serendip, view, prototype){
 
         return facetsElement.html();
     };
+        
     
     return my;
 });
