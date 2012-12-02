@@ -1,4 +1,4 @@
-Serendip.ResultInfoView = (function(serendip, view, prototype) {
+Example.ResultInfoView = (function(serendip, view, prototype) {
 
     serendip.on("render", function(data) {
         var infodata = {
@@ -6,6 +6,6 @@ Serendip.ResultInfoView = (function(serendip, view, prototype) {
             time : data.responseHeader.QTime
         };
 
-        Serendip.View.Render.render(view, prototype, infodata);
+        Example.TemplateHelper.render(view, prototype, infodata);
     });
 });

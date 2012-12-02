@@ -1,38 +1,31 @@
-Serendip.ResultPrPageView = (function(serendip, view, prototype) {
-    var resultsToDisplay = 10;
+Serendip.ResultPrPageView = (function(serendip, view) {
+    var my = {};
     
-    serendip.on("views.init", function(){
-        init();
-    });
+    my.resultsToDisplay = 10;
+    my.resultsToDisplayName = "Results";
+        
+    serendip.on("render", function(data){
+        my.render();
+    });  
+    
+    serendip.on("initFromQueryStr", function(queryStr, params){
+        if (params[my.resultsToDisplayName]){
+            my.resultsToDisplay = params[my.resultsToDisplayName]; 
+            serendip.trigger("resultsPrPageChanged", my.resultsToDisplay);
+        }
+    });  
+    
+    serendip.on("saveInQueryStr", function(save){
+        save(my.resultsToDisplayName, my.resultsToDisplay, 2);
+    });         
+    
+    serendip.on("buildRequest", function(save){
+        save("&rows=" + my.resultsToDisplay);
+    }); 
 
-    function init() {
-        
-       view.find("select").change(function() {
-            resultsToDisplay = $(this).val();
-            serendip.search();
-        }); 
-        
-        serendip.on("render", function(data){
-            render(data);
-        });  
-        
-        serendip.on("initFromQueryStr", function(queryStr, params){
-            if (params["Results"]){
-                resultsToDisplay = params["Results"]; 
-                serendip.trigger("resultsPrPageChanged", resultsToDisplay);
-            }
-        });  
-        
-        serendip.on("saveInQueryStr", function(save){
-            save("Results", resultsToDisplay, 2);
-        });         
-        
-        serendip.on("buildRequest", function(save){
-            save("&rows=" + resultsToDisplay);
-        });                
-    };
-
-    function render(data) {
-        view.find("select").val(resultsToDisplay);
-    };
+    my.render = function(){
+        // Implementations should override this method
+    }
+    
+    return my;
 }); 

@@ -27,11 +27,11 @@ $(document).ready(function(){
     // Views
     Example.SearchView(serendip, $("#SearchView"));
     Example.SortingView(serendip, $(".view"));
-    Serendip.ResultPrPageView(serendip, $("#ResultsPrPage"));
+    Example.ResultPrPageView(serendip, $("#ResultsPrPage"));
     Example.ResultView(serendip, $("#ResultView"), $("#Results_Prototype_TableView"));
-    Serendip.ResultInfoView(serendip, $("#ResultInfoView"), $("#ResultInfo_Prototype"));
-    Serendip.InProgressView(serendip, $("#ResultsInProgressView"));
-    Serendip.PagerView(serendip, $("#PagerView"), $("#Pager_Prototype"));
+    Example.ResultInfoView(serendip, $("#ResultInfoView"), $("#ResultInfo_Prototype"));
+    Example.InProgressView(serendip, $("#ResultsInProgressView"));
+    Example.PagerView(serendip, $("#PagerView"), $("#Pager_Prototype"));
     Serendip.FacetsView(serendip, $("#Facets_Theme"), $("#Prototypes"));
 
     serendip.init();    

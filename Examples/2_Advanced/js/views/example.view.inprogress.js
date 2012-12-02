@@ -1,7 +1,7 @@
-Serendip.InProgressView = (function(serendip, view) {
+Example.InProgressView = (function(serendip, view) {
 
     serendip.on("views.init", function() {
-        init();
+        view.hide();
     });
 
     serendip.on("wait", function() {
@@ -11,9 +11,4 @@ Serendip.InProgressView = (function(serendip, view) {
     serendip.on("render", function() {
         view.hide();
     });
-
-    function init() {
-        view.hide();
-    };
-
 }); 
