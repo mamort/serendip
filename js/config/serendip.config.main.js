@@ -22,7 +22,7 @@ $(document).ready(function(){
     serendip.addFieldConfig({ name: "Birthdate", id: "Birthdate", header: "Birthdate", isEnabled: true , isDate: true, dateFormat: "dd.mmm.yyyy"});
     serendip.addFieldConfig({ name: "Children", id: "Children", header: "Children", isEnabled: true });
 
-    serendip.setSearchAllFields(true);
+    serendip.enableAllFields(true);
 
     serendip.init("index.html");
     

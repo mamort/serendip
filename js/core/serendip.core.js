@@ -6,9 +6,9 @@ Serendip.Core = (function (ajax, history) {
     my.facets = [];
     my.highlightFields = [];
     
-    queryParams = [];
+    _queryParams = [];
 
-    searchAllFields = false;
+    _enableAllFields = false;
     sortQuery = "";
     clickType = "";
 
@@ -45,10 +45,9 @@ Serendip.Core = (function (ajax, history) {
         my.fields.push(config.name);
     };
 
-    my.setSearchAllFields = function(shouldSearchAllFields) {
-        searchAllFields = shouldSearchAllFields;
-        
-        if(shouldSearchAllFields){
+    my.enableAllFields = function(enable) {
+        _enableAllFields = enable;
+        if(enable){
             my.addQueryParam("fl", "*");
         }else{
             my.removeQueryParam("fl");
@@ -63,23 +62,23 @@ Serendip.Core = (function (ajax, history) {
     };
     
     my.removeQueryParam = function(key){
-        delete queryParams[key];
+        delete _queryParams[key];
     };
 
     my.addQueryParam = function(name, value) {
         var param = name + "=" + value;
 
         var found = false;
-        for (var key in queryParams) {
-            var p = queryParams[key];
+        for (var key in _queryParams) {
+            var p = _queryParams[key];
             if (p.indexOf(name) != -1) {
-                queryParams[key] = param;
+                _queryParams[key] = param;
                 found = true;
             }
         }
 
         if (!found) {
-            queryParams.push(name + "=" + value);
+            _queryParams.push(name + "=" + value);
         }
 
     };
@@ -131,7 +130,7 @@ Serendip.Core = (function (ajax, history) {
     };    
     
     function updateFieldsQueryString() {
-        if (searchAllFields == false) {
+        if (_enableAllFields == false) {
             var enabledFields = [];
             for(var i = 0; i < my.fieldConfig.length; i++){
                 var config = my.fieldConfig[i];
@@ -181,7 +180,7 @@ Serendip.Core = (function (ajax, history) {
             request = request + data;
         });        
 
-        var params = getParamsAsQueryString(queryParams);
+        var params = getParamsAsQueryString(_queryParams);
 
         var reqString = solrUrl + "?" + params;
         reqString += request + "&wt=json";
