@@ -1,6 +1,6 @@
-Serendip.View = {};
+Example = {};
 
-Serendip.View.Render = ( function() {
+Example.TemplateHelper = ( function() {
     var my = {};
 
     my.render = function(view, prototype, data) {

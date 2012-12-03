@@ -35,6 +35,7 @@ $(document).ready(function(){
     Example.FacetsView(serendip, $("#Facets_Theme"));
     Example.InactiveFacetsView(serendip, $("#InactiveFacets_Theme"), $("#FacetRow_Prototype"));
     Example.ActiveFacetsView(serendip, $("#ActiveFacets_Theme"), $("#ActiveFacets_Prototype"));
+    Example.InactiveFacetsShowMoreFacetsView(serendip, $("#InactiveFacets_Theme"), $("#FacetRow_Prototype"));
 
     serendip.init();    
     $("#queryInput").focus();

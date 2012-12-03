@@ -6,8 +6,8 @@ $(document).ready(function(){
     serendip.setSolrUrl("http://localhost:8080/solr/Core1/select");
     
     // Configure views
-    Serendip.SearchView(serendip, $("#SearchView"));
-    Serendip.ResultView(serendip, $("#ResultView"), $("#Results_Prototype_TableView"));
+    Example.SearchView(serendip, $("#SearchView"));
+    Example.ResultView(serendip, $("#ResultView"), $("#Results_Prototype_TableView"));
 
     // Add more available fields
     // name: specifies name of field in Solr schema

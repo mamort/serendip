@@ -1,6 +1,6 @@
-Serendip.ShowMoreFacetsView = (function(serendip, view, prototype) {
+Example.InactiveFacetsShowMoreFacetsView = (function(serendip, view, prototype) {
 
-    serendip.on("render.facets.showmore", function(facets){  
+    serendip.on("render.inactivefacets.done", function(facets){  
         view.find(".moreFacetsTxt").show();
         renderMoreFacets(facets);
         bindEvents();
