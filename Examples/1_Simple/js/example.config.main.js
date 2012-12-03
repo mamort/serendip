@@ -7,7 +7,7 @@ $(document).ready(function(){
     
     // Configure views
     Example.SearchView(serendip, $("#SearchView"));
-    Example.ResultView(serendip, $("#ResultView"), $("#Results_Prototype_TableView"));
+    Example.ResultView(serendip, $("#ResultView"));
 
     // Add more available fields
     // name: specifies name of field in Solr schema
@@ -18,13 +18,7 @@ $(document).ready(function(){
     serendip.addFieldConfig({ name: "Firstname", id: "Firstname", header: "Firstname", isEnabled: true });
     serendip.addFieldConfig({ name: "Lastname", id: "Lastname", header: "Lastname", isEnabled: true});
 	serendip.addFieldConfig({ name: "Address", id: "Address", header: "Address", isEnabled: true});
-	serendip.addFieldConfig({ name: "City", id: "City", header: "City", isEnabled: true});
-	serendip.addFieldConfig({ name: "County", id: "County", header: "County", isEnabled: true});
-	serendip.addFieldConfig({ name: "Zip", id: "Zip", header: "Zip", isEnabled: true});
-	serendip.addFieldConfig({ name: "Phone", id: "Phone", header: "Phone", isEnabled: true});
 	serendip.addFieldConfig({ name: "Email", id: "Email", header: "Email", isEnabled: true});
-    serendip.addFieldConfig({ name: "Birthdate", id: "Birthdate", header: "Birthdate", isEnabled: true , isDate: true, dateFormat: "dd.mmm.yyyy"});
-    serendip.addFieldConfig({ name: "Children", id: "Children", header: "Children", isEnabled: true });
 
     serendip.enableAllFields(true);
 
