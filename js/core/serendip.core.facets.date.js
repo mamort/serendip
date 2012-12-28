@@ -75,6 +75,7 @@ Serendip.DateFacet = (function (serendip) {
                 processDateFacetValue(values, k, facetValues, dates, "asc");
             }
         } else {
+
             for (var k = values.length - 2; k > -1; k -= 2) {
                 processDateFacetValue(values, k, facetValues, dates, "desc");
             }
@@ -95,13 +96,9 @@ Serendip.DateFacet = (function (serendip) {
         // Must use GAP to calculate end date from start date here
         var isoDateStr = formatIsoDateWithGap(dateFacet.from, gapDays);
 
-        if (type == "asc") {
-            if (k + 2 < values.length) {
-                dateFacet.to = values[k + 2];
-            } else {
-                dateFacet.to = isoDateStr;
-            }
-        } else {
+        if (k + 2 < values.length) {
+            dateFacet.to = values[k + 2];
+        }else{
             dateFacet.to = isoDateStr;
         }
 
