@@ -8,16 +8,19 @@ Serendip.InactiveFacetsView = (function(serendip, view, prototype){
         serendip.trigger("render.inactivefacets.done", facets);
     });     
     
-    my.filter = function(id, value){
-        serendip.trigger("facet.add", {id: id, value: value});
+    my.filterByFacet = function(id, value){
+        serendip.trigger("facet.add", {id: id, value: value});      
+    };
+    
+    my.search = function(){
         serendip.search();
     };
-
+    
     my.bindEvents = function() {
         // Implementations must override this method
     };
     
-    my.render = function(){
+    my.render = function(visibleFacets){
         // Implementations must override this method
     };    
     

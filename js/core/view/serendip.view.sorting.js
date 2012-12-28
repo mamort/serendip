@@ -4,7 +4,8 @@ Serendip.SortingView = (function(serendip, view) {
     my.sortValueName = "SortBy";
     my.sortDirectionName = "OrderBy";
     my.sortAscName = "asc";
-    my.sortDescName = "desc";    
+    my.sortDescName = "desc";
+    my.defaultSortField = "relevance";
     
     var _sortQuery = "";
     var _sortValue = "";
@@ -20,7 +21,7 @@ Serendip.SortingView = (function(serendip, view) {
     });
 
     serendip.on("saveInQueryStr", function(save) {
-        if (_sortValue && _sortDir && _sortValue != "relevans") {
+        if (_sortValue && _sortDir && _sortValue != my.defaultSortField) {
             var direction = getSortDirectionName(_sortDir);
             
             save(my.sortValueName, _sortValue, 5);
@@ -29,7 +30,7 @@ Serendip.SortingView = (function(serendip, view) {
     });
 
     serendip.on("buildRequest", function(save) {
-        if (_sortValue && _sortDir && _sortValue != "relevans") {
+        if (_sortValue && _sortDir && _sortValue != my.defaultSortField) {
             save("&sort=" + _sortValue + " " + _sortDir);
         }
     }); 
@@ -49,7 +50,11 @@ Serendip.SortingView = (function(serendip, view) {
     my.sort = function(sortFieldId, sortDirection){   
         var sortValue = serendip.getFieldNameForId(sortFieldId);
         
-        if (sortValue && sortDirection && sortValue != "relevans") {
+        if((!sortValue || sortValue == "") && sortFieldId != my.defaultSortField){
+            throw {name: "Error", message: "Could not find field name for sortfield: " + sortFieldId}
+        }
+        
+        if (sortValue && sortDirection && sortValue != my.defaultSortField) {
             _sortQuery = "&sort=" + sortValue + " " + sortDirection;
         } else {
             _sortQuery = "";
@@ -114,7 +119,7 @@ Serendip.SortingView = (function(serendip, view) {
     
     function renderFinished() {
         var sortFieldId = serendip.getIdForFieldName(_sortValue);
-
+        
         my.removeAllActiveSortfields();
         my.makeCurrentSortfieldActive(sortFieldId, _sortDir);        
         my.bindEvents();
