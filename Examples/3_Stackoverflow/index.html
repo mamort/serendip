@@ -1,0 +1,299 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>Serendip</title>
+	<link href="css/serendip.css" rel="stylesheet" type="text/css" />
+	
+	<!--[if IE 7]>
+	<link href="css/ie7.css" rel="stylesheet" type="text/css" />
+	<![endif]-->
+
+	
+  <script src="../../js/core/lib/jquery-1.8.2.min.js" type="text/javascript"></script>
+  <script src="../../js/core/lib/jquery.history.js" type="text/javascript"></script>
+  <script src="../../js/core/lib/date.format-1.2.3.js" type="text/javascript"></script>
+  <script src="../../js/core/lib/pure_min.js" type="text/javascript"></script>
+  
+  <script src="../../js/core/serendip.common.js" type="text/javascript"></script>
+  <script src="../../js/core/serendip.utils.js" type="text/javascript"></script>
+  <script src="../../js/core/serendip.core.abstractions.js" type="text/javascript"></script>   
+  <script src="../../js/core/serendip.core.js" type="text/javascript"></script>
+    
+  <script src="../../js/core/serendip.core.facets.js" type="text/javascript"></script>    
+  <script src="../../js/core/serendip.core.facets.facet.js" type="text/javascript"></script>  
+  <script src="../../js/core/serendip.core.facets.date.js" type="text/javascript"></script>  
+  <script src="../../js/core/serendip.core.facets.range.js" type="text/javascript"></script>  
+  <script src="../../js/core/serendip.core.facets.query.js" type="text/javascript"></script>  
+  <script src="../../js/core/serendip.core.facets.render.inactive.js" type="text/javascript"></script>  
+  <script src="../../js/core/serendip.core.facets.render.active.js" type="text/javascript"></script> 
+
+  <script src="../../js/core/view/facets/serendip.view.facets.active.js" type="text/javascript"></script>    
+  <script src="../../js/core/view/facets/serendip.view.facets.inactive.js" type="text/javascript"></script>     
+  <script src="../../js/core/view/serendip.view.results.js" type="text/javascript"></script> 
+  <script src="../../js/core/view/serendip.view.paging.js" type="text/javascript"></script> 
+  <script src="../../js/core/view/serendip.view.search.js" type="text/javascript"></script> 
+  <script src="../../js/core/view/serendip.view.sorting.js" type="text/javascript"></script> 
+  <script src="../../js/core/view/serendip.view.resultsprpage.js" type="text/javascript"></script>
+  
+  <script src="js/views/example.view.js" type="text/javascript"></script> 
+  <script src="js/views/example.view.results.js" type="text/javascript"></script>  
+  <script src="js/views/example.view.sorting.js" type="text/javascript"></script> 
+  <script src="js/views/example.view.search.js" type="text/javascript"></script> 
+  <script src="js/views/example.view.resultsprpage.js" type="text/javascript"></script> 
+  <script src="js/views/example.view.inprogress.js" type="text/javascript"></script> 
+  <script src="js/views/example.view.resultinfo.js" type="text/javascript"></script> 
+  <script src="js/views/example.view.paging.js" type="text/javascript"></script> 
+  <script src="js/views/example.view.facets.js" type="text/javascript"></script> 
+  <script src="js/views/example.view.facets.active.js" type="text/javascript"></script> 
+  <script src="js/views/example.view.facets.inactive.js" type="text/javascript"></script> 
+  <script src="js/views/example.view.facets.showmore.js" type="text/javascript"></script> 
+  
+  <script src="js/serendip.config.facets.js" type="text/javascript"></script>  
+  <script src="js/serendip.config.main.js" type="text/javascript"></script>
+  
+</head> 
+
+<body>
+
+  <div id="Prototypes">
+  
+    <!-- Prototype for each active facet -->
+    <div id="ActiveFacets_Prototype">
+      <div class="Placeholder">
+          <ul>
+            <li class="activeFacet">
+                <span class="header">&nbsp;</span>
+                <a class="name@facetname value@facetvalue isActive@active displayValue" href="#">&nbsp;</a> 
+                <span class="name@facetname value@facetvalue remove">&nbsp;</span>
+            </li>
+          </ul>
+      </div>
+    </div>
+    
+       <!-- Prototype for each faceet -->
+    <div id="FacetRow_Prototype">
+      <div class="Placeholder">
+          <div class="facet">
+              <div class="facetName@class">
+                <h1 class="facetHeader"></h1>
+                
+                <div class="FacetValues">
+                    <ul>
+                      <li class="facetRow">
+                          <a class="name@facetname value@facetvalue isActive@active displayValue" href="#">
+                          </a>
+                          
+                          <span class="count">(<span class="countValue">&nbsp;</span>)</span>
+                      </li>
+                    </ul>
+                </div>
+                
+                <div class="MoreFacetsValues">
+                </div>                
+                
+                <div class="moreFacetsTxt" style="display:none;">
+                  <a class="moreFacets facetName@facetname">Show more</a>
+                </div>
+                
+                <div class="lessFacetsTxt" style="display:none;">
+                  <a class="moreFacets facetName@facetname">Show less</a>
+                </div>
+              </div>
+          </div>
+      </div>
+    </div> 
+	
+	<!-- Prototype for results -->    
+    <div id="Results_Prototype_TableViewOld">
+      <div class="Placeholder">
+          <table>
+            <thead>
+              <tr>
+				<th class="TitleRow">
+					<div class="sortfield">
+						<div class="active">
+							<a class="name direction" direction="asc" href="#" sort="Title">
+								<span class="header text">Title</span>
+								<span class="desc"></span>
+							</a>
+						</div>
+					</div>
+				</th> 				
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="docs">
+					<td><span class="Title"></span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+    </div>
+    
+
+    <!-- Prototype for results -->    
+    <div id="Results_Prototype_TableView">
+      <div class="Placeholder">
+          <div class="docs">
+                <div><a class="Title" href=""></a></div>
+                
+                 <ul class="Tag" style="float:left">
+                    <li><a class="value" href=""></a></li>
+                </ul>
+                
+                <div class="statistics" style="float:right">
+                    <div class="box"><span class="AnswerCount"></span> answers</div>
+                    <div class="box"><span class="VoteCount"></span> votes</div>
+                    <div class="box"><span class="ViewCount"></span> views</div>
+                </div>
+                
+                <div class="clearfix"></div>
+                
+                <div class="Body"></div>
+                
+                <div class="CreationDate"></div>
+                
+                <a class="ShowMore" href="">Show more...</a>
+                <a class="ShowLess" href="">Show less...</a>
+          </div>
+        </div>
+    </div>
+    
+
+    <!-- Prototype for spelling suggestions -->
+    <div id="SpellingSuggestions_Prototype">
+      <div class="Placeholder">
+          <div id="SpellingSuggestion">
+            Did you mean: 
+              <span class="suggestion">
+                  <a href="#" class="suggestionLink"></a>
+              </span>
+          </div>
+      </div>
+    </div> 
+        
+    <!-- Prototype for autocomplete -->
+    <div id="Autocomplete_Prototype">
+      <div class="Placeholder">
+        <ul>
+          <li class="term">
+              <span class="value">&nbsp;</span> <span class="count">&nbsp;</span>
+          </li>
+        </ul>
+      </div>
+    </div>    
+    
+    <!-- Prototype for resultinfo view -->
+    <div id="ResultInfo_Prototype">
+        <div class="Placeholder">
+            <div id="bar">
+              <span class="right">
+                  <strong class="numDocs">&nbsp;</strong>&nbsp;treff sortert etter relevans. (<span class="time">&nbsp;</span> ms)
+              </span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Prototype for error message -->
+    <div id="ErrorMsg_Prototype">
+      <span class='error'>
+        Cannot display results due to an error. Sorry for the inconvenience.
+      </span>
+    </div>                    
+
+    <!-- Prototype for paging -->
+    <div id="Pager_Prototype">
+      <div class="Placeholder">
+        <ul>
+          <li class="pageRow">
+            <a href="#" class="page@page regularPageActive@class"><span class="page">&nbsp;</span></a>
+            
+            <span class="currentPageActive@class"><span class="selected page">&nbsp;</span></span>
+            
+            <a href="#" class="page@page nextPageActive@class">Next&gt;&gt;</a>
+            <a href="#" class="page@page prevPageActive@class">&lt;&lt;Previous</a>
+          </li>
+        </ul>
+      </div>
+    </div>   
+  </div>
+
+  <div id="searchApp">
+
+    <div id="QueryInput_Theme">
+                
+        <div id="SearchView">
+            <form action="" id="queryform">
+              <input type="text" value="" class="input" name="query" autocomplete="off"/>
+              <input type="image" alt="Go" src="../../images/searchBtn.gif" class="button"/>
+            </form>
+            <div id="Autocomplete_Theme"></div>
+        </div>
+        
+		<div id="ResultsPrPage">
+          <div id="SelectNumResults">
+                Resultater pr side:
+                <select>
+                  <option value="5">5</option>
+                  <option value="10">10</option>
+                  <option value="25">25</option>
+                  <option value="30">30</option>
+                  <option value="50">50</option>
+                </select>
+            </div>
+		</div>   
+		
+          <div id="SortingView">
+              Sort by:
+              <select class="sortfield">
+                  <option value="relevance" data-field="relevance" data-direction="desc">Most relevant</option>
+                  <option value="CreationDate-desc" data-field="CreationDate" data-direction="desc">Show newest first</option>
+                  <option value="CreationDate-asc" data-field="CreationDate" data-direction="asc">Show oldest first</option>
+              </select>
+          </div>
+		  
+        <div id="ResultInfoView">
+		</div>	  
+    </div>
+		
+    <div id="SpellSuggestions_Theme"></div>   
+    
+    <div id="Content_Theme">
+      
+      <div id="ResultsInProgressView" style="display:none">
+          <div class="panel"></div>
+      </div>
+      
+      <div id="ResultView" class="view">   
+      </div>
+	  
+      <div id="PagerView">
+      </div>
+    </div>
+    
+    <div id="Facets_Theme">
+      <div class="t1 line"> </div>
+      <div class="t2 line"> </div>
+      
+      <div id="facets">
+        <div id="active" class="facet">
+            
+            <h1>Active filters</h1>
+            
+            <div id="ActiveFacets_Theme">
+                <span class="inactive">No active filters.</span>
+            </div>
+        </div>
+        
+        <div id="InactiveFacets_Theme">
+        </div>
+      </div>
+      
+      <div class="t2 line"> </div>   
+      <div class="t1 line"> </div>   
+    </div>
+    
+    </div>
+</body>
+</html>

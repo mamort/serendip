@@ -1,0 +1,518 @@
+/*****************************************************************
+ * Generic styles
+ ******************************************************************/
+body {
+	font: 72.5% 'Lucida Grande', Helvetica, Arial, sans-serif;
+	min-width: 850px;
+}
+
+a {
+	color: #003399;
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+.line {
+	background: #CCCCCC none repeat scroll 0 0;
+}
+
+.t1, .t2 {
+	font-size: 1px;
+	height: 1px;
+	line-height: 1px;
+	overflow: hidden;
+}
+
+.t1 {
+	margin: 0 2px;
+}
+
+.t2 {
+	margin: 0 1px;
+}
+
+/**
+ * For modern browsers
+ * 1. The space content is one way to avoid an Opera bug when the
+ *    contenteditable attribute is included anywhere else in the document.
+ *    Otherwise it causes space to appear at the top and bottom of elements
+ *    that are clearfixed.
+ * 2. The use of `table` rather than `block` is only necessary if using
+ *    `:before` to contain the top-margins of child elements.
+ */
+.clearfix:before,
+.clearfix:after {
+    content: " "; /* 1 */
+    display: table; /* 2 */
+}
+
+.clearfix:after {
+    clear: both;
+}
+
+/**
+ * For IE 6/7 only
+ * Include this rule to trigger hasLayout and contain floats.
+ */
+.clearfix {
+    *zoom: 1;
+}
+
+/*****************************************************************
+ * Page structure
+ ******************************************************************/
+#searchApp {
+	margin: 0 auto;
+	width: 1024px;
+}
+
+#Content_Theme {
+	padding-top: 10px;
+	padding-left: 10px;
+	width: 780px;
+	float: left;
+}
+
+/*****************************************************************
+ * Search View
+ ******************************************************************/
+#SearchView {
+	background: none repeat scroll 0 0 #333333;
+	float: left;
+	position: relative;
+	width: 320px;
+	padding-top: 2px;
+	margin-right: 20px;
+}
+
+#SearchView input {
+	vertical-align: middle;
+}
+
+#SearchView .button {
+	position: absolute;
+	right: 9px;
+	top: 4px;
+}
+
+#SearchView .button:hover {
+	cursor: pointer;
+}
+
+#SearchView form {
+	background: url("../images/search-bg.gif") no-repeat scroll 9px 2px transparent;
+	height: 26px;
+	margin: 2px;
+	padding-bottom: 1px;
+	position: relative;
+}
+
+#SearchView .input {
+	border: 1px solid #FFFFFF;
+	color: #000000;
+	font-size: 11px;
+	margin: 6px 0 0 33px;
+	padding: 0;
+	width: 240px;
+	outline: none;
+}
+
+/*****************************************************************
+ * Query input
+ ******************************************************************/
+#QueryInput_Theme {
+	background-color: #333333;
+	height: 35px;
+	width: 100%;
+}
+
+#topmenu {
+	float: left;
+	position: relative;
+	margin: 0px;
+	padding: 0;
+}
+
+ul, li {
+	list-style: none outside none;
+}
+
+#topmenu li {
+	float: left;
+	position: relative;
+}
+
+#topmenu li a {
+	border-color: #404040 #1A1A1A #1A1A1A #505050;
+	border-style: solid;
+	border-width: 1px;
+	color: #FFFFFF;
+	display: block;
+	font-family: arial, sans-serif;
+	font-size: 16px;
+	font-weight: bold;
+	height: 25px;
+	padding: 5px 6px 3px 7px;
+	position: relative;
+	text-decoration: none;
+}
+
+/*****************************************************************
+ * Results in progress
+ ******************************************************************/
+#ResultsInProgressView .panel{
+position:absolute;
+  left: 50%;
+  top: 50%;
+  margin-left: -50px;
+  margin-top: -100px;
+	background: transparent url('../images/loading.gif') no-repeat scroll center center;
+	width:100px;
+	height:100px;
+}
+
+#ResultsInProgressView {
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    opacity:0.85;
+    text-align:center;
+    background-color:#333333;
+    z-index:9999;
+}
+
+/*****************************************************************
+ * Results
+ ******************************************************************/
+#ResultView {
+	font-size: 1.2em;
+}
+
+#ResultView .Title {
+	font-size: 1.5em;
+}
+
+#ResultView .docs {
+	border-bottom: 1px solid #CCCCCC;
+	padding-top:6px;
+	padding-left:10px;
+	padding-bottom:10px
+}
+
+#ResultView .docs:last-child{
+	border:0px;
+}
+
+#ResultView .Body{
+	overflow:hidden;
+	text-overflow: ellipsis;
+	height:62px;
+	margin-bottom:10px;
+}
+
+#ResultView .Body.expand{
+	height:auto !important;
+}
+
+#ResultView ul.Tag{
+	padding: 0;
+	padding-top:2px;
+	margin:0;
+}
+
+#ResultView ul.Tag li{
+	display: inline;
+	list-style-type: none;
+	padding-right:10px;
+}
+
+
+#ResultView em {
+	font-style: normal;
+	font-weight: bold;
+}
+
+#ResultView .statistics{
+	float:right;
+	margin-top:2px;
+}
+
+#ResultView .statistics .box{
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#666666), to(#999999));
+  background-image: -webkit-linear-gradient(top, #666666, #999999);
+  background-image: -moz-linear-gradient(top, #666666, #999999);
+  background-image: -ms-linear-gradient(top, #666666, #999999);
+  background-image: -o-linear-gradient(top, #666666, #999999);
+  width: auto; 
+  height: 25px; 
+  text-align: center; 
+  color: white; 
+  border-radius: 6px; 
+  display: inline-block; 
+  font: bold 11px/26px Arial;
+  margin-left: -1%;
+  padding-left:6px;
+  padding-right:6px;
+}
+
+#ResultView .CreationDate{
+	text-align:right;
+	color:#666666;
+}
+
+#ResultView .ShowMore,
+#ResultView .ShowLess{
+	font-size:12px;
+}
+
+/*****************************************************************
+ * Facets
+ ******************************************************************/
+
+#Facets_Theme {
+	font-size: 1.3em;
+	display: none; /* Will be enabled by theme */
+	margin-top: 10px;
+	float: right;
+}
+
+#facets {
+	padding: 0 0 10px;
+	margin: 0px;
+	width: 200px;
+	float: left;
+	border: 2px solid #CCCCCC;
+}
+
+#facets h1 {
+	font-size: 1.0em;
+	font-family: helvetica;
+	margin: 10px 0px 0px 0px;
+	padding: 0 0 3px;
+}
+
+#facets div.facet {
+	margin: 1px 0px 5px 20px;
+	padding: 0px;
+	float: left;
+	clear: left;
+	width: 100%;
+}
+
+#facets div.facet span, #facets div.facet a {
+	color: blue;
+	margin: 0px 4px 2px 0px;
+}
+
+#facets div.facet ul {
+	list-style: none;
+	margin: 0px;
+	padding: 0px;
+}
+
+#facets div.facet ul li {
+	width: 190px;
+}
+
+#facets div.facet a {
+	color: #005A8B;
+}
+
+#facets div.facet a:hover {
+	cursor: pointer;
+}
+
+#facets div.facet span {
+	color: #aaa;
+	margin: 0px;
+	padding: 0px 0px 2px 0px;
+}
+
+#facets #InactiveFacets_Theme .moreFacetsActive {
+	display: block;
+	padding-top: 2px;
+}
+
+#facets #InactiveFacets_Theme .moreFacetsInactive {
+	display: none;
+}
+
+#facets #InactiveFacets_Theme a.moreFacets {
+	color: #700000;
+	display: block;
+	font-size: 0.7em;
+	padding-top: 5px;
+}
+
+#facets #ActiveFacets_Theme span.header {
+	float: left;
+	clear: left;
+	padding-right: 5px;
+}
+
+#facets #ActiveFacets_Theme span.remove {
+	background: transparent url('../images/remove.png') no-repeat scroll center center;
+	display: block;
+	height: 7px;
+	margin-top: 5px;
+	width: 7px;
+	float: left;
+}
+
+#facets #ActiveFacets_Theme span.remove:hover {
+	cursor: pointer;
+}
+
+#facets #ActiveFacets_Theme a {
+	clear: none;
+	float: left;
+}
+
+#ActiveFacets_Theme .morefacets:hover, #ActiveFacets_Theme .removefilter:hover {
+	cursor: pointer;
+}
+
+/*****************************************************************
+ * Search suggestions
+ ******************************************************************/
+#Searchsuggestion_Theme {
+	font-weight: bold;
+	color: blue;
+}
+
+#Searchsuggestion_Theme:hover {
+	cursor: pointer;
+}
+
+/*****************************************************************
+ * Spelling suggestions
+ ******************************************************************/
+#SpellSuggestions_Theme {
+	padding: 3px;
+	width: 100%;
+	margin-left: 12px;
+	font-size: 14px;
+	font-family: arial;
+	color: darkred;
+}
+
+#SpellSuggestions_Theme .suggestion {
+	padding-right: 3px;
+}
+
+/*****************************************************************
+ * ResultInfo View
+ ******************************************************************/
+
+#ResultInfoView {
+	float: left;
+	clear: left;
+	color: #000000;
+	font-size: 1.1em;
+	font-family: arial;
+	padding: 3px 0px 3px 6px;
+	width: 100%;
+	text-align: right;
+	min-height: 15px;
+}
+
+#ResultInfoView span.text {
+	float: left;
+	padding: 0px;
+}
+
+#ResultInfoView span.left {
+	float: left;
+	font-weight: bold;
+	padding: 4px;
+}
+
+#ResultInfoView span.right {
+	float: right;
+	padding: 3px;
+}
+
+/*****************************************************************
+ * Sorting
+ ******************************************************************/
+#SortingView{
+	float:right;
+	padding-right:25px;
+	padding-top:8px;
+	color:white;
+}
+
+#SortingView select{
+	margin-left:5px;
+}
+
+
+/*****************************************************************
+ * Results pr page
+ ******************************************************************/
+#QueryInput_Theme #SelectNumResults {
+	color: white;
+	float: right;
+	padding-right: 20px;
+	padding-top: 8px;
+}
+
+#QueryInput_Theme #SelectNumResults select {
+	margin-left: 5px;
+}
+
+/*****************************************************************
+ * Paging
+ ******************************************************************/
+#PagerView {
+	font-size: 1.2em;
+	clear: both;
+	float: left;
+	width: 800px;
+	padding: 20px 0 50px 5px;
+}
+
+#PagerView ul {
+	float: left;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+#PagerView li {
+	float: left;
+	padding-right: 10px;
+}
+
+#PagerView li .inactive {
+	display: none;
+}
+
+#PagerView li .selected {
+	background: none repeat scroll 0 0 #444444;
+	border: 1px solid #333333;
+	color: #FFFFFF;
+	font-weight: bold;
+	padding: 0.2em 0.5em;
+	display: block;
+}
+
+#PagerView li a {
+	border: 1px solid #E3E3E3;
+	color: #005A8B;
+	padding: 0.2em 0.5em;
+	text-decoration: none;
+	display: block;
+}
+
+/*****************************************************************
+ * Hide prototypes
+ ******************************************************************/
+#Prototypes {
+	display: none;
+}
