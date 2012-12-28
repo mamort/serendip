@@ -1,4 +1,4 @@
-Serendip.ResultView = (function(serendip, view, prototype) {
+Serendip.ResultView = (function(jquery, serendip, view, prototype) {
     var my = {};
     
     serendip.on("render", function(data){
@@ -49,7 +49,7 @@ Serendip.ResultView = (function(serendip, view, prototype) {
 
             var config = fieldConfig[k];
 
-            var value = getParam(fields, config.name);
+            var value = getParam(fields, config);
 
             if (config.isDate && value) {
                 try {
@@ -85,17 +85,52 @@ Serendip.ResultView = (function(serendip, view, prototype) {
         return value;
     };
 
-    function getParam(fields, param, defaultValue) {
+    function getParam(fields, config, defaultValue) {
         var value = defaultValue;
 
-        if (fields[param])
-            value = fields[param];
+        if (fields[config.name]){
+            value = fields[config.name];            
+        }
 
         if (Serendip.Utils.isArray(value)) {
-            value = value.join("");
+            if(config.isMultivalue){
+                var valueStr = value + '';
+                var values = valueStr.split(config.separator);    
+                value = [];
+                for(var i = 0; i < values.length; i++){
+                    var val = values[i];
+                    
+                    if(config.decodeContent){
+                        val = decodeContent(val);
+                    }
+                    
+                    value.push({value: val});
+                }
+                
+            }else{
+                value = value.join("");
+                
+                if(config.decodeContent){
+                    value = decodeContent(value);
+                }
+            }
+        }else{
+            if(config.decodeContent){
+                value = decodeContent(value);
+            }
+        }
+  
+
+        
+        if(typeof(config.defaultValue) != "undefined" && (!value || value == "")){
+            value = config.defaultValue;
         }
 
         return value;
+    };
+    
+    function decodeContent(content){
+        return jquery('<div/>').html(content).text();
     };
     
     return my;
