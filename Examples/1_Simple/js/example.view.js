@@ -3,7 +3,7 @@ Example = {};
 Example.TemplateHelper = ( function() {
     var my = {};
 
-    my.render = function(view, prototype, data) {
+    my.render = function(view, data) {
         
         var html = "<table>";
         for(var i = 0; i < data.docs.length; i++){

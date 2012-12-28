@@ -1,6 +1,10 @@
 Example.InactiveFacetsView = (function(serendip, view, prototype){
     var my = Serendip.InactiveFacetsView(serendip, view, prototype);
     
+    serendip.on("render.inactivefacets.bindEvents", function(facets){  
+        my.bindEvents();
+    });      
+    
     my.bindEvents = function() {
         view.find(".facetRow a").off('click').on('click', function() {
             var facet = $(this);
@@ -8,7 +12,8 @@ Example.InactiveFacetsView = (function(serendip, view, prototype){
             var id = facet.attr("facetname");
             var value = facet.attr("facetvalue");
 
-            my.filter(id, value);
+            my.filterByFacet(id, value);
+            my.search();
 
             // Return false to avoid the a:href executing
             return false;

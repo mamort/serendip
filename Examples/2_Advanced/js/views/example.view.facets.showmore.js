@@ -4,6 +4,7 @@ Example.InactiveFacetsShowMoreFacetsView = (function(serendip, view, prototype) 
         view.find(".moreFacetsTxt").show();
         renderMoreFacets(facets);
         bindEvents();
+        serendip.trigger("render.inactivefacets.bindEvents");
     });
         
     function renderMoreFacets(facets){

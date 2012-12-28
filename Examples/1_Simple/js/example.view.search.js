@@ -1,4 +1,4 @@
-Example.SearchView = (function(serendip, view, prototype) {
+Example.SearchView = (function(serendip, view) {
     
     var my = Serendip.SearchView(serendip);
     
