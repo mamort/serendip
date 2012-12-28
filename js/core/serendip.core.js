@@ -180,7 +180,7 @@ Serendip.Core = (function (ajax, history) {
         return ((x < y) ? -1 : ((x > y) ? 1 : 0));
     }    
 
-    my.search = function(value) {
+    my.search = function() {
         my.trigger("search");
         doRequest(true);
     };
@@ -189,10 +189,10 @@ Serendip.Core = (function (ajax, history) {
         my.trigger("wait");
         
         if(saveHistoryItem){
-          my.saveHistoryItem();          
+            my.saveHistoryItem();          
+        }else{
+            continueRequest();
         }
-
-        continueRequest();
     };
 
     function getFullQuery() {
