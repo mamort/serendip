@@ -12,7 +12,8 @@
   tagsFacet.header = "Filter by tags"; // The header used when displaying available facets
   tagsFacet.minFacetsToDisplay = 5; // Facets shown
   tagsFacet.maxFacetsToDisplay = 30; // Facets that can be shown by by clicking "show more" link
-
+  tagsFacet.sort = "index";
+  tagsFacet.prefix = "asp";
   
   var answerFacet = Serendip.RangeFacet(serendip);
   answerFacet.id = "Answers"; // Must be unique for all filters/facets. Used to identify the facet in the url.
@@ -25,7 +26,6 @@
   answerFacet.rangeStart = 0;
   answerFacet.rangeEnd = 200;
   answerFacet.rangeGap = 10;
-  
   
   var creationDateFacet = Serendip.DateFacet(serendip);
   creationDateFacet.id = "CreationDate"; // Must be unique for all filters/facets. Used to identify the facet in the url.

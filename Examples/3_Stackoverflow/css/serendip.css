@@ -226,11 +226,22 @@ position:absolute;
 }
 
 #ResultView ul.Tag li{
-	display: inline;
+	float:left;
+	display: block;
 	list-style-type: none;
-	padding-right:10px;
+	padding-right:5px;
+	padding-left:5px;
+	border-right:1px solid #666666;
 }
 
+#ResultView ul.Tag li:first-child{
+	padding-left:0px;
+}
+
+#ResultView ul.Tag li:last-child{
+	padding-right:0px;
+	border-right:0px;
+}
 
 #ResultView em {
 	font-style: normal;

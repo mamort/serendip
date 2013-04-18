@@ -6,7 +6,6 @@ Example.ResultView = (function(serendip, view, prototype) {
     var my = Serendip.ResultView(jQuery, serendip, view, prototype);
     
     my.render = function(data){
-        
         modifyData(data);
         renderData(data);
         updateShowMore();
@@ -21,12 +20,13 @@ Example.ResultView = (function(serendip, view, prototype) {
     };
     
     function renderData(data){
+        
         var directive = {
             '.docs': {
                 'doc<-docs': { // "for doc in docs"
-                    '.Title': 'doc.Title',
+                    '.Title': 'doc.Title_hl',
                     '.Title@href': 'doc.Url',
-                    '.Body': 'doc.Body',
+                    '.Body': 'doc.Body_hl',
                     '.CreationDate': 'doc.CreationDate',
                     '.AnswerCount': 'doc.AnswerCount',
                     '.VoteCount': 'doc.VoteCount',

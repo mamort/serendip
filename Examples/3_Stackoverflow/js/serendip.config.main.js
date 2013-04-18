@@ -5,6 +5,10 @@ serendip.setSolrUrl("http://localhost:8080/solr/Core1/select");
 serendip.addQueryParam("defType", "edismax");
 serendip.addQueryParam("qf", "title_text^2 body_text");
 
+serendip.on("error.request", function(statusCode, msg){
+    alert(statusCode + " - " + msg);
+});
+
 // Add more available fields
 // name: specifies name of field in Solr schema
 // id: unique identifier for field
