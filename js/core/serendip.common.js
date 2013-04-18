@@ -37,4 +37,20 @@ Serendip.Events = (function () {
     
     return my;
 }());
+
+/**
+ * Creates dummy console.log etcetera functions, if console.log doesn't
+ * exist. Otherwise scripts break in IE (IE9 at least), where there is
+ * no console.log unless the dev tools window has been opened (click F12).
+ */
+if (typeof console === 'undefined' || !console.log) {
+    window.console = {
+        debug: function () { },
+        trace: function () { },
+        log: function () { },
+        info: function () { },
+        warn: function () { },
+        error: function () { }
+    };
+}
     
