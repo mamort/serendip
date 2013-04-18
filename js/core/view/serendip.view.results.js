@@ -5,7 +5,7 @@ Serendip.ResultView = (function(jquery, serendip, view, prototype) {
         render(data);
     });
     
-    my.render = function(){
+    my.render = function(data){
         // Implementations should override this method
     };
     
@@ -16,7 +16,8 @@ Serendip.ResultView = (function(jquery, serendip, view, prototype) {
 
         var docsDataArr = [];
         for ( i = 0; i < docs.length; i++) {
-            var docData = processDoc(docs[i], data.highlighting);
+            var doc = docs[i];
+            var docData = processDoc(doc, data.highlighting);
             docsDataArr.push(docData)
         }
 
@@ -27,15 +28,14 @@ Serendip.ResultView = (function(jquery, serendip, view, prototype) {
 
         var fieldConfig = serendip.fieldConfig;
         var fields = serendip.fields;
-        var highlightFields = serendip.highlightFields;
 
         var fieldsArr = {};
         for (var i = 0; i < fields.length; i++) {
-            fieldsArr[fields[i]] = getFieldValue(doc, highlight, fields[i]);
-        }
-
-        for (var i = 0; i < highlightFields.length; i++) {
-            fieldsArr[highlightFields[i]] = getFieldValue(doc, highlight, highlightFields[i]);
+            var field = fields[i];
+            fieldsArr[field] = doc[field];
+            
+            var key = getHightlightName(field);
+            fieldsArr[key] = getHighlightFieldValue(doc, highlight, field);
         }
 
         return processDocData(fieldsArr, fields, fieldConfig);
@@ -65,25 +65,29 @@ Serendip.ResultView = (function(jquery, serendip, view, prototype) {
             }
 
             data[config.id] = value;
+            
+            var key = getHightlightName(config.name);
+            var idKey = getHightlightName(config.id);
+            data[idKey] = fields[key];
+            
+            if(config.decodeContent){
+                data[idKey] = decodeContent(fields[key]);
+            }
         }
 
         return data;
     };
-
-    function getFieldValue(doc, highlight, field) {
-        var value;
-
-        if ( typeof (highlight) == "undefined") {
-            value = doc[field];
-        } else {
-            value = highlight[doc.id][field];
+    
+    function getHighlightFieldValue(doc, highlight, field){
+        if ( typeof (highlight) != "undefined") {
+            var docHighlight = highlight[doc.id];
+            if(typeof(docHighlight[field]) != "undefined"){
+                return highlight[doc.id][field];        
+            }
         }
-
-        if ( typeof (value) == "undefined")
-            value = doc[field];
-
-        return value;
-    };
+ 
+        return "";
+    }
 
     function getParam(fields, config, defaultValue) {
         var value = defaultValue;
@@ -128,6 +132,10 @@ Serendip.ResultView = (function(jquery, serendip, view, prototype) {
 
         return value;
     };
+    
+    function getHightlightName(field){
+        return field + "_hl";
+    }
     
     function decodeContent(content){
         return jquery('<div/>').html(content).text();
