@@ -4,44 +4,44 @@ Serendip.Ajax = (function(){
     my.get = function(url, succHandler, errorHandler) {
 
         $.ajax({
-            scriptCharset : "utf-8",
-            type : "GET",
+            scriptCharset: "utf-8",
+            type: "GET",
 
-            url : url,
-            data : "",
-            dataType : "json",
-            contentType : "text/plain; charset=utf-8",
-            timeout : 5000,
+            url: url,
+            data: "",
+            dataType: "json",
+            contentType: "text/plain; charset=utf-8",
+            timeout: 5000,
 
-            success : succHandler,
+            success: succHandler,
 
-            error : function(httpReq, ajaxOpts, thrownError) {
-                var shouldRedirectToLogin = false;
+            error: function(httpReq, ajaxOpts, thrownError) {
+                var response = httpReq.responseText;
                 try {
-                    if (thrownError.indexOf("<html") > -1) {
-                        shouldRedirectToLogin = true;
-                    }
-                } catch (ex) {
-                    if (console) {
-                        console.log(ex.toSource());
-                    }
+                    response = jQuery.parseJSON(httpReq.responseText);
+                } catch(ex) {
+                    // ignore
                 }
 
-                var response = jQuery.parseJSON(httpReq.responseText);
+                console.log(response);
+                console.log(thrownError);
 
-                if (console) {
-                    console.log(response);
-                    console.log(thrownError.toSource());
-                }
-
-                if ( response == "") {
+                if (response == "") {
                     response = "Unable to contact server.";
                 }
+                
+                if (!response) {
+                    response = "Failed to execute XMLHTTPRequest.";
+                } else if (response.error) {
+                    response = response.error.msg;
+                } else {
+                    response = "Unknown error. Please debug with Chrome or Firefox.";
+                }
 
-                errorHandler(response, shouldRedirectToLogin);
+                errorHandler(httpReq.status, response);
             }
         });
-    }
+    };
     
     return my;
 }());
