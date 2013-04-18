@@ -7,11 +7,11 @@ Serendip.RangeFacet = (function (serendip) {
     my.rangeGap = null;
 
    my.getQuery = function() {
-        var query = "facet.range={!ex=" + my.id + "}" + my.name;
-        var key = "&f." + my.name + ".facet.range";
-        query += key + ".start=" + encodeURIComponent(my.rangeStart);
-        query += key + ".end=" + encodeURIComponent(my.rangeEnd);
-        query += key + ".gap=" + encodeURIComponent(my.rangeGap);
+        var query = "facet.range={!ex=" + my.id + ", key=" + my.id + "}" + my.name;
+
+        query = my.applyOption(query, "range.start", my.rangeStart);
+        query = my.applyOption(query, "range.end", my.rangeEnd);
+        query = my.applyOption(query, "range.gap", my.rangeGap);
         
         return query;
     };
@@ -61,8 +61,8 @@ Serendip.RangeFacet = (function (serendip) {
 
     my.process = function(data) {
         var facetRanges = data.facet_counts.facet_ranges;
-        var ranges = facetRanges[my.name].counts;
-        var gap = facetRanges[my.name].gap;
+        var ranges = facetRanges[my.id].counts;
+        var gap = facetRanges[my.id].gap;
         
         var facetValues = [];
         

@@ -3,14 +3,14 @@ Serendip.FacetsRenderActive = (function(serendip){
     
     var _facetsCore = null;
     
-    init(serendip);
+    init();
 
-    function init(serendip) {
+    function init() {
         serendip.on("init.facets.core", function(facetsCore) {
             _facetsCore = facetsCore;
         });
 
-        serendip.on("render", function(data) {
+        serendip.on("render", function() {
             var activeFacets = createActiveFacets();
             serendip.trigger("render.facets.active", activeFacets);
         });

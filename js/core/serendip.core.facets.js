@@ -6,7 +6,7 @@ Serendip.Facets = (function(serendip){
     var facets = null;
     
     serendip.on("views.init", function() {
-        init(serendip);
+        init();
     });
     
     my.getActiveFacetsQueriesMap = function() {
@@ -17,7 +17,7 @@ Serendip.Facets = (function(serendip){
         return facetIdToFacetMap;
     };
 
-    function init(serendip) {
+    function init() {
         facets = serendip.facets;
 
         facetIdToFacetMap = [];
@@ -35,28 +35,25 @@ Serendip.Facets = (function(serendip){
             activeFacetQueries = {};
 
             for (var i = 0; i < facets.length; i++) {
-                var facet = facets[i];
-                var key = facet.id + "";
+                var theFacet = facets[i];
+                var key = theFacet.id + "";
                 if (paramsMap[key]) {
                     var values = paramsMap[key];
 
-                    facetQuery = {};
-                    facetQuery.id = facet.id;
+                    var facetQuery = {};
+                    facetQuery.id = theFacet.id;
                     facetQuery.values = values.split(",");
 
-                    activeFacetQueries[facet.id] = facetQuery;
+                    activeFacetQueries[theFacet.id] = facetQuery;
                 }
             }
 
         });
 
         serendip.on("saveInQueryStr", function(save) {
-            var query = "";
             for (var id in activeFacetQueries) {
-
-                var facetConfig = facetIdToFacetMap[id];
-                var facet = activeFacetQueries[id];
-                var values = facet.values;
+                var activeFacet = activeFacetQueries[id];
+                var values = activeFacet.values;
 
                 if (values && values.length > 0) {
                     save(id, values.join(","), 6);
@@ -65,19 +62,19 @@ Serendip.Facets = (function(serendip){
         });
 
         serendip.on("buildRequest", function(save) {
-            var query = getFacetsAsQueryString(facets);
+            var query = getFacetsAsQueryString();
             save("&facet=true&" + query);
 
-            var query = getActiveFacetsQuery();
-            save("&" + query);
+            var activeQuery = getActiveFacetsQuery();
+            save("&" + activeQuery);
         });
 
-        serendip.on("facet.remove", function(facet) {
-            handleFacetClick(facet.id, facet.value, false);
+        serendip.on("facet.remove", function(removedFacet) {
+            handleFacetClick(removedFacet.id, removedFacet.value, false);
         });
 
-        serendip.on("facet.add", function(facet) {
-            handleFacetClick(facet.id, facet.value, true);
+        serendip.on("facet.add", function(addedFacet) {
+            handleFacetClick(addedFacet.id, addedFacet.value, true);
         });
     };
 
@@ -101,7 +98,7 @@ Serendip.Facets = (function(serendip){
             return "";
     };
 
-    function getFacetsAsQueryString(facets) {
+    function getFacetsAsQueryString() {
         var query = "";
 
         for (var i = 0; i < facets.length; i++) {

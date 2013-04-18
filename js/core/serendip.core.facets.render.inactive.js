@@ -3,9 +3,9 @@ Serendip.FacetsRenderInactive = (function(serendip){
     
     var _facetsCore = null;
     
-    init(serendip);
+    init();
 
-    function init(serendip){
+    function init(){
         serendip.on("init.facets.core", function(facetsCore) {
             _facetsCore = facetsCore;
         });        
@@ -87,7 +87,6 @@ Serendip.FacetsRenderInactive = (function(serendip){
 
         var len = facetArray.length;
 
-        var currentIndex = 0;
         for (var i = 0; i < len; i += 2) {
             var value = facetArray[i];
             var count = facetArray[i + 1];
@@ -101,8 +100,6 @@ Serendip.FacetsRenderInactive = (function(serendip){
             if (facetFieldData != ""){
                 facetRow.push(facetFieldData);                
             }
-
-            currentIndex = i;
         }
         
         var facetdata = {
@@ -111,36 +108,6 @@ Serendip.FacetsRenderInactive = (function(serendip){
         };
         
         return facetdata;
-    };
-
-    function addMoreFacets(data, facet, facetArray, len, max, currentIndex) {
-        if (max < len)
-            len = max;
-
-        var moreFacetsData = [];
-
-        var moreFacets = {};
-        moreFacets.count = 0;
-        moreFacets.data = "";
-
-        for (var i = currentIndex + 2; i < len; i += 2) {
-            var value = facetArray[i];
-            var count = facetArray[i + 1];
-
-            var isActive = isFacetFieldActive(data, facet, value);
-            var facetData = processFacetField(facet, value, count, isActive);
-
-            if (facetData != "") {
-                moreFacetsData.push(facetData);
-                moreFacets.count++;
-            }
-        }
-
-        if (moreFacets.count > 0) {
-            moreFacets.data = moreFacetsData;
-        }
-
-        return moreFacets;
     };
 
     function removeEmptyFacets(facets) {
@@ -169,7 +136,17 @@ Serendip.FacetsRenderInactive = (function(serendip){
     };
 
     function isFacetFieldActive(data, facet, value) {
-        var activeFacets = data.responseHeader.params.fq;
+
+        var header = data.responseHeader;
+        if (!header.params) {
+            return false;
+        }
+
+        if (!header.params.fq) {
+            return false;
+        }
+        
+        var activeFacets = header.params.fq;
 
         if (activeFacets) {
 
@@ -229,9 +206,10 @@ Serendip.FacetsRenderInactive = (function(serendip){
             var data = facets[i];
             var values = getVisibleFacetRowValues(data.facet, data.values);
             var row = {
-                facet : data.facet,
-                values : values
-            }
+                facet: data.facet,
+                values: values
+            };
+            
             facetRows.push(row);
         }
 

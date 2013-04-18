@@ -6,19 +6,16 @@ Serendip.Core = (function (ajax, history) {
     my.facets = [];
     my.highlightFields = [];
     
-    _queryParams = [];
+    var _queryParams = [];
+    var _enableAllFields = false;
 
-    _enableAllFields = false;
-    sortQuery = "";
-    clickType = "";
-
-    cplIndex = -1;
-
-    solrUrl = "";
+    var solrUrl = "";
     
     Serendip.Utils.setupEvents(my);
     
-    my.init = function(pageName) {
+    my.init = function () {
+        initFacets();
+        
         my.trigger("views.init");
         
         my.fieldConfig.sort(fieldSort);
@@ -31,18 +28,22 @@ Serendip.Core = (function (ajax, history) {
     
     my.addFacet = function(facet){
         my.facets.push(facet);
-        
-        if(facet.facets.length > 0){
-            for(var i = 0; i < facet.facets.length;i++){
-                var subFacet = facet.facets[i];
-                my.addFacet(subFacet);
-            }
-        }
     };
 
     my.addFieldConfig = function(config) {
         my.fieldConfig.push(config);
         my.fields.push(config.name);
+    };
+
+    my.getFieldConfigForField = function(field) {
+        for (var i = 0; i < my.fieldConfig.length; i++) {
+            var config = my.fieldConfig[i];
+            if (config.name == field) {
+                return config;
+            }
+        }
+
+        return null;
     };
 
     my.enableAllFields = function(enable) {
@@ -58,7 +59,7 @@ Serendip.Core = (function (ajax, history) {
 
     my.setHighlightFields = function(fields) {
         addQueryParam("hl.fl", fields.join(" "));
-        highlightFields = fields;
+        my.highlightFields = fields;
     };
     
     my.removeQueryParam = function(key){
@@ -85,6 +86,17 @@ Serendip.Core = (function (ajax, history) {
 
     my.setSolrUrl = function(url) {
         solrUrl = url;
+
+        var currentUrlParsed = Serendip.Utils.parseUri(document.URL);
+        var solrUrlParsed = Serendip.Utils.parseUri(url);
+        
+        if (currentUrlParsed.host != solrUrlParsed.host || currentUrlParsed.port != solrUrlParsed.port) {
+            console.warn("The hostname and port of the solr url does not match the hostname and port of the page url. " +
+                "This is likely a bug since you will (likely) experience crossite scripting errors when " +
+                "making ajax requests to Solr.");
+            console.warn("Solr host/port: " + solrUrlParsed.host + ":" + solrUrlParsed.port
+                + " Page host/port: " + currentUrlParsed.host + ":" + currentUrlParsed.port);
+        }
     };
 
     my.saveHistoryItem = function() {
@@ -109,15 +121,13 @@ Serendip.Core = (function (ajax, history) {
         history.load("!" + hash);
     };
     
-    my.getIdForFieldName = function(name) {
-        for (var i = 0; i < my.fieldConfig.length; i++) {
-            var config = my.fieldConfig[i];
-            if (config.name == name) {
-                return config.id;
-            }
+    my.getIdForFieldName = function(field) {
+        var config = my.getFieldConfigForField(field);
+        if(config != null){
+            return config.id;    
         }
-
-        return "";
+        
+        return null;
     };    
     
     my.getFieldNameForId = function(id) {
@@ -130,7 +140,25 @@ Serendip.Core = (function (ajax, history) {
 
         return "";
     };
-        
+
+    my.search = function () {
+        my.trigger("search");
+        doRequest(true);
+    };
+    
+    function initFacets() {
+        for (var i = 0; i < my.facets.length; i++) {
+            var facet = my.facets[i];
+
+            if (facet.facets.length > 0) {
+                for (var k = 0; k < facet.facets.length; k++) {
+                    var subFacet = facet.facets[k];
+                    my.addFacet(subFacet);
+                }
+            }
+        }
+    };
+
     function initHistory(){
         history.on("history.change", function(queryParams){
              initFromQueryStr(queryParams);
@@ -180,11 +208,6 @@ Serendip.Core = (function (ajax, history) {
         return ((x < y) ? -1 : ((x > y) ? 1 : 0));
     }    
 
-    my.search = function() {
-        my.trigger("search");
-        doRequest(true);
-    };
-
     function doRequest(saveHistoryItem) {
         my.trigger("wait");
         
@@ -216,20 +239,11 @@ Serendip.Core = (function (ajax, history) {
         ajax.get(url, handleResponse, handleError);
     };
     
-    function handleError(error, shouldRedirectToLogin) {
-        alert(error);
-
-        if (shouldRedirectToLogin) {
-            redirectToLogin();
-        }
+    function handleError(statusCode, msg) {
+        my.trigger("error.request", statusCode, msg);
     };
 
     function handleResponse(data) {
-
-        if (data == null) {
-            redirectToLogin();
-        }
-
         my.trigger("renderStart");
         my.trigger("render", data);
         my.trigger("renderFinished");
@@ -247,22 +261,6 @@ Serendip.Core = (function (ajax, history) {
         return query;
     };
 
-    function parseParam(queryStr, name) {
-        var startIndex = queryStr.indexOf(name);
-
-        if (startIndex != -1) {
-            var endIndex = queryStr.indexOf("&", startIndex);
-
-            if (endIndex == -1) {
-                endIndex = queryStr.length;
-            }
-
-            return queryStr.substring(startIndex + name.length, endIndex);
-        }
-
-        return "";
-    };
-
     function parseQueryToMap(queryStr) {
         var split = queryStr.split("&");
 
@@ -275,7 +273,7 @@ Serendip.Core = (function (ajax, history) {
         
         split = queryStr.replace("!/", "").split("/");
 
-        for (var i = 0; i < split.length-1; i+=2) {
+        for (i = 0; i < split.length-1; i+=2) {
             var key = split[i];
             var value = split[i+1];
             queryParams["" + key + ""] = value;

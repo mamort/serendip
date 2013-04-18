@@ -1,4 +1,4 @@
-Serendip.Facet = (function (serendip) {
+Serendip.Facet = (function () {
     var my = {};
     
     my.facetType = "text";
@@ -7,6 +7,8 @@ Serendip.Facet = (function (serendip) {
     my.header  = null;
     my.minFacetsToDisplay = null;
     my.maxFacetsToDisplay = null;
+    my.sort = null;
+    my.prefix = null;
     my.facets = [];
     my.parents = [];
 
@@ -21,8 +23,8 @@ Serendip.Facet = (function (serendip) {
     
     my.getActiveQuery = function(values){
         var query = "fq={!tag=" + my.id + "}" + my.name;
-        var values = my.getActiveQueryValues(values);
-        query += ":(" + values + ")";
+        var activeValues = my.getActiveQueryValues(values);
+        query += ":(" + activeValues + ")";
         return query;
     };
     
@@ -40,7 +42,24 @@ Serendip.Facet = (function (serendip) {
     };
     
     my.getQuery = function() {
-        return "facet.field={!ex=" + my.id + "}" + my.name;
+        var query = "facet.field={!ex=" + my.id + ", key=" + my.id + "}" + my.name;
+        
+        query = my.applyOption(query, "sort", my.sort);
+        query = my.applyOption(query, "prefix", my.prefix);
+        query = my.applyOption(query, "limit", my.maxFacetsToDisplay);
+        
+        return query;
+    };
+
+    my.applyOption = function(query, queryParam, optionValue) {
+        // Unfortunately it is not possible yet to use 'key' (my.id) here
+        var optionPrefix = "&f." + my.name + ".facet";
+
+        if (optionValue != null) {
+            query += optionPrefix + "." + queryParam + "=" + encodeURIComponent(optionValue);
+        }
+
+        return query;
     };
     
     my.parseActiveValue = function(activeValue){
@@ -74,13 +93,9 @@ Serendip.Facet = (function (serendip) {
 
     my.process = function(data) {
         var facetfields = data.facet_counts.facet_fields;
-        var facetValues = facetfields[my.name];
+        var facetValues = facetfields[my.id];
 
-        if ( typeof (facetValues != "undefined")) {
-            return facetValues;
-        }
-
-        return [];
+        return facetValues;
     },
 
     my.processActive = function(value) {
