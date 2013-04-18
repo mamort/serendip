@@ -43,11 +43,16 @@ Serendip.Facet = (function () {
     
     my.getQuery = function() {
         var query = "facet.field={!ex=" + my.id + ", key=" + my.id + "}" + my.name;
+        query = my.applyOptions(query);
         
+        return query;
+    };
+
+    my.applyOptions = function(query) {
         query = my.applyOption(query, "sort", my.sort);
         query = my.applyOption(query, "prefix", my.prefix);
         query = my.applyOption(query, "limit", my.maxFacetsToDisplay);
-        
+
         return query;
     };
 

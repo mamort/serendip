@@ -15,6 +15,8 @@ Serendip.DateFacet = (function (serendip) {
         query = my.applyOption(query, "date.end", my.dateEnd);
         query = my.applyOption(query, "date.gap", my.dateGap);
 
+        query = my.applyOptions(query);
+        
         return query;
     };
 

@@ -12,7 +12,9 @@ Serendip.RangeFacet = (function (serendip) {
         query = my.applyOption(query, "range.start", my.rangeStart);
         query = my.applyOption(query, "range.end", my.rangeEnd);
         query = my.applyOption(query, "range.gap", my.rangeGap);
-        
+       
+        query = my.applyOptions(query);
+       
         return query;
     };
     
@@ -35,12 +37,6 @@ Serendip.RangeFacet = (function (serendip) {
         }
         
         return [];
-    };
-    
-    my.isFacetFieldActive = function(facetActiveValue, facetValue){
-
-        
-        return false;
     };
 
     my.processActive = function(value) {
@@ -73,10 +69,9 @@ Serendip.RangeFacet = (function (serendip) {
             var range = {from: value};
             
             if (i + 2 < ranges.length) {
-                range.to = value + gap - 1;   
+                range.to = value + gap;   
             } else {
-                // TODO: Add support for last range being all additional values
-                range.to = value + gap - 1;  
+                range.to = value + gap;  
             }
             
             facetValues.push(range);
